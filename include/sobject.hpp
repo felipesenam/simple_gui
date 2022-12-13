@@ -13,19 +13,22 @@ namespace PROJECT_NAMESPACE
         Object(const Object &) = delete;
 
     protected:
+        static size_t objectCounter;
         static size_t objectCount;
         static std::vector<Object<T> *> objects;
         const size_t id;
 
     public:
-        Object() : id(objectCount++)
+        Object() : id(objectCounter++)
         {
             Debug("New object " << self.getName());
             objects.emplace_back(this);
+            objectCounter++;
         }
         virtual ~Object()
         {
             Debug("Destroying " << self.getName());
+            objectCounter--;
         };
         size_t getId() const noexcept
         {
@@ -47,13 +50,30 @@ namespace PROJECT_NAMESPACE
                 __throw_exception_again;
             }
         }
+        static void atexit_handler()
+        {
+            if (objectCounter)
+            {
+                Debug("There's " << objectCounter << " lost objects");
+            }
+            else
+            {
+                Debug("All objects has been freed");
+            }
+        }
     };
 
     template <typename T>
     size_t Object<T>::objectCount = 0;
 
     template <typename T>
+    size_t Object<T>::objectCounter = 0;
+
+    template <typename T>
     std::vector<Object<T> *> Object<T>::objects;
+
+    // template <typename T>
+    // std::atexit(Object<T>::atexit_handler);
 }
 
 #endif // __SOBJECT_H__

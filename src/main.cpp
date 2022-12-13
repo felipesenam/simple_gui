@@ -12,7 +12,11 @@ int main(/*int argc, char const *argv[]*/)
 
     Application app(config);
     auto &window = app.windows.get("main");
-    auto &label = window.widgets.create<Label>();
+    window.widgets.create<Label>();
+    window.widgets.create<Label>();
+    window.widgets.create<Label>();
+    window.widgets.create<Label>();
+    window.widgets.create<Label>();
 
     return app();
 }
