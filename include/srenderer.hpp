@@ -1,11 +1,14 @@
 #ifndef __SRENDERER_H__
 #define __SRENDERER_H__
 
-#include "score.hpp"
 #include "scolor.hpp"
+#include "score.hpp"
+#include "sgeometry.hpp"
 
 namespace PROJECT_NAMESPACE
 {
+    using DrawFunction = std::function<SDL_Surface *(TTF_Font *, const char *, SDL_Color)>;
+    using DrawFunctionWrapped = std::function<SDL_Surface *(TTF_Font *, const char *, SDL_Color, Uint32)>;
     class Window;
     struct RendererConfig
     {
@@ -57,6 +60,13 @@ namespace PROJECT_NAMESPACE
 
         void clear();
         void present();
+
+        SDL_Texture *createTextureFromSurface(SDL_Surface *surface);
+        void drawTexture(SDL_Texture *texture, SDL_Rect *src, SDL_Rect *dest);
+        void drawRectangle(const SDL_Rect &dest, const Color &color);
+        void drawFillRectangle(const SDL_Rect &dest, const Color &color);
+        SDL_Texture *renderText(const std::string &text, TTF_Font *font, Geometry *geometry, DrawFunction TTF_RenderFunction);
+        SDL_Texture *renderWrapped(const std::string &text, TTF_Font *font, Geometry *geometry, Uint32 wrapLenght, DrawFunctionWrapped TTF_RenderFunction);
     };
 }
 

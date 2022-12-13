@@ -2,7 +2,7 @@
 
 namespace PROJECT_NAMESPACE
 {
-    Window::Window(const WindowConfig &config)
+    Window::Window(const WindowConfig &config) : widgets(self)
     {
         window = SDL_CreateWindow(
             config.title.c_str(),
@@ -61,12 +61,12 @@ namespace PROJECT_NAMESPACE
     }
     void Window::update()
     {
-        // UPDATE LOGIC
+        widgets.update();
     }
     void Window::draw()
     {
         renderer.clear();
-        // DRAW LOGIC
+        widgets.draw();
         renderer.present();
     }
 }

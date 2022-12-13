@@ -5,7 +5,7 @@
 
 namespace PROJECT_NAMESPACE
 {
-    class Application
+    class Application : public Object<Application>
     {
     private:
         unsigned targetFPS = 60;

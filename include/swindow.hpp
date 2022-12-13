@@ -3,7 +3,7 @@
 
 #include "score.hpp"
 #include "srenderer.hpp"
-
+#include "swidget.hpp"
 namespace PROJECT_NAMESPACE
 {
     struct WindowConfig
@@ -64,7 +64,7 @@ namespace PROJECT_NAMESPACE
         Options options;
         RendererConfig renderer;
     };
-    class Window : public Object
+    class Window : public Object<Window>
     {
     private:
         static size_t windowCount;
@@ -87,6 +87,8 @@ namespace PROJECT_NAMESPACE
         void show();
         void hide();
         void destroy();
+
+        WidgetManager widgets;
 
         struct Behavior
         {
