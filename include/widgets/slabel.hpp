@@ -9,23 +9,19 @@ namespace PROJECT_NAMESPACE
     class Label : public Widget, public Object<Label>
     {
     private:
-        SDL_Texture *text_texture;
+        SDL_Texture *textTexture = nullptr;
+
+        Color renderedColor;
+        std::string renderedText;
+        // TTF* renderedFont = nullptr;
 
     public:
-        Label(Window &window) : Widget(window)
-        {
-        }
+        std::string text;
+        Label(Window &window);
 
-        void handleEvent(const SDL_Event &e) override
-        {
-        }
-        void update() override
-        {
-        }
-        void draw() override
-        {
-            // self.window.renderer
-        }
+        void handleEvent(const SDL_Event &e) override;
+        void update() override;
+        void draw() override;
     };
 
 }

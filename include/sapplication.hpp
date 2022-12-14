@@ -12,22 +12,7 @@ namespace PROJECT_NAMESPACE
 
         bool running = false;
 
-        class WindowManager
-        {
-        private:
-            std::unordered_map<std::string, Window *> windows;
-
         public:
-            WindowManager();
-            ~WindowManager();
-            bool hasActiveWindows() const;
-            Window &get(const std::string &id);
-            Window &create(const std::string &id, const WindowConfig &windowConfig = WindowConfig());
-            void handleEvent(const SDL_Event &);
-            void runLogic();
-        };
-
-    public:
         Application(const WindowConfig &windowConfig = WindowConfig());
         ~Application();
 

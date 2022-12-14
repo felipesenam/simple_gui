@@ -3,6 +3,7 @@
 
 #include "scolor.hpp"
 #include "score.hpp"
+#include "sfont.hpp"
 #include "sgeometry.hpp"
 
 namespace PROJECT_NAMESPACE
@@ -62,11 +63,10 @@ namespace PROJECT_NAMESPACE
         void present();
 
         SDL_Texture *createTextureFromSurface(SDL_Surface *surface);
-        void drawTexture(SDL_Texture *texture, SDL_Rect *src, SDL_Rect *dest);
-        void drawRectangle(const SDL_Rect &dest, const Color &color);
-        void drawFillRectangle(const SDL_Rect &dest, const Color &color);
-        SDL_Texture *renderText(const std::string &text, TTF_Font *font, Geometry *geometry, DrawFunction TTF_RenderFunction);
-        SDL_Texture *renderWrapped(const std::string &text, TTF_Font *font, Geometry *geometry, Uint32 wrapLenght, DrawFunctionWrapped TTF_RenderFunction);
+        void drawTexture(SDL_Texture *texture, Rect *src, Rect *dest);
+        void drawRectangle(const Rect &dest, const Color &color);
+        void drawFillRectangle(const Rect &dest, const Color &color);
+        SDL_Texture *renderText(const std::string &text, Font &font, Geometry &geometry, Uint32 wrapLenght = 0);
     };
 }
 

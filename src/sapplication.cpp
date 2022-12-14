@@ -2,78 +2,28 @@
 
 namespace PROJECT_NAMESPACE
 {
-    Application::WindowManager::WindowManager()
-    {
-    }
-
-    Application::WindowManager::~WindowManager()
-    {
-        for (auto i = windows.begin(); i != windows.end();)
-        {
-            delete i->second;
-            i = windows.erase(i);
-        }
-    }
-
-    Window &Application::WindowManager::get(const std::string &id)
-    {
-        return *windows[id];
-    }
-
-    Window &Application::WindowManager::create(const std::string &id, const WindowConfig &windowConfig)
-    {
-        auto it = windows.find(id);
-        if (it == windows.end())
-        {
-            windows[id] = new Window(windowConfig);
-            return *windows[id];
-        }
-        return *it->second;
-    }
-
-    void Application::WindowManager::handleEvent(const SDL_Event &event)
-    {
-        for (auto &window : windows)
-            window.second->handleEvent(event);
-    }
-
-    void Application::WindowManager::runLogic()
-    {
-
-        for (auto it = windows.begin(); it != windows.end();)
-        {
-            auto window = it->second;
-            if (!window->isActive() && window->behavior.destroyOnClose)
-            {
-                delete window;
-                it = windows.erase(it);
-            }
-            else
-            {
-                ++it;
-            }
-        }
-
-        for (auto &window : windows)
-        {
-            window.second->update();
-            window.second->draw();
-        }
-    }
-    bool Application::WindowManager::hasActiveWindows() const
-    {
-        for (auto &it : windows)
-        {
-            auto window = it.second;
-            if (window && window->isActive() && window->isShown())
-                return true;
-        }
-
-        return false;
-    }
 
     Application::Application(const WindowConfig &windowConfig)
     {
+        SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
+
+        if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
+        {
+            const int flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;
+            if (IMG_Init(flags) != flags)
+            {
+                Warn("IMG_Init: " << IMG_GetError());
+            }
+            if (TTF_Init() != 0)
+            {
+                Warn("TTF_Init: " << TTF_GetError());
+            }
+        }
+        else
+        {
+            SDL_PrintError(Error);
+            exit(-1);
+        }
         windows.create("main", windowConfig);
     }
     Application::~Application()

@@ -55,7 +55,7 @@ namespace PROJECT_NAMESPACE
         }
         return tex;
     }
-    void Renderer::drawTexture(SDL_Texture *texture, SDL_Rect *src, SDL_Rect *dest)
+    void Renderer::drawTexture(SDL_Texture *texture, Rect *src, Rect *dest)
     {
         DebugFrame(*dest, Color(255, 0, 0));
         if (dest->w <= 0 || dest->h <= 0)
@@ -68,7 +68,7 @@ namespace PROJECT_NAMESPACE
         }
     }
 
-    void Renderer::drawRectangle(const SDL_Rect &dest, const Color &color)
+    void Renderer::drawRectangle(const Rect &dest, const Color &color)
     {
         if (color.a == 0)
             return;
@@ -78,7 +78,7 @@ namespace PROJECT_NAMESPACE
         SDL_SetRenderDrawColor(renderer, RGBA(drawColor));
     }
 
-    void Renderer::drawFillRectangle(const SDL_Rect &dest, const Color &color)
+    void Renderer::drawFillRectangle(const Rect &dest, const Color &color)
     {
         if (color.a == 0)
             return;
@@ -88,54 +88,58 @@ namespace PROJECT_NAMESPACE
         SDL_SetRenderDrawColor(renderer, RGBA(drawColor));
     }
 
-    SDL_Texture *Renderer::renderText(const std::string &text, TTF_Font *font, Geometry *geometry, DrawFunction TTF_RenderFunction)
+    SDL_Texture *Renderer::renderText(const std::string &text, Font &font, Geometry &geometry, Uint32 wrapLenght)
     {
-        if (font == nullptr)
+        if (font.font == nullptr)
         {
             Warn("Invalid font.");
             return nullptr;
         }
 
-        SDL_Texture *texture = nullptr;
-        SDL_Surface *textSurface = TTF_RenderFunction(font, text.c_str(), {255, 255, 255, 255});
+        SDL_Surface *textSurface = nullptr;
+        if (wrapLenght)
+        {
+            switch (font.renderType)
+            {
+            case blended:
+                textSurface = TTF_RenderUTF8_Blended_Wrapped(font.font, text.c_str(), font.color, wrapLenght);
+                break;
+            case solid:
+                textSurface = TTF_RenderUTF8_Solid_Wrapped(font.font, text.c_str(), font.color, wrapLenght);
+                break;
+            case shaded:
+                textSurface = TTF_RenderUTF8_Shaded_Wrapped(font.font, text.c_str(), font.color, font.background, wrapLenght);
+                break;
+            }
+        }
+        else
+        {
+            switch (font.renderType)
+            {
+            case blended:
+                textSurface = TTF_RenderUTF8_Blended(font.font, text.c_str(), font.color);
+                break;
+            case solid:
+                textSurface = TTF_RenderUTF8_Solid(font.font, text.c_str(), font.color);
+                break;
+            case shaded:
+                textSurface = TTF_RenderUTF8_Shaded(font.font, text.c_str(), font.color, font.background);
+                break;
+            }
+        }
         if (textSurface == nullptr)
         {
             SDL_PrintError(Error);
         }
 
-        texture = createTextureFromSurface(textSurface);
-        SDL_FreeSurface(textSurface);
-
-        int w, h;
-        SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-        geometry->abs.w = w;
-        geometry->abs.h = h;
-
-        return texture;
-    }
-
-    SDL_Texture *Renderer::renderWrapped(const std::string &text, TTF_Font *font, Geometry *geometry, Uint32 wrapLenght, DrawFunctionWrapped TTF_RenderFunction)
-    {
-        if (font == nullptr)
-        {
-            Error("Invalid font.");
-            return nullptr;
-        }
-
         SDL_Texture *texture = nullptr;
-        SDL_Surface *textSurface = TTF_RenderFunction(font, text.c_str(), {255, 255, 255, 255}, wrapLenght);
-        if (textSurface == nullptr)
-        {
-            SDL_PrintError(Error);
-        }
-
         texture = createTextureFromSurface(textSurface);
         SDL_FreeSurface(textSurface);
 
         int w, h;
         SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
-        geometry->abs.w = w;
-        geometry->abs.h = h;
+        geometry.abs.w = w;
+        geometry.abs.h = h;
 
         return texture;
     }

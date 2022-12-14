@@ -2,18 +2,13 @@
 #define __SWINDOW_H__
 
 #include "score.hpp"
+#include "sfont.hpp"
 #include "srenderer.hpp"
 #include "swidget.hpp"
 namespace PROJECT_NAMESPACE
 {
     struct WindowConfig
     {
-        std::string title = "Window";
-        int x = SDL_WINDOWPOS_CENTERED;
-        int y = SDL_WINDOWPOS_CENTERED;
-        int width = 600;
-        int height = 400;
-
         struct Options
         {
             // SDL_WINDOW_FULLSCREEN
@@ -61,19 +56,54 @@ namespace PROJECT_NAMESPACE
                     (this->skipsTaskbar ? SDL_WINDOW_SKIP_TASKBAR : 0));
             }
         };
+
+        struct Behavior
+        {
+            bool destroyOnClose = true;
+        };
+
+        std::string title = "Window";
+        int x = SDL_WINDOWPOS_CENTERED;
+        int y = SDL_WINDOWPOS_CENTERED;
+        int width = 600;
+        int height = 400;
+
+        std::string defaultFontPath = "assets/fonts/segoeui.ttf";
+        unsigned defaultFontSize = 12;
+
         Options options;
+        Behavior behavior;
         RendererConfig renderer;
     };
+
+    class WindowManager
+    {
+    private:
+        std::unordered_map<std::string, Window *> windows;
+
+        friend class Application;
+
+    public:
+        WindowManager();
+        ~WindowManager();
+
+        bool hasActiveWindows() const;
+        Window &get(const std::string &id);
+        Window &create(const std::string &id, const WindowConfig &windowConfig = WindowConfig());
+        void handleEvent(const SDL_Event &);
+        void runLogic();
+    };
+
     class Window : public Object<Window>
     {
     private:
         static size_t windowCount;
         SDL_Window *window = nullptr;
 
-        friend Renderer;
-
         bool active = true;
         bool shown = true;
+
+        friend Renderer;
 
     public:
         Window(const WindowConfig &config = WindowConfig());
@@ -81,20 +111,16 @@ namespace PROJECT_NAMESPACE
 
         Renderer renderer;
 
+        WidgetManager widgets;
+
+        WindowConfig config;
+
         bool isActive() const;
         bool isShown() const;
 
         void show();
         void hide();
         void destroy();
-
-        WidgetManager widgets;
-
-        struct Behavior
-        {
-            bool destroyOnClose = true;
-        };
-        Behavior behavior;
 
         void handleEvent(const SDL_Event &event);
         void update();

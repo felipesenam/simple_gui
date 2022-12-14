@@ -2,6 +2,7 @@
 #define __WIDGET_H__
 
 #include "score.hpp"
+#include "sfont.hpp"
 #include "sgeometry.hpp"
 
 namespace PROJECT_NAMESPACE
@@ -41,6 +42,9 @@ namespace PROJECT_NAMESPACE
         Widget(Window &window);
 
         Geometry geometry;
+        Font font;
+
+        Color color, background;
 
         virtual void handleEvent(const SDL_Event &e);
         virtual void update();

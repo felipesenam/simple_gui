@@ -4,6 +4,7 @@
 #include "widgets/slabel.hpp"
 
 using namespace sgui;
+using namespace sgui::Colors;
 
 int main(/*int argc, char const *argv[]*/)
 {
@@ -12,11 +13,9 @@ int main(/*int argc, char const *argv[]*/)
 
     Application app(config);
     auto &window = app.windows.get("main");
-    window.widgets.create<Label>();
-    window.widgets.create<Label>();
-    window.widgets.create<Label>();
-    window.widgets.create<Label>();
-    window.widgets.create<Label>();
+    auto &label1 = window.widgets.create<Label>();
+    label1.color.hex(Red);
+    label1.text = "Hello world";
 
     return app();
 }
