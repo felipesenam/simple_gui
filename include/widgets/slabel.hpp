@@ -16,8 +16,10 @@ namespace PROJECT_NAMESPACE
         // TTF* renderedFont = nullptr;
 
     public:
-        std::string text;
         Label(Window &window);
+        ~Label();
+
+        std::string text;
 
         void handleEvent(const SDL_Event &e) override;
         void update() override;

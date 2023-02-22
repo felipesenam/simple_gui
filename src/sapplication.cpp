@@ -3,7 +3,7 @@
 namespace PROJECT_NAMESPACE
 {
 
-    Application::Application(const WindowConfig &windowConfig)
+    Application::Application(const ApplicationConfig &config) : config(config)
     {
         SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
 
@@ -24,10 +24,15 @@ namespace PROJECT_NAMESPACE
             SDL_PrintError(Error);
             exit(-1);
         }
-        windows.create("main", windowConfig);
+        windows.create("main", config.window);
     }
     Application::~Application()
     {
+        Debug("Shutting down SDL subsystems...");
+        TTF_Quit();
+        IMG_Quit();
+        SDL_Quit();
+        Debug("Shutdown complete.");
     }
     void Application::stop()
     {
@@ -38,7 +43,7 @@ namespace PROJECT_NAMESPACE
         running = true;
 
         Uint32 fStart, frameTime;
-        const double frameDelay = 1000 / (double)targetFPS;
+        const float frameDelay = 1000.0f / config.targetFPS;
         while (running && windows.hasActiveWindows())
         {
             fStart = SDL_GetTicks();

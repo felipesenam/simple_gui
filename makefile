@@ -27,7 +27,7 @@ DEFINES=DEBUG
 CC=g++
 
 # Flags that will be used when compiling binaries
-COMPILATION_FLAGS=-Wall -Wextra -pedantic -std=c++11 -g
+COMPILATION_FLAGS=-Wall -Wextra -pedantic -std=c++11 -g -ggdb3 -O0
 # Flags that will be used when linking the executable
 ifeq ($(OS),Windows_NT)
 LINKER_FLAGS=-lcomdlg32
@@ -119,7 +119,7 @@ clean:
 ifeq ($(OS),Windows_NT)
 	del /f /s /q $(foreach obj,$(subst /,\,$(OBJECTS)),"$(obj)") "$(FILE).exe" *~
 else
-	@ rm -f $(foreach obj,$(OBJECTS),"$(obj)") "$(FILE)" *~
+	rm -f $(foreach obj,$(OBJECTS),"$(obj)") "$(FILE)" *~
 endif
 
 .PHONY: all clean objdir

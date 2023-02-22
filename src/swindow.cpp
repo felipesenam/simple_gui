@@ -7,10 +7,9 @@ namespace PROJECT_NAMESPACE
 
     WindowManager::~WindowManager()
     {
-        for (auto i = windows.begin(); i != windows.end();)
+        for (auto i = windows.begin(); i != windows.end(); ++i)
         {
             delete i->second;
-            i = windows.erase(i);
         }
     }
 
@@ -38,7 +37,6 @@ namespace PROJECT_NAMESPACE
 
     void WindowManager::runLogic()
     {
-
         for (auto it = windows.begin(); it != windows.end();)
         {
             auto window = it->second;
@@ -74,7 +72,7 @@ namespace PROJECT_NAMESPACE
 
 namespace PROJECT_NAMESPACE
 {
-    Window::Window(const WindowConfig &config) : widgets(self), config(config)
+    Window::Window(const WindowConfig &config) : config(config), container(self)
     {
         window = SDL_CreateWindow(
             config.title.c_str(),
@@ -133,12 +131,12 @@ namespace PROJECT_NAMESPACE
     }
     void Window::update()
     {
-        widgets.update();
+        container.update();
     }
     void Window::draw()
     {
         renderer.clear();
-        widgets.draw();
+        container.draw();
         renderer.present();
     }
 }

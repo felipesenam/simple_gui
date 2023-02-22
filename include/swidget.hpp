@@ -8,34 +8,17 @@
 namespace PROJECT_NAMESPACE
 {
     class Window;
-    class Widget;
-
-    class WidgetManager
-    {
-    private:
-        Window &window;
-        std::vector<Widget *> widgets;
-        friend class Widget;
-
-    public:
-        WidgetManager(Window &window);
-        ~WidgetManager();
-
-        template <typename T, typename... Args>
-        T &create(Args &&...args)
-        {
-            T *widget = new T(window, args...);
-            widgets.emplace_back(widget);
-            return *widget;
-        }
-        void handleEvent(const SDL_Event &e);
-        void update();
-        void draw();
-    };
+    class WidgetManager;
+    class Container;
 
     class Widget : public Object<Widget>
     {
+    private:
+        friend class WidgetManager;
+        friend class Container;
+
     protected:
+        Container *parent = nullptr;
         Window &window;
 
     public:
@@ -51,6 +34,34 @@ namespace PROJECT_NAMESPACE
         virtual void draw();
     };
 
+    class WidgetManager : public Widget
+    {
+    private:
+        friend class Container;
+
+    protected:
+        std::vector<Widget *> widgets;
+
+    public:
+        WidgetManager(Window &window);
+        virtual ~WidgetManager();
+
+        template <typename T, typename... Args>
+        T &create(Args &&...args)
+        {
+            T *widget = new T(window, args...);
+            widgets.emplace_back(widget);
+            return *widget;
+        }
+        size_t count() const noexcept
+        {
+            return widgets.size();
+        }
+
+        void handleEvent(const SDL_Event &e) override;
+        void update() override;
+        void draw() override;
+    };
 }
 
 #endif // __WIDGET_H__

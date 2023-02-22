@@ -10,9 +10,9 @@ namespace PROJECT_NAMESPACE
     {
     }
 
-    Color::Color(int hex, Uint8 a)
+    Color::Color(unsigned hex)
     {
-        this->hex(hex, a);
+        this->hex(hex);
     }
 
     Color::Color(const Color &color)
@@ -134,27 +134,23 @@ namespace PROJECT_NAMESPACE
         return self;
     }
 
-    Color &Color::hex(int hex, Uint8 a)
+    Color &Color::hex(unsigned hex)
     {
-        this->r = (hex >> 16) & 0xFF;
-        this->g = (hex >> 8) & 0xFF;
-        this->b = hex & 0xFF;
-        this->a = a;
+        self.r = (hex >> 24) & 0xFF;
+        self.g = (hex >> 16) & 0xFF;
+        self.b = (hex >> 8) & 0xFF;
+        self.a = hex & 0xFF;
 
         return self;
     }
 
-    Color &Color::operator=(int hex)
+    Color &Color::operator=(unsigned hex)
     {
         return this->hex(hex);
     }
 
     Color &Color::operator=(const Color &color)
     {
-        return this->rgb(
-            color.r,
-            color.g,
-            color.b,
-            color.a);
+        return this->rgb(RGBA(color));
     }
 }

@@ -5,6 +5,7 @@
 #include "sfont.hpp"
 #include "srenderer.hpp"
 #include "swidget.hpp"
+#include "widgets/smaincontainer.hpp"
 namespace PROJECT_NAMESPACE
 {
     struct WindowConfig
@@ -71,6 +72,10 @@ namespace PROJECT_NAMESPACE
         std::string defaultFontPath = "assets/fonts/segoeui.ttf";
         unsigned defaultFontSize = 12;
 
+        /**
+         * @brief Window options. Note this alter this options after after window initialized has no effect.
+         *
+         */
         Options options;
         Behavior behavior;
         RendererConfig renderer;
@@ -111,12 +116,23 @@ namespace PROJECT_NAMESPACE
 
         Renderer renderer;
 
-        WidgetManager widgets;
-
         WindowConfig config;
+        MainContainer container;
 
         bool isActive() const;
         bool isShown() const;
+
+        /**
+         * @brief
+         *
+         * @return std::pair<int, int> Which represents respectively window width and height.
+         */
+        std::pair<int, int> size() const
+        {
+            std::pair<int, int> _size;
+            SDL_GetWindowSize(window, &_size.first, &_size.second);
+            return _size;
+        }
 
         void show();
         void hide();

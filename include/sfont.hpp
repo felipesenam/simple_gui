@@ -17,26 +17,18 @@ namespace PROJECT_NAMESPACE
     class Font
     {
     private:
-        static std::map<std::pair<std::string, unsigned>, TTF_Font *> fonts;
-
-        TTF_Font *font = nullptr;
+        TTF_Font *ttf = nullptr;
 
         friend class Renderer;
-
-        static int err;
-        static void atexit_handler()
-        {
-            Debug("Closing fonts");
-            for (auto pair : fonts)
-            {
-                TTF_CloseFont(pair.second);
-            }
-        }
 
     public:
         Font(const std::string &path, unsigned size = 12)
         {
             open(path, size);
+        }
+        ~Font()
+        {
+            TTF_CloseFont(ttf);
         }
 
         Color color, background;

@@ -3,8 +3,18 @@
 
 namespace PROJECT_NAMESPACE
 {
+    template <>
+    const int Object<Label>::err = std::atexit(Object<Label>::atexit_handler);
+
     Label::Label(Window &window) : Widget(window)
     {
+    }
+    Label::~Label()
+    {
+        if (textTexture)
+        {
+            SDL_DestroyTexture(textTexture);
+        }
     }
 
     void Label::handleEvent(const SDL_Event &e)
@@ -15,7 +25,9 @@ namespace PROJECT_NAMESPACE
         if (text != renderedText)
         {
             if (textTexture != nullptr)
+            {
                 SDL_DestroyTexture(textTexture);
+            }
             SDL_PrintIfError(Warn);
 
             textTexture = self.window.renderer.renderText(text, font, self.geometry);
@@ -24,8 +36,10 @@ namespace PROJECT_NAMESPACE
         }
         if (textTexture != nullptr)
         {
-            SDL_SetTextureColorMod(textTexture, RGB(font.color));
-            SDL_PrintIfError(Warn);
+            if (SDL_SetTextureColorMod(textTexture, RGB(font.color)) != 0)
+            {
+                Warn(SDL_GetError());
+            }
         }
     }
     void Label::draw()

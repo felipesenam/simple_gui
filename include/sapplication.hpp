@@ -5,19 +5,25 @@
 
 namespace PROJECT_NAMESPACE
 {
+    class ApplicationConfig
+    {
+    public:
+        unsigned targetFPS = 60;
+        WindowConfig window;
+    };
+
     class Application : public Object<Application>
     {
     private:
-        unsigned targetFPS = 60;
-
         bool running = false;
 
-        public:
-        Application(const WindowConfig &windowConfig = WindowConfig());
+    public:
+        Application(const ApplicationConfig &config = ApplicationConfig());
         ~Application();
 
         SDL_Event event;
         WindowManager windows;
+        ApplicationConfig config;
 
         int run();
         int operator()();

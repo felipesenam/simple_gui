@@ -3,7 +3,7 @@
 
 namespace PROJECT_NAMESPACE
 {
-    WidgetManager::WidgetManager(Window &window) : window(window)
+    WidgetManager::WidgetManager(Window &window) : Widget(window)
     {
     }
 
@@ -33,7 +33,7 @@ namespace PROJECT_NAMESPACE
 
 namespace PROJECT_NAMESPACE
 {
-    Widget::Widget(Window &window) : window(window), font(window.config.defaultFontPath, window.config.defaultFontSize)
+    Widget::Widget(Window &window) : parent(&window.container), window(window), font(window.config.defaultFontPath, window.config.defaultFontSize)
     {
     }
     void Widget::handleEvent(const SDL_Event &)

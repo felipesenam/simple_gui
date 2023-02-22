@@ -12,10 +12,24 @@ namespace PROJECT_NAMESPACE
     private:
         Object(const Object &) = delete;
 
-    protected:
         static size_t objectCounter;
         static size_t objectCount;
         static std::vector<Object<T> *> objects;
+
+        const static int err;
+        static void atexit_handler()
+        {
+            if (objectCount)
+            {
+                Debug("There's " << objectCount << " lost objects");
+            }
+            else
+            {
+                Debug("All objects has been freed");
+            }
+        }
+
+    protected:
         const size_t id;
 
     public:
@@ -38,27 +52,16 @@ namespace PROJECT_NAMESPACE
         {
             return type(self) + "{id=" + std::to_string(id) + "}";
         }
-        static Object &get(size_t id, LINE_INFO)
+        static T &get(size_t id, LINE_INFO)
         {
             try
             {
-                return *objects.at(id);
+                return *dynamic_cast<T *>(objects.at(id));
             }
             catch (const std::out_of_range &e)
             {
                 PRINT_TRACE;
                 __throw_exception_again;
-            }
-        }
-        static void atexit_handler()
-        {
-            if (objectCounter)
-            {
-                Debug("There's " << objectCounter << " lost objects");
-            }
-            else
-            {
-                Debug("All objects has been freed");
             }
         }
     };
@@ -71,9 +74,6 @@ namespace PROJECT_NAMESPACE
 
     template <typename T>
     std::vector<Object<T> *> Object<T>::objects;
-
-    // template <typename T>
-    // std::atexit(Object<T>::atexit_handler);
 }
 
 #endif // __SOBJECT_H__
