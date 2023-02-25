@@ -2,7 +2,6 @@
 #define __SGEOMETRY_H__
 
 #include "score.hpp"
-
 namespace PROJECT_NAMESPACE
 {
     class Rect : public SDL_Rect
@@ -16,11 +15,51 @@ namespace PROJECT_NAMESPACE
         }
     };
 
+    class Box
+    {
+    public:
+        int top, left, bottom, right;
+        Box() {}
+        Box(int top, int left, int bottom, int right) : top(top), left(left), bottom(bottom), right(right) {}
+
+        bool operator==(const Box &box)
+        {
+            return self.top == box.top && self.left == box.left && self.bottom == box.bottom && self.right == box.right;
+        }
+
+        Box &operator=(int value)
+        {
+            self.top = self.bottom = self.left = self.right = value;
+            return self;
+        }
+
+        int x() const
+        {
+            return self.left + self.right;
+        }
+        void x(int x)
+        {
+            self.left = x;
+            self.right = x;
+        }
+        int y() const
+        {
+            return self.top + self.bottom;
+        }
+        void y(int y)
+        {
+            self.top = y;
+            self.bottom = y;
+        }
+    };
+
     enum Behavior
     {
         fixed,
         hug,
+        fill
     };
+
     enum Center
     {
         none,
@@ -35,9 +74,12 @@ namespace PROJECT_NAMESPACE
         bottom_right
     };
 
+    class Widget;
     class Geometry
     {
     private:
+        Widget &widget;
+
         void confine(int &srcp, int &srcd, int &destp, int &destd, int boxp, int boxd, int absd)
         {
             srcp = 0;
@@ -63,7 +105,7 @@ namespace PROJECT_NAMESPACE
         }
 
     public:
-        Geometry()
+        Geometry(Widget &widget) : widget(widget)
         {
         }
 
@@ -71,25 +113,10 @@ namespace PROJECT_NAMESPACE
         Behavior behavior = hug;
         Center anchor = middle_center;
 
-        void normalize()
-        {
-            switch (behavior)
-            {
-            case fixed:
-                break;
+        Box margin;
+        Box padding;
 
-            case hug:
-                if (src == dest)
-                {
-                    src = dest = abs;
-                }
-                else
-                {
-                    dest = abs;
-                }
-                break;
-            }
-        }
+        void normalize();
 
         void confine(const SDL_Rect &box)
         {
@@ -97,47 +124,47 @@ namespace PROJECT_NAMESPACE
             confine(src.y, src.h, dest.y, dest.h, box.y, box.h, abs.h);
         }
 
-        void posCenter()
+        void posCenter(Rect ref)
         {
             switch (anchor)
             {
             case none:
                 break;
             case top_left:
-                dest.x = abs.x;
-                dest.y = abs.y;
+                dest.x = ref.x;
+                dest.y = ref.y;
                 break;
             case top_center:
-                dest.x = abs.x - (abs.w / 2);
-                dest.y = abs.y;
+                dest.x = ref.x - (ref.w / 2);
+                dest.y = ref.y;
                 break;
             case top_right:
-                dest.x = abs.x - abs.w;
-                dest.y = abs.y;
+                dest.x = ref.x - ref.w;
+                dest.y = ref.y;
                 break;
             case middle_left:
-                dest.x = abs.x;
-                dest.y = abs.y - (abs.h / 2);
+                dest.x = ref.x;
+                dest.y = ref.y - (ref.h / 2);
                 break;
             case middle_center:
-                dest.x = abs.x - (abs.w / 2);
-                dest.y = abs.y - (abs.h / 2);
+                dest.x = ref.x - (ref.w / 2);
+                dest.y = ref.y - (ref.h / 2);
                 break;
             case middle_right:
-                dest.x = abs.x - abs.w;
-                dest.y = abs.y - (abs.h / 2);
+                dest.x = ref.x - ref.w;
+                dest.y = ref.y - (ref.h / 2);
                 break;
             case bottom_left:
-                dest.x = abs.x;
-                dest.y = abs.y - abs.h;
+                dest.x = ref.x;
+                dest.y = ref.y - ref.h;
                 break;
             case bottom_center:
-                dest.x = abs.x - (abs.w / 2);
-                dest.y = abs.y - abs.h;
+                dest.x = ref.x - (ref.w / 2);
+                dest.y = ref.y - ref.h;
                 break;
             case bottom_right:
-                dest.x = abs.x - abs.w;
-                dest.y = abs.y - abs.h;
+                dest.x = ref.x - ref.w;
+                dest.y = ref.y - ref.h;
                 break;
             }
         }

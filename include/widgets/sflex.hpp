@@ -3,6 +3,7 @@
 
 #include "../score.hpp"
 #include "../swidget.hpp"
+#include "scolors.hpp"
 #include "scontainer.hpp"
 
 namespace PROJECT_NAMESPACE
@@ -13,46 +14,32 @@ namespace PROJECT_NAMESPACE
         vertical
     };
 
+    enum HorizontalAlign
+    {
+        left,
+        center,
+        right
+    };
+    enum VerticalAlign
+    {
+        top,
+        middle,
+        bottom
+    };
+
     class Flex : public Container, public Object<Flex>
     {
     private:
     public:
-        Flex(Window &window) : Container(window)
-        {
-            // geometry.abs.w =
-        }
+        Flex(Window &window);
 
         Direction direction = vertical;
+        VerticalAlign verticalAlign = top;
+        HorizontalAlign horizontalAlign = left;
 
-        void handleEvent(const SDL_Event &e) override
-        {
-            for (auto &widget : widgets)
-            {
-                widget->handleEvent(e);
-            }
-        }
-        void update() override
-        {
-            Rect last;
-
-            int mx = geometry.dest.w / 2, lx = geometry.dest.x;
-            int ly = geometry.dest.y;
-            for (auto &widget : widgets)
-            {
-                widget->update();
-                widget->geometry.dest.x = lx + mx - (widget->geometry.abs.w / 2);
-                widget->geometry.dest.y = ly;
-
-                ly += widget->geometry.dest.h;
-            }
-        }
-        void draw() override
-        {
-            for (auto &widget : widgets)
-            {
-                widget->draw();
-            }
-        }
+        void handleEvent(const SDL_Event &e) override;
+        void update() override;
+        void draw() override;
     };
 
 }

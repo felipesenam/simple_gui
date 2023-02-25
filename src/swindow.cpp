@@ -82,6 +82,14 @@ namespace PROJECT_NAMESPACE
             config.height,
             config.options.get());
         renderer.create(self, config.renderer);
+
+        container.events.onWindowSizeChanged = [&](int w, int h)
+        {
+            container.geometry.abs.w = w;
+            container.geometry.abs.h = h;
+            container.geometry.normalize();
+        };
+        container.events.onWindowSizeChanged.invoke(config.width, config.height);
     }
     Window::~Window()
     {
@@ -128,6 +136,7 @@ namespace PROJECT_NAMESPACE
                 break;
             }
         }
+        container.handleEvent(event);
     }
     void Window::update()
     {

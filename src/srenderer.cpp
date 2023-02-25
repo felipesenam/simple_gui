@@ -82,6 +82,19 @@ namespace PROJECT_NAMESPACE
         SDL_SetRenderDrawColor(renderer, RGBA(drawColor));
     }
 
+    void Renderer::drawCross(const Rect &dest, const Color &color)
+    {
+        if (color.a == 0)
+            return;
+
+        SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+        const int mw = dest.w / 2;
+        const int mh = dest.h / 2;
+        SDL_RenderDrawLine(renderer, dest.x + mw, dest.y, dest.x + mw, dest.y + dest.h);
+        SDL_RenderDrawLine(renderer, dest.x, dest.y + mh, dest.x + dest.w, dest.y + mh);
+        SDL_SetRenderDrawColor(renderer, RGBA(drawColor));
+    }
+
     void Renderer::drawFillRectangle(const Rect &dest, const Color &color)
     {
         if (color.a == 0)

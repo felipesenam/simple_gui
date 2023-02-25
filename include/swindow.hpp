@@ -5,7 +5,7 @@
 #include "sfont.hpp"
 #include "srenderer.hpp"
 #include "swidget.hpp"
-#include "widgets/smaincontainer.hpp"
+#include "widgets/sflex.hpp"
 namespace PROJECT_NAMESPACE
 {
     struct WindowConfig
@@ -117,7 +117,7 @@ namespace PROJECT_NAMESPACE
         Renderer renderer;
 
         WindowConfig config;
-        MainContainer container;
+        Flex container;
 
         bool isActive() const;
         bool isShown() const;

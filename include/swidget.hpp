@@ -16,10 +16,57 @@ namespace PROJECT_NAMESPACE
     private:
         friend class WidgetManager;
         friend class Container;
+        friend class Geometry;
 
     protected:
         Container *parent = nullptr;
         Window &window;
+
+        template <typename T, typename... Args>
+        class Event
+        {
+        private:
+            using Type = T(Args...);
+            std::function<Type> function;
+
+        public:
+            T operator()(Args... args)
+            {
+                invoke(args...);
+            }
+            T invoke(Args... args)
+            {
+                if (function)
+                {
+                    function(args...);
+                }
+            }
+            std::function<Type> operator=(std::function<Type> function)
+            {
+                return this->function = function;
+            }
+        };
+        struct Events
+        {
+            Event<void> onHovering;
+            Event<void> onClicked;
+            Event<void> onHover;
+            Event<void> onMouseDown;
+            Event<void> onMouseUp;
+            Event<void> onMouseLeave;
+            Event<void> onFocus;
+            Event<void> onLostFocus;
+
+            Event<void> onCaretMoved;
+            Event<void> onTextModified;
+
+            Event<void> onKeydown;
+            Event<void> onKeyup;
+            Event<void> onMouseWheelMoved;
+
+            Event<void, int, int> onWindowSizeChanged;
+            Event<void, int, int> onWindowResized;
+        };
 
     public:
         Widget(Window &window);
@@ -29,7 +76,12 @@ namespace PROJECT_NAMESPACE
 
         Color color, background;
 
+        Events events;
+
+        virtual void handleWindowEvents(const SDL_Event &e);
+
         virtual void handleEvent(const SDL_Event &e);
+        virtual void render();
         virtual void update();
         virtual void draw();
     };

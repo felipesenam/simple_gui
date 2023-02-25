@@ -17,10 +17,11 @@ namespace PROJECT_NAMESPACE
         }
     }
 
-    void Label::handleEvent(const SDL_Event &e)
+    void Label::handleEvent(const SDL_Event &)
     {
     }
-    void Label::update()
+
+    void Label::render()
     {
         if (text != renderedText)
         {
@@ -34,6 +35,11 @@ namespace PROJECT_NAMESPACE
             renderedText = text;
             self.geometry.normalize();
         }
+    }
+
+    void Label::update()
+    {
+
         if (textTexture != nullptr)
         {
             if (SDL_SetTextureColorMod(textTexture, RGB(font.color)) != 0)
@@ -42,6 +48,7 @@ namespace PROJECT_NAMESPACE
             }
         }
     }
+
     void Label::draw()
     {
         self.window.renderer.drawTexture(textTexture, &self.geometry.src, &self.geometry.dest);
