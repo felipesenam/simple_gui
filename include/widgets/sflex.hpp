@@ -20,6 +20,14 @@ namespace PROJECT_NAMESPACE
         center,
         right
     };
+
+    enum JustifyContent
+    {
+        none,
+        between,
+        around
+    };
+
     enum VerticalAlign
     {
         top,
@@ -27,17 +35,56 @@ namespace PROJECT_NAMESPACE
         bottom
     };
 
-    class Flex : public Container, public Object<Flex>
+    enum Layout
     {
-    private:
+        normal,
+        fixed
+    };
+
+    class Flex : public Container<Widget>, public Object<Flex>
+    {
+    protected:
+        void posWidgetHorizontal(int &lx, int &ly, int currentWidth, Widget &widget, const int spaceBetween, const int spaceAround);
+        void posWidgetVertical(int &lx, int &ly, int currentHeight, Widget &widget, const int spaceBetween, const int spaceAround);
+        Dimensions dimensions;
+        void getDimensions();
+
     public:
         Flex(Window &window);
+        struct Style
+        {
+            Direction direction = vertical;
+            VerticalAlign verticalAlign = top;
+            HorizontalAlign horizontalAlign = left;
+            JustifyContent justifyContent = none;
+        };
 
-        Direction direction = vertical;
-        VerticalAlign verticalAlign = top;
-        HorizontalAlign horizontalAlign = left;
+        Style style;
 
         void handleEvent(const SDL_Event &e) override;
+        void update() override;
+        void draw() override;
+    };
+
+    class Column : public Flex, public Object<Column>
+    {
+    public:
+        Column(Window &window);
+
+        unsigned size = 0;
+
+        void render() override;
+    };
+
+    class Row : public Flex, public Object<Row>
+    {
+    public:
+        Row(Window &window);
+
+        unsigned size = 12;
+
+        void handleEvent(const SDL_Event &e) override;
+        void render() override;
         void update() override;
         void draw() override;
     };

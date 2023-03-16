@@ -3,9 +3,6 @@
 
 namespace PROJECT_NAMESPACE
 {
-    template <>
-    const int Object<Label>::err = std::atexit(Object<Label>::atexit_handler);
-
     Label::Label(Window &window) : Widget(window)
     {
     }
@@ -17,8 +14,9 @@ namespace PROJECT_NAMESPACE
         }
     }
 
-    void Label::handleEvent(const SDL_Event &)
+    void Label::handleEvent(const SDL_Event &e)
     {
+        handleWindowEvents(e);
     }
 
     void Label::render()
@@ -39,7 +37,6 @@ namespace PROJECT_NAMESPACE
 
     void Label::update()
     {
-
         if (textTexture != nullptr)
         {
             if (SDL_SetTextureColorMod(textTexture, RGB(font.color)) != 0)

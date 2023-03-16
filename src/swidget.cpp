@@ -18,6 +18,11 @@ namespace PROJECT_NAMESPACE
         for (auto widget : widgets)
             widget->handleEvent(e);
     }
+    void WidgetManager::render()
+    {
+        for (auto widget : widgets)
+            widget->render();
+    }
     void WidgetManager::update()
     {
         for (auto widget : widgets)
@@ -33,6 +38,9 @@ namespace PROJECT_NAMESPACE
 
 namespace PROJECT_NAMESPACE
 {
+    template <>
+    const int Object<Widget>::err = std::atexit(Object<Widget>::atexit_handler);
+
     Widget::Widget(Window &window) : parent(&window.container), window(window), geometry(self), font(window.config.defaultFontPath, window.config.defaultFontSize)
     {
     }

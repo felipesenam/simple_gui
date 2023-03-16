@@ -9,17 +9,19 @@ namespace PROJECT_NAMESPACE
 {
     class Window;
     class WidgetManager;
+    template <typename T>
     class Container;
 
     class Widget : public Object<Widget>
     {
     private:
         friend class WidgetManager;
+        template <typename T>
         friend class Container;
         friend class Geometry;
 
     protected:
-        Container *parent = nullptr;
+        Container<Widget> *parent = nullptr;
         Window &window;
 
         template <typename T, typename... Args>
@@ -89,6 +91,7 @@ namespace PROJECT_NAMESPACE
     class WidgetManager : public Widget
     {
     private:
+        template <typename T>
         friend class Container;
 
     protected:
@@ -111,6 +114,7 @@ namespace PROJECT_NAMESPACE
         }
 
         void handleEvent(const SDL_Event &e) override;
+        void render() override;
         void update() override;
         void draw() override;
     };

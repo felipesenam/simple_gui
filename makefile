@@ -1,7 +1,7 @@
 
 ################################
 # Executable name
-FILE=prog
+FILE=prog.out
 # Set some value if using SDL2
 USING_SDL2=True
 
@@ -27,7 +27,7 @@ DEFINES=DEBUG
 CC=g++
 
 # Flags that will be used when compiling binaries
-COMPILATION_FLAGS=-Wall -Wextra -pedantic -std=c++11 -g -ggdb3 -O0
+COMPILATION_FLAGS=-Wall -Wextra -pedantic -std=c++11 -g -ggdb3
 # Flags that will be used when linking the executable
 ifeq ($(OS),Windows_NT)
 LINKER_FLAGS=-lcomdlg32

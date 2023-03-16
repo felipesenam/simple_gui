@@ -13,14 +13,24 @@ namespace PROJECT_NAMESPACE
         {
             return self.x == rect.x && self.y == rect.y && self.w == rect.w && self.h == rect.h;
         }
+
+        friend std::ostream &operator<<(std::ostream &o, const Rect &rect)
+        {
+            o << "{" << rect.x << "," << rect.y << "," << rect.w << "," << rect.h << "}";
+            return o;
+        }
     };
 
     class Box
     {
     public:
-        int top, left, bottom, right;
         Box() {}
         Box(int top, int left, int bottom, int right) : top(top), left(left), bottom(bottom), right(right) {}
+
+        int top = 0;
+        int left = 0;
+        int bottom = 0;
+        int right = 0;
 
         bool operator==(const Box &box)
         {
@@ -29,7 +39,7 @@ namespace PROJECT_NAMESPACE
 
         Box &operator=(int value)
         {
-            self.top = self.bottom = self.left = self.right = value;
+            top = bottom = left = right = value;
             return self;
         }
 
@@ -55,14 +65,11 @@ namespace PROJECT_NAMESPACE
 
     enum Behavior
     {
-        fixed,
         hug,
-        fill
     };
 
     enum Center
     {
-        none,
         top_left,
         top_center,
         top_right,
@@ -128,8 +135,6 @@ namespace PROJECT_NAMESPACE
         {
             switch (anchor)
             {
-            case none:
-                break;
             case top_left:
                 dest.x = ref.x;
                 dest.y = ref.y;

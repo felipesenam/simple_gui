@@ -17,35 +17,39 @@ int main(/*int argc, char const *argv[]*/)
 
     auto &window = app.windows.get("main");
 
-    window.container.verticalAlign = bottom;
-    window.container.horizontalAlign = right;
+    window.container.geometry.padding = 5;
+    window.container.style.direction = horizontal;
+    window.container.style.verticalAlign = middle;
+    window.container.style.justifyContent = between;
 
-    auto &flex = window.container.create<Flex>();
-    flex.geometry.padding = 5;
-    flex.direction = horizontal;
-    flex.verticalAlign = top;
-    flex.horizontalAlign = left;
+    auto &row = window.container.create<Row>();
+    row.style.horizontalAlign = center;
 
-    auto window_size = window.size();
-    flex.geometry.dest.x = 0;
-    flex.geometry.dest.y = 0;
-    flex.geometry.dest.w = window_size.first;
-    flex.geometry.dest.h = window_size.second;
+    auto &column1 = row.create<Column>();
+    column1.size = 2;
 
-    auto &label1 = flex.create<Label>();
+    auto &label1 = column1.create<Label>();
     label1.geometry.padding = 5;
     label1.font.color = Red;
     label1.text = "RRR";
 
-    auto &label2 = flex.create<Label>();
+    auto &column2 = row.create<Column>();
+    auto &label2 = column2.create<Label>();
     label2.geometry.padding = 10;
     label2.font.color = Blue;
     label2.text = "BBB";
 
-    auto &label3 = flex.create<Label>();
+    auto &column3 = row.create<Column>();
+    auto &label3 = column3.create<Label>();
     label3.geometry.padding = 15;
     label3.font.color = Lime;
     label3.text = "GGG";
+
+    auto &column4 = row.create<Column>();
+    auto &label4 = column4.create<Label>();
+    label4.geometry.padding = 20;
+    label4.font.color = White;
+    label4.text = "WWW";
 
     return app();
 }

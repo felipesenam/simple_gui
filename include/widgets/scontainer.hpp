@@ -6,15 +6,16 @@
 
 namespace PROJECT_NAMESPACE
 {
-    class Container : public WidgetManager, public Object<Container>
+    template <typename T>
+    class Container : public WidgetManager, public Object<Container<T>>
     {
     private:
-        void push(Widget &widget)
+        void push(T &widget)
         {
             auto &pwidgets = widget.parent->widgets;
             pwidgets.erase(std::remove_if(
                 pwidgets.begin(), pwidgets.end(),
-                [this, &widget](const Widget *ptr)
+                [this, &widget](const T *ptr)
                 {
                     if (&widget == ptr)
                     {
@@ -33,6 +34,33 @@ namespace PROJECT_NAMESPACE
         }
         virtual ~Container()
         {
+        }
+
+        struct Dimensions
+        {
+            int width = 0;
+            int height = 0;
+        };
+
+        Dimensions query_content_vertical() const noexcept
+        {
+            Dimensions dimensions;
+            for (auto &widget : widgets)
+            {
+                dimensions.width = std::max(dimensions.width, widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x());
+                dimensions.height += widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y();
+            }
+            return dimensions;
+        }
+        Dimensions query_content_horizontal() const noexcept
+        {
+            Dimensions dimensions;
+            for (auto &widget : widgets)
+            {
+                dimensions.width += widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x();
+                dimensions.height = std::max(dimensions.height, widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y());
+            }
+            return dimensions;
         }
 
         template <typename Arg>

@@ -10,7 +10,7 @@ namespace PROJECT_NAMESPACE
     public:
         Color();
         Color(Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255);
-        Color(unsigned hex);
+        Color(unsigned hex, Uint8 a = 255);
         Color(const Color &color);
 
         Color &hsl(float h, float s, float l, Uint8 a = 255);

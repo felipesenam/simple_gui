@@ -14,18 +14,19 @@ namespace PROJECT_NAMESPACE
 
         static size_t objectCounter;
         static size_t objectCount;
+        static std::string objectType;
         static std::vector<Object<T> *> objects;
 
         const static int err;
-        static void atexit_handler()
+        static void atexit_handler() // cppcheck-suppress unusedPrivateFunction
         {
             if (objectCount)
             {
-                Debug("There's " << objectCount << " lost objects");
+                Debug("There's " << objectCount << " lost " << objectType);
             }
             else
             {
-                Debug("All objects has been freed");
+                Debug("All " << objectType << " has been freed");
             }
         }
 
@@ -35,6 +36,9 @@ namespace PROJECT_NAMESPACE
     public:
         Object() : id(objectCounter++)
         {
+            if (objectType.empty())
+                objectType = type(self);
+
             Debug("New object " << self.getName());
             objects.emplace_back(this);
             objectCounter++;
@@ -43,7 +47,8 @@ namespace PROJECT_NAMESPACE
         {
             Debug("Destroying " << self.getName());
             objectCounter--;
-        };
+        }
+
         size_t getId() const noexcept
         {
             return id;
@@ -71,6 +76,9 @@ namespace PROJECT_NAMESPACE
 
     template <typename T>
     size_t Object<T>::objectCounter = 0;
+
+    template <typename T>
+    std::string Object<T>::objectType = "";
 
     template <typename T>
     std::vector<Object<T> *> Object<T>::objects;

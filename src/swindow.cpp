@@ -140,6 +140,7 @@ namespace PROJECT_NAMESPACE
     }
     void Window::update()
     {
+        container.render();
         container.update();
     }
     void Window::draw()

@@ -10,9 +10,10 @@ namespace PROJECT_NAMESPACE
     {
     }
 
-    Color::Color(unsigned hex)
+    Color::Color(unsigned hex, Uint8 a)
     {
-        this->hex(hex);
+        self.hex(hex);
+        self.a = a;
     }
 
     Color::Color(const Color &color)
