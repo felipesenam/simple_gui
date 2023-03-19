@@ -3,13 +3,13 @@
 
 namespace PROJECT_NAMESPACE
 {
-    Flex::Flex(Window &window) : Container<Widget>(window)
+    Flex::Flex(Window &window) : WidgetManager(window)
     {
     }
 
     void Flex::handleEvent(const SDL_Event &e)
     {
-        handleWindowEvents(e);
+        handleGenericEvents(e);
 
         for (auto &widget : widgets)
         {
@@ -17,7 +17,7 @@ namespace PROJECT_NAMESPACE
         }
     }
 
-    void Flex::posWidgetHorizontal(int &lx, int &ly, int currentWidth, Widget &widget, const int spaceBetween, const int spaceAround)
+    void Flex::posWidgetHorizontal(int &lx, int &ly, int &currentWidth, Widget &widget, const int spaceBetween, const int spaceAround)
     {
         switch (style.horizontalAlign)
         {
@@ -66,7 +66,7 @@ namespace PROJECT_NAMESPACE
             break;
         }
     }
-    void Flex::posWidgetVertical(int &lx, int &ly, int currentHeight, Widget &widget, const int spaceBetween, const int spaceAround)
+    void Flex::posWidgetVertical(int &lx, int &ly, int &currentHeight, Widget &widget, const int spaceBetween, const int spaceAround)
     {
         switch (style.horizontalAlign)
         {
@@ -130,6 +130,8 @@ namespace PROJECT_NAMESPACE
 
     void Flex::update()
     {
+        events.perform();
+
         int lx, ly;
         getDimensions();
         if (style.direction == vertical)
@@ -227,39 +229,30 @@ namespace PROJECT_NAMESPACE
         self.geometry.dest.w = self.parent->geometry.dest.w;
         self.geometry.dest.h = dimensions.height;
     }
-    void Row::update()
-    {
-        int currentWidth = 0;
-        int lx, ly;
+    // void Row::update()
+    // {
+    //     int currentWidth = 0;
+    //     int lx, ly;
 
-        for (auto widget : widgets)
-        {
-            Column *column = dynamic_cast<Column *>(widget);
-            if (column)
-            {
-                posWidgetHorizontal(lx, ly, currentWidth, *column, 0, 0);
-                column->geometry.dest.h = self.geometry.dest.h;
+    //     for (auto widget : widgets)
+    //     {
+    //         posWidgetHorizontal(lx, ly, currentWidth, *widget, 0, 0);
+    //         // widget->geometry.dest.h = self.geometry.dest.h;
+    //         widget->update();
 
-                column->update();
-
-                const int mx = column->geometry.margin.x();
-                const int px = column->geometry.padding.x();
-                currentWidth += column->geometry.dest.w + mx + px;
-            }
-            else
-            {
-                Error("This object is not supported in this container");
-            }
-        }
-    }
+    //         const int mx = widget->geometry.margin.x();
+    //         const int px = widget->geometry.padding.x();
+    //         currentWidth += widget->geometry.dest.w + mx + px;
+    //     }
+    // }
     void Row::draw()
     {
         for (auto widget : widgets)
             widget->draw();
 
 #ifdef DEBUG
-        window.renderer.drawRectangle(self.geometry.dest, Colors::Red);
-        window.renderer.drawCross(geometry.dest, {Colors::Red, 122});
+        window.renderer.drawRectangle(self.geometry.dest, Colors::Orange);
+        window.renderer.drawCross(geometry.dest, {Colors::Orange, 122});
 #endif
     }
 }

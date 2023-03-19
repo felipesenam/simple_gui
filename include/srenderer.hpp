@@ -67,7 +67,7 @@ namespace PROJECT_NAMESPACE
         void drawRectangle(const Rect &dest, const Color &color);
         void drawCross(const Rect &dest, const Color &color);
         void drawFillRectangle(const Rect &dest, const Color &color);
-        SDL_Texture *renderText(const std::string &text, Font &font, Geometry &geometry, Uint32 wrapLenght = 0);
+        SDL_Texture *renderText(const std::string &text, Font &font, Geometry &geometry, const Color &background, Uint32 wrapLenght = 0);
     };
 }
 

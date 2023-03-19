@@ -105,7 +105,7 @@ namespace PROJECT_NAMESPACE
         SDL_SetRenderDrawColor(renderer, RGBA(drawColor));
     }
 
-    SDL_Texture *Renderer::renderText(const std::string &text, Font &font, Geometry &geometry, Uint32 wrapLenght)
+    SDL_Texture *Renderer::renderText(const std::string &text, Font &font, Geometry &geometry, const Color &background, Uint32 wrapLenght)
     {
         if (font.ttf == nullptr)
         {
@@ -125,7 +125,7 @@ namespace PROJECT_NAMESPACE
                 textSurface = TTF_RenderUTF8_Solid_Wrapped(font.ttf, text.c_str(), {255, 255, 255, 255}, wrapLenght);
                 break;
             case shaded:
-                textSurface = TTF_RenderUTF8_Shaded_Wrapped(font.ttf, text.c_str(), {255, 255, 255, 255}, font.background, wrapLenght);
+                textSurface = TTF_RenderUTF8_Shaded_Wrapped(font.ttf, text.c_str(), {255, 255, 255, 255}, background, wrapLenght);
                 break;
             }
         }
@@ -140,7 +140,7 @@ namespace PROJECT_NAMESPACE
                 textSurface = TTF_RenderUTF8_Solid(font.ttf, text.c_str(), {255, 255, 255, 255});
                 break;
             case shaded:
-                textSurface = TTF_RenderUTF8_Shaded(font.ttf, text.c_str(), {255, 255, 255, 255}, font.background);
+                textSurface = TTF_RenderUTF8_Shaded(font.ttf, text.c_str(), {255, 255, 255, 255}, background);
                 break;
             }
         }

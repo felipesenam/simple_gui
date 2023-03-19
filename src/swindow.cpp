@@ -83,13 +83,14 @@ namespace PROJECT_NAMESPACE
             config.options.get());
         renderer.create(self, config.renderer);
 
-        container.events.onWindowSizeChanged = [&](int w, int h)
+        container.events["windowSizeChanged"] = [&]()
         {
-            container.geometry.abs.w = w;
-            container.geometry.abs.h = h;
+            auto size = this->size();
+            container.geometry.abs.w = size.first;
+            container.geometry.abs.h = size.second;
             container.geometry.normalize();
         };
-        container.events.onWindowSizeChanged.invoke(config.width, config.height);
+        container.events["windowSizeChanged"].invoke();
     }
     Window::~Window()
     {

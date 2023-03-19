@@ -4,7 +4,6 @@
 #include "../score.hpp"
 #include "../swidget.hpp"
 #include "scolors.hpp"
-#include "scontainer.hpp"
 
 namespace PROJECT_NAMESPACE
 {
@@ -41,11 +40,11 @@ namespace PROJECT_NAMESPACE
         fixed
     };
 
-    class Flex : public Container<Widget>, public Object<Flex>
+    class Flex : public WidgetManager, public Object<Flex>
     {
     protected:
-        void posWidgetHorizontal(int &lx, int &ly, int currentWidth, Widget &widget, const int spaceBetween, const int spaceAround);
-        void posWidgetVertical(int &lx, int &ly, int currentHeight, Widget &widget, const int spaceBetween, const int spaceAround);
+        void posWidgetHorizontal(int &lx, int &ly, int &currentWidth, Widget &widget, const int spaceBetween, const int spaceAround);
+        void posWidgetVertical(int &lx, int &ly, int &currentHeight, Widget &widget, const int spaceBetween, const int spaceAround);
         Dimensions dimensions;
         void getDimensions();
 
@@ -85,7 +84,7 @@ namespace PROJECT_NAMESPACE
 
         void handleEvent(const SDL_Event &e) override;
         void render() override;
-        void update() override;
+        // void update() override;
         void draw() override;
     };
 

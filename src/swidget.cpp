@@ -41,36 +41,77 @@ namespace PROJECT_NAMESPACE
     template <>
     const int Object<Widget>::err = std::atexit(Object<Widget>::atexit_handler);
 
-    Widget::Widget(Window &window) : parent(&window.container), window(window), geometry(self), font(window.config.defaultFontPath, window.config.defaultFontSize)
+    Widget::Widget(Window &window) : window(window), geometry(self), font(window.config.defaultFontPath, window.config.defaultFontSize)
     {
+        window.container.add(self);
     }
 
-    void Widget::handleWindowEvents(const SDL_Event &e)
+    void Widget::handleGenericEvents(const SDL_Event &e)
     {
-        if (e.type == SDL_WINDOWEVENT)
+        switch (e.type)
+        {
+        case SDL_WINDOWEVENT:
         {
             switch (e.window.event)
             {
             case SDL_WINDOWEVENT_SIZE_CHANGED:
-                events.onWindowSizeChanged(e.window.data1, e.window.data2);
+                events["windowSizeChanged"].triggered = true;
                 break;
             case SDL_WINDOWEVENT_RESIZED:
-                events.onWindowResized(e.window.data1, e.window.data2);
+                events["windowResized"].triggered = true;
                 break;
             }
+            break;
+        }
+        case SDL_MOUSEMOTION:
+        {
+            SDL_Point mousePos;
+            SDL_GetMouseState(&mousePos.x, &mousePos.y);
+            bool isInside = SDL_PointInRect(&mousePos, &geometry.dest);
+            if (isInside)
+            {
+                if (!m_isHovered)
+                {
+                    events["hover"].triggered = m_isHovered = true;
+                }
+            }
+            else
+            {
+                m_isHovered = false;
+            }
+
+            events["hovering"].triggered = isInside;
+            break;
+        }
+        case SDL_MOUSEBUTTONDOWN:
+        {
+            events["pressed"].triggered = events["hovering"].triggered;
+            break;
+        }
+        case SDL_MOUSEBUTTONUP:
+        {
+            if (m_isPressed)
+            {
+                events["clicked"].triggered = true;
+            }
+            break;
+        }
         }
     }
 
-    void Widget::handleEvent(const SDL_Event &)
+    void Widget::handleEvent(const SDL_Event &e)
     {
+        handleGenericEvents(e);
     }
     void Widget::render()
     {
     }
     void Widget::update()
     {
+        events.perform();
     }
     void Widget::draw()
     {
+        window.renderer.drawFillRectangle(geometry.dest, Colors::Red);
     }
 }

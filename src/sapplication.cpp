@@ -5,8 +5,6 @@ namespace PROJECT_NAMESPACE
 
     Application::Application(const ApplicationConfig &config) : config(config)
     {
-        SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
-
         if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
         {
             const int flags = IMG_INIT_JPG | IMG_INIT_PNG | IMG_INIT_TIF;

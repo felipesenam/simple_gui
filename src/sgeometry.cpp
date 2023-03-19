@@ -1,6 +1,5 @@
 #include "sgeometry.hpp"
 #include "swidget.hpp"
-#include "widgets/scontainer.hpp"
 
 namespace PROJECT_NAMESPACE
 {

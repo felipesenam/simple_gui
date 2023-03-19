@@ -9,65 +9,48 @@ namespace PROJECT_NAMESPACE
 {
     class Window;
     class WidgetManager;
-    template <typename T>
-    class Container;
 
     class Widget : public Object<Widget>
     {
     private:
         friend class WidgetManager;
-        template <typename T>
-        friend class Container;
         friend class Geometry;
 
+        bool m_isHovered = false;
+        bool m_isPressed = false;
+        bool m_isFocused = false;
+        bool m_isEnabled = true;
+
     protected:
-        Container<Widget> *parent = nullptr;
+        WidgetManager *parent = nullptr;
         Window &window;
 
-        template <typename T, typename... Args>
         class Event
         {
         private:
-            using Type = T(Args...);
-            std::function<Type> function;
+            std::function<void()> m_function;
 
         public:
-            T operator()(Args... args)
+            bool triggered = false;
+
+            void operator()()
             {
-                invoke(args...);
-            }
-            T invoke(Args... args)
-            {
-                if (function)
+                if (triggered && m_function)
                 {
-                    function(args...);
+                    m_function();
+                    triggered = false;
                 }
             }
-            std::function<Type> operator=(std::function<Type> function)
+
+            void invoke()
             {
-                return this->function = function;
+                m_function();
             }
-        };
-        struct Events
-        {
-            Event<void> onHovering;
-            Event<void> onClicked;
-            Event<void> onHover;
-            Event<void> onMouseDown;
-            Event<void> onMouseUp;
-            Event<void> onMouseLeave;
-            Event<void> onFocus;
-            Event<void> onLostFocus;
 
-            Event<void> onCaretMoved;
-            Event<void> onTextModified;
-
-            Event<void> onKeydown;
-            Event<void> onKeyup;
-            Event<void> onMouseWheelMoved;
-
-            Event<void, int, int> onWindowSizeChanged;
-            Event<void, int, int> onWindowResized;
+            std::function<void()> operator=(std::function<void()> function)
+            {
+                return this->m_function = function;
+            }
         };
 
     public:
@@ -76,13 +59,67 @@ namespace PROJECT_NAMESPACE
         Geometry geometry;
         Font font;
 
-        Color color, background;
+        struct WidgetColorScheme
+        {
+            struct ColorScheme
+            {
+                Color color;
+                Color background;
+                Color border;
+            };
 
-        Events events;
+            ColorScheme normal;
+            ColorScheme hover;
+            ColorScheme pressed;
+            ColorScheme focused;
+            ColorScheme disabled;
+        };
+        WidgetColorScheme scheme;
 
-        virtual void handleWindowEvents(const SDL_Event &e);
+        class EventManager
+        {
+        public:
+            std::map<std::string, Event> events;
 
-        virtual void handleEvent(const SDL_Event &e);
+            void perform()
+            {
+                for (auto &tuple : events)
+                {
+                    auto &event = tuple.second;
+                    event();
+                }
+            }
+
+            Event &operator[](const std::string &index)
+            {
+                return events[index];
+            }
+        };
+        EventManager events;
+
+        virtual void handleGenericEvents(const SDL_Event &e);
+
+        bool isHovered() const noexcept { return m_isHovered; }
+        bool isPressed() const noexcept { return m_isPressed; }
+        bool isFocused() const noexcept { return m_isFocused; }
+        bool isEnabled() const noexcept { return m_isEnabled; }
+
+        const WidgetColorScheme::ColorScheme &getCurrentColorScheme() const noexcept
+        {
+            if (!m_isEnabled)
+                return scheme.disabled;
+            if (m_isHovered)
+                return scheme.hover;
+            if (m_isPressed)
+                return scheme.pressed;
+            if (m_isFocused)
+                return scheme.focused;
+
+            return scheme.normal;
+        }
+
+        virtual void
+        handleEvent(const SDL_Event &e);
         virtual void render();
         virtual void update();
         virtual void draw();
@@ -91,8 +128,39 @@ namespace PROJECT_NAMESPACE
     class WidgetManager : public Widget
     {
     private:
-        template <typename T>
-        friend class Container;
+        void push()
+        {
+            Debug("End of interaction");
+        }
+
+        template <typename... Args>
+        void push(Widget &widget, Args &&...args)
+        {
+            if (widget.parent)
+            {
+                auto &pwidgets = widget.parent->widgets;
+                pwidgets.erase(std::remove_if(
+                    pwidgets.begin(), pwidgets.end(),
+                    [this, &widget](const Widget *ptr)
+                    {
+                        if (&widget == ptr)
+                        {
+                            Debug("Moving object " << widget.getName());
+                            widget.parent = this;
+                            self.widgets.emplace_back(&widget);
+                            return true;
+                        }
+                        return false;
+                    }));
+            }
+            else
+            {
+                widget.parent = this;
+                self.widgets.emplace_back(&widget);
+            }
+
+            return push(args...);
+        }
 
     protected:
         std::vector<Widget *> widgets;
@@ -101,16 +169,42 @@ namespace PROJECT_NAMESPACE
         WidgetManager(Window &window);
         virtual ~WidgetManager();
 
-        template <typename T, typename... Args>
-        T &create(Args &&...args)
-        {
-            T *widget = new T(window, args...);
-            widgets.emplace_back(widget);
-            return *widget;
-        }
         size_t count() const noexcept
         {
             return widgets.size();
+        }
+
+        struct Dimensions
+        {
+            int width = 0;
+            int height = 0;
+        };
+
+        Dimensions query_content_vertical() const noexcept
+        {
+            Dimensions dimensions;
+            for (auto &widget : widgets)
+            {
+                dimensions.width = std::max(dimensions.width, widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x());
+                dimensions.height += widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y();
+            }
+            return dimensions;
+        }
+        Dimensions query_content_horizontal() const noexcept
+        {
+            Dimensions dimensions;
+            for (auto &widget : widgets)
+            {
+                dimensions.width += widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x();
+                dimensions.height = std::max(dimensions.height, widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y());
+            }
+            return dimensions;
+        }
+
+        template <typename... Args>
+        void add(Args &&...widgets)
+        {
+            self.push(widgets...);
         }
 
         void handleEvent(const SDL_Event &e) override;

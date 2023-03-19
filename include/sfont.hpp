@@ -31,7 +31,6 @@ namespace PROJECT_NAMESPACE
             TTF_CloseFont(ttf);
         }
 
-        Color color, background;
         RenderType renderType = blended;
 
         void open(const std::string &path, unsigned size);

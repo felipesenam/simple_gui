@@ -1,10 +1,12 @@
 #include "widgets/slabel.hpp"
+#include "sscheme.hpp"
 #include "swindow.hpp"
 
 namespace PROJECT_NAMESPACE
 {
     Label::Label(Window &window) : Widget(window)
     {
+        self.scheme = UI_LABEL_COLOR_SCHEME;
     }
     Label::~Label()
     {
@@ -16,11 +18,13 @@ namespace PROJECT_NAMESPACE
 
     void Label::handleEvent(const SDL_Event &e)
     {
-        handleWindowEvents(e);
+        handleGenericEvents(e);
     }
 
     void Label::render()
     {
+        const WidgetColorScheme::ColorScheme *currentScheme = &scheme.normal;
+
         if (text != renderedText)
         {
             if (textTexture != nullptr)
@@ -29,7 +33,7 @@ namespace PROJECT_NAMESPACE
             }
             SDL_PrintIfError(Warn);
 
-            textTexture = self.window.renderer.renderText(text, font, self.geometry);
+            textTexture = self.window.renderer.renderText(text, font, self.geometry, currentScheme->background);
             renderedText = text;
             self.geometry.normalize();
         }
@@ -37,9 +41,12 @@ namespace PROJECT_NAMESPACE
 
     void Label::update()
     {
+        events.perform();
+
+        auto &scheme = getCurrentColorScheme();
         if (textTexture != nullptr)
         {
-            if (SDL_SetTextureColorMod(textTexture, RGB(font.color)) != 0)
+            if (SDL_SetTextureColorMod(textTexture, RGB(scheme.color)) != 0)
             {
                 Warn(SDL_GetError());
             }
