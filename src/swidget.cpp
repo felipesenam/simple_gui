@@ -43,7 +43,8 @@ namespace PROJECT_NAMESPACE
 
     Widget::Widget(Window &window) : window(window), geometry(self), font(window.config.defaultFontPath, window.config.defaultFontSize)
     {
-        window.container.add(self);
+        if (&window.container != this)
+            window.container.add(self);
     }
 
     void Widget::handleGenericEvents(const SDL_Event &e)

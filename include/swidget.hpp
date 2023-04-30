@@ -147,7 +147,7 @@ namespace PROJECT_NAMESPACE
                         {
                             Debug("Moving object " << widget.getName());
                             widget.parent = this;
-                            self.widgets.emplace_back(&widget);
+                            self.widgets.push_back(&widget);
                             return true;
                         }
                         return false;
@@ -156,7 +156,7 @@ namespace PROJECT_NAMESPACE
             else
             {
                 widget.parent = this;
-                self.widgets.emplace_back(&widget);
+                self.widgets.push_back(&widget);
             }
 
             return push(args...);
