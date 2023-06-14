@@ -7,16 +7,6 @@ namespace PROJECT_NAMESPACE
     {
     }
 
-    void Flex::handleEvent(const SDL_Event &e)
-    {
-        handleGenericEvents(e);
-
-        for (auto &widget : widgets)
-        {
-            widget->handleEvent(e);
-        }
-    }
-
     void Flex::posWidgetHorizontal(int &lx, int &ly, int &currentWidth, Widget &widget, const int spaceBetween, const int spaceAround)
     {
         switch (style.horizontalAlign)
@@ -170,18 +160,6 @@ namespace PROJECT_NAMESPACE
         }
     }
 
-    void Flex::draw()
-    {
-        for (auto &widget : widgets)
-        {
-            widget->draw();
-        }
-
-#ifdef DEBUG
-        window.renderer.drawRectangle(geometry.dest, Colors::Red);
-        window.renderer.drawCross(geometry.dest, {Colors::Red, 122});
-#endif
-    }
 }
 
 namespace PROJECT_NAMESPACE
@@ -189,6 +167,7 @@ namespace PROJECT_NAMESPACE
     Column::Column(Window &window) : Flex(window)
     {
     }
+
     void Column::render()
     {
         for (auto widget : widgets)
@@ -207,11 +186,6 @@ namespace PROJECT_NAMESPACE
         style.direction = horizontal;
     }
 
-    void Row::handleEvent(const SDL_Event &e)
-    {
-        for (auto widget : widgets)
-            widget->handleEvent(e);
-    }
     void Row::render()
     {
         for (auto widget : widgets)
@@ -228,31 +202,5 @@ namespace PROJECT_NAMESPACE
         dimensions = query_content_horizontal();
         self.geometry.dest.w = self.parent->geometry.dest.w;
         self.geometry.dest.h = dimensions.height;
-    }
-    // void Row::update()
-    // {
-    //     int currentWidth = 0;
-    //     int lx, ly;
-
-    //     for (auto widget : widgets)
-    //     {
-    //         posWidgetHorizontal(lx, ly, currentWidth, *widget, 0, 0);
-    //         // widget->geometry.dest.h = self.geometry.dest.h;
-    //         widget->update();
-
-    //         const int mx = widget->geometry.margin.x();
-    //         const int px = widget->geometry.padding.x();
-    //         currentWidth += widget->geometry.dest.w + mx + px;
-    //     }
-    // }
-    void Row::draw()
-    {
-        for (auto widget : widgets)
-            widget->draw();
-
-#ifdef DEBUG
-        window.renderer.drawRectangle(self.geometry.dest, Colors::Orange);
-        window.renderer.drawCross(geometry.dest, {Colors::Orange, 122});
-#endif
     }
 }

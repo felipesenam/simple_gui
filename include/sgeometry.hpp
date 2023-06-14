@@ -63,11 +63,6 @@ namespace PROJECT_NAMESPACE
         }
     };
 
-    enum Behavior
-    {
-        hug,
-    };
-
     enum Center
     {
         top_left,
@@ -117,7 +112,13 @@ namespace PROJECT_NAMESPACE
         }
 
         Rect src, dest, abs;
-        Behavior behavior = hug;
+
+        enum Behavior
+        {
+            normal,
+            hug,
+        };
+        Behavior behavior = normal;
         Center anchor = middle_center;
 
         Box margin;

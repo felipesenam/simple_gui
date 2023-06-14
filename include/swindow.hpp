@@ -3,6 +3,7 @@
 
 #include "score.hpp"
 #include "sfont.hpp"
+#include "skeyboard.hpp"
 #include "srenderer.hpp"
 #include "swidget.hpp"
 #include "widgets/sflex.hpp"
@@ -45,16 +46,16 @@ namespace PROJECT_NAMESPACE
             Uint32 get() const noexcept
             {
                 return (
-                    (this->isFullscreen ? SDL_WINDOW_FULLSCREEN : 0) |
-                    (this->isHidden ? SDL_WINDOW_HIDDEN : 0) |
-                    (this->isShown ? SDL_WINDOW_SHOWN : 0) |
-                    (this->isBorderless ? SDL_WINDOW_BORDERLESS : 0) |
-                    (this->isResizable ? SDL_WINDOW_RESIZABLE : 0) |
-                    (this->isMinimized ? SDL_WINDOW_MINIMIZED : 0) |
-                    (this->isMaximized ? SDL_WINDOW_MAXIMIZED : 0) |
-                    (this->isFullscreenDesktop ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) |
-                    (this->isAlwaysOnTop ? SDL_WINDOW_ALWAYS_ON_TOP : 0) |
-                    (this->skipsTaskbar ? SDL_WINDOW_SKIP_TASKBAR : 0));
+                    (self.isFullscreen ? SDL_WINDOW_FULLSCREEN : 0) |
+                    (self.isHidden ? SDL_WINDOW_HIDDEN : 0) |
+                    (self.isShown ? SDL_WINDOW_SHOWN : 0) |
+                    (self.isBorderless ? SDL_WINDOW_BORDERLESS : 0) |
+                    (self.isResizable ? SDL_WINDOW_RESIZABLE : 0) |
+                    (self.isMinimized ? SDL_WINDOW_MINIMIZED : 0) |
+                    (self.isMaximized ? SDL_WINDOW_MAXIMIZED : 0) |
+                    (self.isFullscreenDesktop ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) |
+                    (self.isAlwaysOnTop ? SDL_WINDOW_ALWAYS_ON_TOP : 0) |
+                    (self.skipsTaskbar ? SDL_WINDOW_SKIP_TASKBAR : 0));
             }
         };
 
@@ -118,6 +119,7 @@ namespace PROJECT_NAMESPACE
 
         WindowConfig config;
         Flex container;
+        KeyboardController keyboard;
 
         bool isActive() const;
         bool isShown() const;

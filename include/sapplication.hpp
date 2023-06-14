@@ -15,7 +15,7 @@ namespace PROJECT_NAMESPACE
     class Application : public Object<Application>
     {
     private:
-        bool running = false;
+        bool m_running = false;
 
     public:
         Application(const ApplicationConfig &config = ApplicationConfig());
@@ -29,7 +29,7 @@ namespace PROJECT_NAMESPACE
         int operator()();
         void stop();
 
-        bool isRunning() const;
+        bool isRunning() const noexcept;
     };
 }
 

@@ -60,9 +60,7 @@ namespace PROJECT_NAMESPACE
 
         Style style;
 
-        void handleEvent(const SDL_Event &e) override;
         void update() override;
-        void draw() override;
     };
 
     class Column : public Flex, public Object<Column>
@@ -82,10 +80,7 @@ namespace PROJECT_NAMESPACE
 
         unsigned size = 12;
 
-        void handleEvent(const SDL_Event &e) override;
         void render() override;
-        // void update() override;
-        void draw() override;
     };
 
 }

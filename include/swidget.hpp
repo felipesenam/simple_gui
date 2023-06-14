@@ -49,7 +49,7 @@ namespace PROJECT_NAMESPACE
 
             std::function<void()> operator=(std::function<void()> function)
             {
-                return this->m_function = function;
+                return self.m_function = function;
             }
         };
 
@@ -98,6 +98,7 @@ namespace PROJECT_NAMESPACE
         EventManager events;
 
         virtual void handleGenericEvents(const SDL_Event &e);
+        virtual void drawCommonElements();
 
         bool isHovered() const noexcept { return m_isHovered; }
         bool isPressed() const noexcept { return m_isPressed; }
@@ -118,8 +119,7 @@ namespace PROJECT_NAMESPACE
             return scheme.normal;
         }
 
-        virtual void
-        handleEvent(const SDL_Event &e);
+        virtual void handleEvent(const SDL_Event &e);
         virtual void render();
         virtual void update();
         virtual void draw();
@@ -205,6 +205,11 @@ namespace PROJECT_NAMESPACE
         void add(Args &&...widgets)
         {
             self.push(widgets...);
+        }
+
+        Widget &operator[](size_t index)
+        {
+            return *widgets[index];
         }
 
         void handleEvent(const SDL_Event &e) override;

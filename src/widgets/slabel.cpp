@@ -16,11 +16,6 @@ namespace PROJECT_NAMESPACE
         }
     }
 
-    void Label::handleEvent(const SDL_Event &e)
-    {
-        handleGenericEvents(e);
-    }
-
     void Label::render()
     {
         const WidgetColorScheme::ColorScheme *currentScheme = &scheme.normal;

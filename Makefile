@@ -1,25 +1,26 @@
 include .conf
 
 ifeq ($(OS),Windows_NT)
-OS_SPECIFIC_LINK_FLAGS=-lcomdlg32
+LINK_FLAGS:=$(LINK_FLAGS) -lcomdlg32
+TARGET_OBJFOLDER=$(OBJFOLDER)/windows
 else
-OS_SPECIFIC_LINK_FLAGS=
+TARGET_OBJFOLDER=$(OBJFOLDER)/linux
 endif
 
 ifeq ($(SDL2), true)
 ifeq ($(OS),Windows_NT)
-SDL_COMP_FLAGS=-IC:/MinGW/include/SDL2
-SDL_LINK_FLAGS=-LC:/MinGW/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+COMPILATION_FLAGS:=$(COMPILATION_FLAGS) -IC:/MinGW/include/SDL2
+LINK_FLAGS:=$(LINK_FLAGS) -LC:/MinGW/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 else
-SDL_COMP_FLAGS=-I/usr/include/SDL2
-SDL_LINK_FLAGS=-lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
+COMPILATION_FLAGS:=$(COMPILATION_FLAGS) -I/usr/include/SDL2
+LINK_FLAGS:=$(LINK_FLAGS) -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 endif
 endif
 
-ifeq ($(OS),Windows_NT)
-TARGET_OBJFOLDER=$(OBJFOLDER)/windows
+ifeq ($(filter debug,$(MAKECMDGOALS)),debug)
+TARGET_OBJFOLDER := $(TARGET_OBJFOLDER)/debug
 else
-TARGET_OBJFOLDER=$(OBJFOLDER)/linux
+TARGET_OBJFOLDER := $(TARGET_OBJFOLDER)/release
 endif
 
 SRCFILES:=$(wildcard ./$(SRCFOLDER)/*$(SOURCE_EXT)) $(wildcard ./$(SRCFOLDER)/**/*$(SOURCE_EXT))
@@ -35,14 +36,9 @@ else
 OBJCOUNT=$$(($(words $(OBJECTS))+1))
 endif
 
-all: objdir $(FILE)
-ifeq ($(OS),Windows_NT)
-	@ echo [100%%] Built target $(FILE)
-else
-	@ printf "[100%%] Built target %s\n" "$(FILE)"
-endif
+debug: all
 
-run: objdir $(FILE)
+run: all
 ifeq ($(OS),Windows_NT)
 	@ echo [100%%] Built target $(FILE)
 	@ echo.
@@ -51,6 +47,14 @@ else
 	@ printf "[100%%] Built target %s\n\n" "$(FILE)"
 	@ ./$(FILE) || echo Process returned $$?
 endif
+
+all: objdir $(FILE)
+ifeq ($(OS),Windows_NT)
+	@ echo [100%%] Built target $(FILE)
+else
+	@ printf "[100%%] Built target %s\n" "$(FILE)"
+endif
+
 
 $(FILE): $(OBJECTS)
 ifeq ($(OS),Windows_NT)

@@ -8,14 +8,11 @@ namespace PROJECT_NAMESPACE
         switch (behavior)
         {
         case hug:
-            if (src == dest)
-            {
-                src = dest = abs;
-            }
-            else
-            {
-                dest = abs;
-            }
+            src = dest = abs;
+            break;
+
+        case normal:
+            src = dest = abs;
             break;
 
         default:

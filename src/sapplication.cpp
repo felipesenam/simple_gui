@@ -34,15 +34,15 @@ namespace PROJECT_NAMESPACE
     }
     void Application::stop()
     {
-        running = false;
+        m_running = false;
     }
     int Application::run()
     {
-        running = true;
+        m_running = true;
 
         Uint32 fStart, frameTime;
         const float frameDelay = 1000.0f / config.targetFPS;
-        while (running && windows.hasActiveWindows())
+        while (m_running && windows.hasActiveWindows())
         {
             fStart = SDL_GetTicks();
 
@@ -50,7 +50,7 @@ namespace PROJECT_NAMESPACE
             {
                 if (event.type == SDL_QUIT)
                 {
-                    running = false;
+                    m_running = false;
                     break;
                 }
                 windows.handleEvent(event);
@@ -64,7 +64,7 @@ namespace PROJECT_NAMESPACE
             SDL_Delay(std::floor(frameDelay - elapsed));
         }
 
-        running = false;
+        m_running = false;
 
         return 0;
     }
@@ -74,8 +74,8 @@ namespace PROJECT_NAMESPACE
         return run();
     }
 
-    bool Application::isRunning() const
+    bool Application::isRunning() const noexcept
     {
-        return running;
+        return m_running;
     }
 }

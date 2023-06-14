@@ -27,8 +27,8 @@ namespace PROJECT_NAMESPACE
             Uint32 get() const noexcept
             {
                 return (
-                    (this->usesHardwareAcceleration ? SDL_RENDERER_ACCELERATED : 0) |
-                    (this->usesVSync ? SDL_RENDERER_PRESENTVSYNC : 0));
+                    (self.usesHardwareAcceleration ? SDL_RENDERER_ACCELERATED : 0) |
+                    (self.usesVSync ? SDL_RENDERER_PRESENTVSYNC : 0));
             }
         };
         Options options;

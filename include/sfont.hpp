@@ -6,14 +6,6 @@
 
 namespace PROJECT_NAMESPACE
 {
-
-    enum RenderType
-    {
-        blended,
-        solid,
-        shaded
-    };
-
     class Font
     {
     private:
@@ -31,6 +23,12 @@ namespace PROJECT_NAMESPACE
             TTF_CloseFont(ttf);
         }
 
+        enum RenderType
+        {
+            blended,
+            solid,
+            shaded
+        };
         RenderType renderType = blended;
 
         void open(const std::string &path, unsigned size);

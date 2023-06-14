@@ -85,7 +85,7 @@ namespace PROJECT_NAMESPACE
 
         container.events["windowSizeChanged"] = [&]()
         {
-            auto size = this->size();
+            auto size = self.size();
             container.geometry.abs.w = size.first;
             container.geometry.abs.h = size.second;
             container.geometry.normalize();
@@ -137,6 +137,7 @@ namespace PROJECT_NAMESPACE
                 break;
             }
         }
+        keyboard.handleKeyboardEvent(event);
         container.handleEvent(event);
     }
     void Window::update()

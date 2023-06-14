@@ -21,7 +21,6 @@ namespace PROJECT_NAMESPACE
 
         std::string text;
 
-        void handleEvent(const SDL_Event &e) override;
         void render() override;
         void update() override;
         void draw() override;

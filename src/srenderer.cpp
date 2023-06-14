@@ -9,7 +9,7 @@ namespace PROJECT_NAMESPACE
 
     Renderer::~Renderer()
     {
-        this->destroy();
+        self.destroy();
     }
 
     bool Renderer::isCreated() const noexcept
@@ -25,7 +25,7 @@ namespace PROJECT_NAMESPACE
                 window.window,
                 rendererConfig.index,
                 rendererConfig.options.get());
-            this->drawColor = rendererConfig.drawColor;
+            self.drawColor = rendererConfig.drawColor;
             if (SDL_SetRenderDrawBlendMode(renderer, static_cast<SDL_BlendMode>(rendererConfig.blendMode)))
             {
                 Warn(SDL_GetError());
@@ -118,13 +118,13 @@ namespace PROJECT_NAMESPACE
         {
             switch (font.renderType)
             {
-            case blended:
+            case Font::blended:
                 textSurface = TTF_RenderUTF8_Blended_Wrapped(font.ttf, text.c_str(), {255, 255, 255, 255}, wrapLenght);
                 break;
-            case solid:
+            case Font::solid:
                 textSurface = TTF_RenderUTF8_Solid_Wrapped(font.ttf, text.c_str(), {255, 255, 255, 255}, wrapLenght);
                 break;
-            case shaded:
+            case Font::shaded:
                 textSurface = TTF_RenderUTF8_Shaded_Wrapped(font.ttf, text.c_str(), {255, 255, 255, 255}, background, wrapLenght);
                 break;
             }
@@ -133,13 +133,13 @@ namespace PROJECT_NAMESPACE
         {
             switch (font.renderType)
             {
-            case blended:
+            case Font::blended:
                 textSurface = TTF_RenderUTF8_Blended(font.ttf, text.c_str(), {255, 255, 255, 255});
                 break;
-            case solid:
+            case Font::solid:
                 textSurface = TTF_RenderUTF8_Solid(font.ttf, text.c_str(), {255, 255, 255, 255});
                 break;
-            case shaded:
+            case Font::shaded:
                 textSurface = TTF_RenderUTF8_Shaded(font.ttf, text.c_str(), {255, 255, 255, 255}, background);
                 break;
             }

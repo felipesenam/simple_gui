@@ -28,8 +28,9 @@ int main(/*int argc, char const *argv[]*/)
     row.add(calculator);
 
     auto &displayRow = window.create<Row>();
-
     displayRow.style.horizontalAlign = right;
+    displayRow.scheme.normal.background = Plum;
+
     auto &displayCol = window.create<Column>();
     displayRow.add(displayCol);
     displayCol.geometry.margin = 4;
@@ -38,6 +39,7 @@ int main(/*int argc, char const *argv[]*/)
     displayCol.add(display);
     display.geometry.padding = 5;
     display.text = "0";
+    display.font.open("assets/fonts/arial.ttf", 24);
 
     auto numericRow = [&window, &display](int begin, int end) -> Widget &
     {
@@ -49,12 +51,14 @@ int main(/*int argc, char const *argv[]*/)
         {
             auto &col = window.create<Column>();
             auto &num = window.create<Label>();
-            num.text = std::to_string(i);
-            num.geometry.padding = 4;
+
+            std::string number = std::to_string(i);
+            num.text = number;
+            num.geometry.padding = 8;
             num.scheme.hover.color = Red;
-            col.events["hover"] = [&num, &display]()
+            num.font.open("assets/fonts/arial.ttf", 24);
+            window.keyboard.event_map[{number[0], KMOD_NONE}] = col.events["clicked"] = [&num, &display]()
             {
-                Warn("clicked");
                 display.text += num.text;
             };
             col.add(num);

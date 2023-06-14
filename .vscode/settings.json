@@ -1,4 +1,5 @@
 {
+    "editor.formatOnSave": true,
     "files.associations": {
         "string_view": "cpp",
         "deque": "cpp",
@@ -47,6 +48,10 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "chrono": "cpp",
+        "future": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     }
 }

@@ -65,10 +65,10 @@ namespace PROJECT_NAMESPACE
             bt = X;
         }
 
-        this->r = (rt + m) * 255;
-        this->g = (gt + m) * 255;
-        this->b = (bt + m) * 255;
-        this->a = a;
+        self.r = (rt + m) * 255;
+        self.g = (gt + m) * 255;
+        self.b = (bt + m) * 255;
+        self.a = a;
 
         return self;
     }
@@ -117,20 +117,20 @@ namespace PROJECT_NAMESPACE
             bt = X;
         }
 
-        this->r = (rt + m) * 255;
-        this->g = (gt + m) * 255;
-        this->b = (bt + m) * 255;
-        this->a = a;
+        self.r = (rt + m) * 255;
+        self.g = (gt + m) * 255;
+        self.b = (bt + m) * 255;
+        self.a = a;
 
         return self;
     }
 
     Color &Color::rgb(float r, float g, float b, Uint8 a)
     {
-        this->r = r;
-        this->g = g;
-        this->b = b;
-        this->a = a;
+        self.r = r;
+        self.g = g;
+        self.b = b;
+        self.a = a;
 
         return self;
     }
@@ -147,11 +147,11 @@ namespace PROJECT_NAMESPACE
 
     Color &Color::operator=(unsigned hex)
     {
-        return this->hex(hex);
+        return self.hex(hex);
     }
 
     Color &Color::operator=(const Color &color)
     {
-        return this->rgb(RGBA(color));
+        return self.rgb(RGBA(color));
     }
 }

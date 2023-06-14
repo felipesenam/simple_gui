@@ -1,10 +1,12 @@
 #include "swidget.hpp"
 #include "swindow.hpp"
+#include "sscheme.hpp"
 
 namespace PROJECT_NAMESPACE
 {
     WidgetManager::WidgetManager(Window &window) : Widget(window)
     {
+        scheme = UI_TRANSPARENT_COLOR_SCHEME;
     }
 
     WidgetManager::~WidgetManager()
@@ -16,7 +18,10 @@ namespace PROJECT_NAMESPACE
     void WidgetManager::handleEvent(const SDL_Event &e)
     {
         for (auto widget : widgets)
+        {
+            widget->handleGenericEvents(e);
             widget->handleEvent(e);
+        }
     }
     void WidgetManager::render()
     {
@@ -31,7 +36,10 @@ namespace PROJECT_NAMESPACE
     void WidgetManager::draw()
     {
         for (auto widget : widgets)
+        {
+            widget->drawCommonElements();
             widget->draw();
+        }
     }
 
 }
@@ -86,12 +94,12 @@ namespace PROJECT_NAMESPACE
         }
         case SDL_MOUSEBUTTONDOWN:
         {
-            events["pressed"].triggered = events["hovering"].triggered;
+            events["pressed"].triggered = m_isPressed = m_isHovered;
             break;
         }
         case SDL_MOUSEBUTTONUP:
         {
-            if (m_isPressed)
+            if (m_isPressed && m_isHovered)
             {
                 events["clicked"].triggered = true;
             }
@@ -100,9 +108,19 @@ namespace PROJECT_NAMESPACE
         }
     }
 
-    void Widget::handleEvent(const SDL_Event &e)
+    void Widget::drawCommonElements()
     {
-        handleGenericEvents(e);
+        auto scheme = self.getCurrentColorScheme();
+        window.renderer.drawFillRectangle(geometry.dest, scheme.background);
+        window.renderer.drawRectangle(geometry.dest, scheme.border);
+#ifdef DEBUG
+        window.renderer.drawRectangle(geometry.dest, Colors::Red);
+        window.renderer.drawCross(geometry.dest, {Colors::Red, 122});
+#endif
+    }
+
+    void Widget::handleEvent(const SDL_Event &)
+    {
     }
     void Widget::render()
     {
@@ -113,6 +131,5 @@ namespace PROJECT_NAMESPACE
     }
     void Widget::draw()
     {
-        window.renderer.drawFillRectangle(geometry.dest, Colors::Red);
     }
 }
