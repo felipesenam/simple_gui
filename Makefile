@@ -19,6 +19,7 @@ endif
 
 ifeq ($(filter debug,$(MAKECMDGOALS)),debug)
 TARGET_OBJFOLDER := $(TARGET_OBJFOLDER)/debug
+DEFINES := $(DEFINES) $(DEBUG_DEFINES)
 else
 TARGET_OBJFOLDER := $(TARGET_OBJFOLDER)/release
 endif

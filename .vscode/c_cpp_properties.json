@@ -6,7 +6,9 @@
                 "${workspaceFolder}/include/**",
                 "${workspaceFolder}/include"
             ],
-            "defines": [],
+            "defines": [
+                "DEBUG"
+            ],
             "compilerPath": "/usr/bin/g++",
             "cStandard": "c17",
             "cppStandard": "c++14",
