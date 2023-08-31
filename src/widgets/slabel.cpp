@@ -18,10 +18,9 @@ namespace PROJECT_NAMESPACE
 
     void Label::render()
     {
-        const WidgetColorScheme::ColorScheme *currentScheme = &scheme.normal;
-
         if (text != renderedText)
         {
+            const WidgetColorScheme::ColorScheme *currentScheme = &scheme.normal;
             if (textTexture != nullptr)
             {
                 SDL_DestroyTexture(textTexture);

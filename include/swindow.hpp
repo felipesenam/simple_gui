@@ -7,6 +7,7 @@
 #include "srenderer.hpp"
 #include "swidget.hpp"
 #include "widgets/sflex.hpp"
+
 namespace PROJECT_NAMESPACE
 {
     struct WindowConfig

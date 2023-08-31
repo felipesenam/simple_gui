@@ -1,8 +1,8 @@
 #ifndef B3562FE8_D320_4D08_B652_824BBE86B6AD
 #define B3562FE8_D320_4D08_B652_824BBE86B6AD
 
-#include "../score.hpp"
-#include "../swidget.hpp"
+#include "score.hpp"
+#include "swidget.hpp"
 #include "scolors.hpp"
 
 namespace PROJECT_NAMESPACE
@@ -82,7 +82,6 @@ namespace PROJECT_NAMESPACE
 
         void render() override;
     };
-
 }
 
 #endif /* B3562FE8_D320_4D08_B652_824BBE86B6AD */

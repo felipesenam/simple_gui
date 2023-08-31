@@ -108,13 +108,14 @@ namespace PROJECT_NAMESPACE
 
     void Flex::getDimensions()
     {
-        if (self.style.direction == horizontal)
+        switch (self.style.direction)
         {
-            dimensions = query_content_horizontal();
-        }
-        else
-        {
-            dimensions = query_content_vertical();
+        case horizontal:
+            self.dimensions = query_content_horizontal();
+            break;
+        case vertical:
+            self.dimensions = query_content_vertical();
+            break;
         }
     }
 
@@ -122,7 +123,7 @@ namespace PROJECT_NAMESPACE
     {
         events.perform();
 
-        int lx, ly;
+        int lx = 0, ly = 0;
         getDimensions();
         if (style.direction == vertical)
         {
@@ -166,6 +167,9 @@ namespace PROJECT_NAMESPACE
 {
     Column::Column(Window &window) : Flex(window)
     {
+        style.direction = vertical;
+        style.horizontalAlign = center;
+        style.verticalAlign = top;
     }
 
     void Column::render()
@@ -173,9 +177,9 @@ namespace PROJECT_NAMESPACE
         for (auto widget : widgets)
             widget->render();
 
-        getDimensions();
-        self.geometry.dest.h = dimensions.height;
-        self.geometry.dest.w = dimensions.width;
+        self.dimensions = query_content_vertical();
+        self.geometry.dest.w = dimensions.width + self.geometry.padding.x();
+        self.geometry.dest.h = dimensions.height + self.geometry.padding.y();
     }
 }
 
@@ -184,6 +188,8 @@ namespace PROJECT_NAMESPACE
     Row::Row(Window &window) : Flex(window)
     {
         style.direction = horizontal;
+        style.horizontalAlign = center;
+        style.verticalAlign = middle;
     }
 
     void Row::render()
@@ -200,7 +206,7 @@ namespace PROJECT_NAMESPACE
         }
 
         dimensions = query_content_horizontal();
-        self.geometry.dest.w = self.parent->geometry.dest.w;
-        self.geometry.dest.h = dimensions.height;
+        self.geometry.dest.w = dimensions.width + self.geometry.padding.x();
+        self.geometry.dest.h = dimensions.height + self.geometry.padding.y();
     }
 }

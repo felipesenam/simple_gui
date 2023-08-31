@@ -25,6 +25,7 @@ namespace PROJECT_NAMESPACE
     {
     public:
         Box() {}
+        Box(int size) : top(size), left(size), bottom(size), right(size) {}
         Box(int top, int left, int bottom, int right) : top(top), left(left), bottom(bottom), right(right) {}
 
         int top = 0;
@@ -43,7 +44,7 @@ namespace PROJECT_NAMESPACE
             return self;
         }
 
-        int x() const
+        int x() const noexcept
         {
             return self.left + self.right;
         }
@@ -52,7 +53,7 @@ namespace PROJECT_NAMESPACE
             self.left = x;
             self.right = x;
         }
-        int y() const
+        int y() const noexcept
         {
             return self.top + self.bottom;
         }

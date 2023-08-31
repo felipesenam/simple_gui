@@ -178,8 +178,23 @@ namespace PROJECT_NAMESPACE
         {
             int width = 0;
             int height = 0;
+
+            friend std::ostream &operator<<(std::ostream &os, const Dimensions &dimensions)
+            {
+                return os << "Dimensions{width=" << dimensions.width << ", height=" << dimensions.height << "}";
+            }
         };
 
+        Dimensions query_content() const noexcept
+        {
+            Dimensions dimensions;
+            for (auto &widget : widgets)
+            {
+                dimensions.width += widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x();
+                dimensions.height += widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y();
+            }
+            return dimensions;
+        }
         Dimensions query_content_vertical() const noexcept
         {
             Dimensions dimensions;

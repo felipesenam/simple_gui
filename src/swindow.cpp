@@ -138,6 +138,8 @@ namespace PROJECT_NAMESPACE
             }
         }
         keyboard.handleKeyboardEvent(event);
+
+        container.handleGenericEvents(event);
         container.handleEvent(event);
     }
     void Window::update()

@@ -81,6 +81,7 @@ namespace PROJECT_NAMESPACE
             {
                 if (!m_isHovered)
                 {
+                    Debug("Hovering " << self.getName());
                     events["hover"].triggered = m_isHovered = true;
                 }
             }
@@ -94,11 +95,12 @@ namespace PROJECT_NAMESPACE
         }
         case SDL_MOUSEBUTTONDOWN:
         {
-            events["pressed"].triggered = m_isPressed = m_isHovered;
+            events["mousedown"].triggered = m_isPressed = m_isHovered;
             break;
         }
         case SDL_MOUSEBUTTONUP:
         {
+            events["mouseup"].triggered;
             if (m_isPressed && m_isHovered)
             {
                 events["clicked"].triggered = true;
@@ -113,9 +115,27 @@ namespace PROJECT_NAMESPACE
         auto scheme = self.getCurrentColorScheme();
         window.renderer.drawFillRectangle(geometry.dest, scheme.background);
         window.renderer.drawRectangle(geometry.dest, scheme.border);
+
 #ifdef DEBUG
+        if (self.m_isHovered)
+        {
+            auto marginbox = geometry.dest;
+            marginbox.x -= geometry.margin.left;
+            marginbox.y -= geometry.margin.top;
+            marginbox.w += geometry.margin.x();
+            marginbox.h += geometry.margin.y();
+
+            window.renderer.drawRectangle(marginbox, Colors::Yellow);
+
+            auto paddingbox = geometry.dest;
+            paddingbox.x += geometry.padding.left;
+            paddingbox.y += geometry.padding.top;
+            paddingbox.w -= geometry.padding.x();
+            paddingbox.h -= geometry.padding.y();
+
+            window.renderer.drawRectangle(paddingbox, Colors::Blue);
+        }
         window.renderer.drawRectangle(geometry.dest, Colors::Red);
-        window.renderer.drawCross(geometry.dest, {Colors::Red, 122});
 #endif
     }
 

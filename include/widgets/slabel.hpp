@@ -1,8 +1,8 @@
 #ifndef __LABEL_H__
 #define __LABEL_H__
 
-#include "../score.hpp"
-#include "../swidget.hpp"
+#include "score.hpp"
+#include "swidget.hpp"
 
 namespace PROJECT_NAMESPACE
 {
