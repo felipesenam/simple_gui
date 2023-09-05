@@ -49,7 +49,7 @@ namespace PROJECT_NAMESPACE
 
             std::function<void()> operator=(std::function<void()> function)
             {
-                return self.m_function = function;
+                return this->m_function = function;
             }
         };
 
@@ -66,6 +66,8 @@ namespace PROJECT_NAMESPACE
                 Color color;
                 Color background;
                 Color border;
+
+                NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ColorScheme, color, background, border);
             };
 
             ColorScheme normal;
@@ -73,6 +75,8 @@ namespace PROJECT_NAMESPACE
             ColorScheme pressed;
             ColorScheme focused;
             ColorScheme disabled;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(WidgetColorScheme, normal, hover, pressed, focused, disabled);
         };
         WidgetColorScheme scheme;
 
@@ -128,42 +132,8 @@ namespace PROJECT_NAMESPACE
     class WidgetManager : public Widget
     {
     private:
-        void push()
-        {
-            Debug("End of interaction");
-        }
-
-        template <typename... Args>
-        void push(Widget &widget, Args &&...args)
-        {
-            if (widget.parent)
-            {
-                auto &pwidgets = widget.parent->widgets;
-                pwidgets.erase(std::remove_if(
-                    pwidgets.begin(), pwidgets.end(),
-                    [this, &widget](const Widget *ptr)
-                    {
-                        if (&widget == ptr)
-                        {
-                            Debug("Moving object " << widget.getName());
-                            widget.parent = this;
-                            self.widgets.push_back(&widget);
-                            return true;
-                        }
-                        return false;
-                    }));
-            }
-            else
-            {
-                widget.parent = this;
-                self.widgets.push_back(&widget);
-            }
-
-            return push(args...);
-        }
-
     protected:
-        std::vector<Widget *> widgets;
+        std::unordered_map<std::string, Widget *> widgets;
 
     public:
         WidgetManager(Window &window);
@@ -188,43 +158,83 @@ namespace PROJECT_NAMESPACE
         Dimensions query_content() const noexcept
         {
             Dimensions dimensions;
-            for (auto &widget : widgets)
+            for (auto pair : widgets)
             {
-                dimensions.width += widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x();
-                dimensions.height += widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y();
+                auto &widget = *pair.second;
+
+                dimensions.width += widget.geometry.dest.w + widget.geometry.margin.x() + widget.geometry.padding.x();
+                dimensions.height += widget.geometry.dest.h + widget.geometry.margin.y() + widget.geometry.padding.y();
             }
             return dimensions;
         }
         Dimensions query_content_vertical() const noexcept
         {
             Dimensions dimensions;
-            for (auto &widget : widgets)
+            for (auto pair : widgets)
             {
-                dimensions.width = std::max(dimensions.width, widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x());
-                dimensions.height += widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y();
+                auto &widget = *pair.second;
+
+                dimensions.width = std::max(dimensions.width, widget.geometry.dest.w + widget.geometry.margin.x() + widget.geometry.padding.x());
+                dimensions.height += widget.geometry.dest.h + widget.geometry.margin.y() + widget.geometry.padding.y();
             }
             return dimensions;
         }
         Dimensions query_content_horizontal() const noexcept
         {
             Dimensions dimensions;
-            for (auto &widget : widgets)
+            for (auto pair : widgets)
             {
-                dimensions.width += widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x();
-                dimensions.height = std::max(dimensions.height, widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y());
+                auto &widget = *pair.second;
+
+                dimensions.width += widget.geometry.dest.w + widget.geometry.margin.x() + widget.geometry.padding.x();
+                dimensions.height = std::max(dimensions.height, widget.geometry.dest.h + widget.geometry.margin.y() + widget.geometry.padding.y());
             }
             return dimensions;
         }
 
-        template <typename... Args>
-        void add(Args &&...widgets)
+        template <typename T>
+        T &get(const std::string &uid)
         {
-            self.push(widgets...);
+            return *dynamic_cast<T *>(widgets[uid]);
+        }
+        template <typename T>
+        T &operator[](const std::string &uid)
+        {
+            return this->get<T>(uid);
         }
 
-        Widget &operator[](size_t index)
+        void add(Widget &widget)
         {
-            return *widgets[index];
+            this->add(widget.uid, widget);
+        }
+        void add(const std::string &uid, Widget &widget)
+        {
+            if (widget.parent)
+            {
+                auto &pwidgets = widget.parent->widgets;
+                pwidgets.erase(std::find_if(
+                    pwidgets.begin(), pwidgets.end(),
+                    [this, &widget, &uid](const auto &pair)
+                    {
+                        if (&widget == pair.second)
+                        {
+                            widget.parent = this;
+                            this->widgets[uid] = &widget;
+
+                            Debug("Moved object " << widget);
+
+                            return true;
+                        }
+                        return false;
+                    }));
+            }
+            else
+            {
+                widget.parent = this;
+                this->widgets[uid] = &widget;
+
+                Debug("Orphan object moved " << widget);
+            }
         }
 
         void handleEvent(const SDL_Event &e) override;

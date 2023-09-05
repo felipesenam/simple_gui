@@ -93,13 +93,12 @@ void updateLabels(double minR, double maxR, double minI, Label &minRbox, Label &
 
 int mandelbrot()
 {
-    ApplicationConfig config;
-    config.window.height = 400;
-    config.window.width = 600;
-    config.window.renderer.drawColor = Gray;
-    config.window.options.isResizable = true;
+    const std::string config_file("assets/mandelbrot.json");
+    std::ifstream ifstream(config_file);
+    json data = json::parse(ifstream);
+    Application app = data.template get<Application>();
 
-    Application app(config);
+    app.dump(config_file);
 
     auto &window = app.windows.get("main");
     window.container.style.direction = vertical;

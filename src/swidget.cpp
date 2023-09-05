@@ -1,6 +1,8 @@
 #include "swidget.hpp"
+
 #include "swindow.hpp"
 #include "sscheme.hpp"
+#include "widgets/sflex.hpp"
 
 namespace PROJECT_NAMESPACE
 {
@@ -11,32 +13,48 @@ namespace PROJECT_NAMESPACE
 
     WidgetManager::~WidgetManager()
     {
-        for (auto widget : widgets)
+        for (auto pair : widgets)
+        {
+            auto widget = pair.second;
+
             delete widget;
+        }
     }
 
     void WidgetManager::handleEvent(const SDL_Event &e)
     {
-        for (auto widget : widgets)
+        for (auto pair : widgets)
         {
+            auto widget = pair.second;
+
             widget->handleGenericEvents(e);
             widget->handleEvent(e);
         }
     }
     void WidgetManager::render()
     {
-        for (auto widget : widgets)
+        for (auto pair : widgets)
+        {
+            auto widget = pair.second;
+
             widget->render();
+        }
     }
     void WidgetManager::update()
     {
-        for (auto widget : widgets)
+        for (auto pair : widgets)
+        {
+            auto widget = pair.second;
+
             widget->update();
+        }
     }
     void WidgetManager::draw()
     {
-        for (auto widget : widgets)
+        for (auto pair : widgets)
         {
+            auto widget = pair.second;
+
             widget->drawCommonElements();
             widget->draw();
         }
@@ -49,10 +67,12 @@ namespace PROJECT_NAMESPACE
     template <>
     const int Object<Widget>::err = std::atexit(Object<Widget>::atexit_handler);
 
-    Widget::Widget(Window &window) : window(window), geometry(self), font(window.config.defaultFontPath, window.config.defaultFontSize)
+    Widget::Widget(Window &window) : window(window), geometry(*this), font(window.config.defaultFontPath, window.config.defaultFontSize)
     {
-        if (&window.container != this)
-            window.container.add(self);
+        if (window.container && window.container != this)
+        {
+            window.container->add(*this);
+        }
     }
 
     void Widget::handleGenericEvents(const SDL_Event &e)
@@ -81,7 +101,7 @@ namespace PROJECT_NAMESPACE
             {
                 if (!m_isHovered)
                 {
-                    Debug("Hovering " << self.getName());
+                    Debug("Hovering " << *this);
                     events["hover"].triggered = m_isHovered = true;
                 }
             }
@@ -112,12 +132,12 @@ namespace PROJECT_NAMESPACE
 
     void Widget::drawCommonElements()
     {
-        auto scheme = self.getCurrentColorScheme();
+        auto scheme = this->getCurrentColorScheme();
         window.renderer.drawFillRectangle(geometry.dest, scheme.background);
         window.renderer.drawRectangle(geometry.dest, scheme.border);
 
 #ifdef DEBUG
-        if (self.m_isHovered)
+        if (this->m_isHovered)
         {
             auto marginbox = geometry.dest;
             marginbox.x -= geometry.margin.left;

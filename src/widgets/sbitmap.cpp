@@ -24,8 +24,8 @@ namespace PROJECT_NAMESPACE
     void Bitmap::alloc(size_t width, size_t height)
     {
         erase();
-        geometry.abs.w = self.w = width;
-        geometry.abs.h = self.h = height;
+        geometry.abs.w = this->w = width;
+        geometry.abs.h = this->h = height;
 
         data = new Color *[height];
         for (size_t i = 0; i < height; ++i)
@@ -66,7 +66,7 @@ namespace PROJECT_NAMESPACE
             tex = window.renderer.createTextureFromSurface(surface);
 
             m_render = false;
-            self.geometry.normalize();
+            this->geometry.normalize();
         }
     }
 

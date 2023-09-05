@@ -29,6 +29,27 @@ namespace PROJECT_NAMESPACE
               << static_cast<int>(color.a) << ")";
             return o;
         }
+
+        friend void to_json(json &j, const Color &color)
+        {
+            j = json::array({color.r, color.g, color.b, color.a});
+        }
+        friend void from_json(const json &j, Color &color)
+        {
+            if (j.is_array())
+            {
+                if (j.size() >= 3)
+                {
+                    color.r = j[0];
+                    color.g = j[1];
+                    color.b = j[2];
+                }
+                if (j.size() >= 4)
+                {
+                    color.a = j[3];
+                }
+            }
+        }
     };
 }
 #endif // __SCOLOR_H__

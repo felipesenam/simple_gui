@@ -1,0 +1,74 @@
+{
+    "config": {
+        "targetFPS": 60
+    },
+    "windows": {
+        "windows": {
+            "main": {
+                "config": {
+                    "behavior": {
+                        "destroyOnClose": true
+                    },
+                    "defaultFontPath": "assets/fonts/segoeui.ttf",
+                    "defaultFontSize": 12,
+                    "height": 400,
+                    "options": {
+                        "isAlwaysOnTop": false,
+                        "isBorderless": false,
+                        "isFullscreen": false,
+                        "isFullscreenDesktop": false,
+                        "isHidden": false,
+                        "isMaximized": false,
+                        "isMinimized": false,
+                        "isResizable": false,
+                        "isShown": true,
+                        "skipsTaskbar": false
+                    },
+                    "renderer": {
+                        "blendMode": 1,
+                        "drawColor": [
+                            122,
+                            122,
+                            122,
+                            255
+                        ],
+                        "index": -1,
+                        "options": {
+                            "usesHardwareAcceleration": false,
+                            "usesVSync": true
+                        }
+                    },
+                    "title": "Window",
+                    "width": 600,
+                    "x": 805240832,
+                    "y": 805240832
+                },
+                "container": {
+                    "style": {
+                        "direction": "vertical",
+                        "horizontalAlign": "center",
+                        "justifyContent": "none",
+                        "verticalAlign": "middle"
+                    },
+                    "type": "sgui::Flex",
+                    "widgets": {
+                        "mylabel": {
+                            "scheme": {
+                                "hover": {
+                                    "color": [
+                                        0,
+                                        122,
+                                        122,
+                                        255
+                                    ]
+                                }
+                            },
+                            "text": "Olá mundo!!",
+                            "type": "sgui::Label"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

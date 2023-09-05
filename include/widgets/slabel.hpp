@@ -24,6 +24,20 @@ namespace PROJECT_NAMESPACE
         void render() override;
         void update() override;
         void draw() override;
+
+        friend void to_json(json &j, const Label &p)
+        {
+            j["type"] = type(p);
+            j["text"] = p.text;
+            j["geometry"] = p.geometry;
+            j["scheme"] = p.scheme;
+        }
+        friend void from_json(const json &j, Label &p)
+        {
+            SETATTR_IF_JSON_CONTAINS(j, p, text);
+            SETATTR_IF_JSON_CONTAINS(j, p, geometry);
+            SETATTR_IF_JSON_CONTAINS(j, p, scheme);
+        }
     };
 
 }

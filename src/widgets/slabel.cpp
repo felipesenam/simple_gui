@@ -6,7 +6,7 @@ namespace PROJECT_NAMESPACE
 {
     Label::Label(Window &window) : Widget(window)
     {
-        self.scheme = UI_LABEL_COLOR_SCHEME;
+        this->scheme = UI_LABEL_COLOR_SCHEME;
     }
     Label::~Label()
     {
@@ -27,9 +27,9 @@ namespace PROJECT_NAMESPACE
             }
             SDL_PrintIfError(Warn);
 
-            textTexture = self.window.renderer.renderText(text, font, self.geometry, currentScheme->background);
+            textTexture = this->window.renderer.renderText(text, font, this->geometry, currentScheme->background);
             renderedText = text;
-            self.geometry.normalize();
+            this->geometry.normalize();
         }
     }
 
@@ -49,6 +49,6 @@ namespace PROJECT_NAMESPACE
 
     void Label::draw()
     {
-        self.window.renderer.drawTexture(textTexture, &self.geometry.src, &self.geometry.dest);
+        this->window.renderer.drawTexture(textTexture, &this->geometry.src, &this->geometry.dest);
     }
 }

@@ -108,13 +108,13 @@ namespace PROJECT_NAMESPACE
 
     void Flex::getDimensions()
     {
-        switch (self.style.direction)
+        switch (this->style.direction)
         {
         case horizontal:
-            self.dimensions = query_content_horizontal();
+            this->dimensions = query_content_horizontal();
             break;
         case vertical:
-            self.dimensions = query_content_vertical();
+            this->dimensions = query_content_vertical();
             break;
         }
     }
@@ -131,8 +131,10 @@ namespace PROJECT_NAMESPACE
             const int spaceBetween = widgets.size() > 1 ? (geometry.dest.h - dimensions.height) / (widgets.size() - 1) : 0;
 
             int currentHeight = 0;
-            for (auto &widget : widgets)
+            for (auto &pair : widgets)
             {
+                auto widget = pair.second;
+
                 posWidgetVertical(lx, ly, currentHeight, *widget, spaceBetween, spaceAround);
 
                 widget->update();
@@ -148,8 +150,10 @@ namespace PROJECT_NAMESPACE
             const int spaceBetween = widgets.size() > 1 ? (geometry.dest.w - dimensions.width) / (widgets.size() - 1) : 0;
 
             int currentWidth = 0;
-            for (auto &widget : widgets)
+            for (auto &pair : widgets)
             {
+                auto widget = pair.second;
+
                 posWidgetHorizontal(lx, ly, currentWidth, *widget, spaceBetween, spaceAround);
 
                 widget->update();
@@ -160,7 +164,6 @@ namespace PROJECT_NAMESPACE
             }
         }
     }
-
 }
 
 namespace PROJECT_NAMESPACE
@@ -174,12 +177,12 @@ namespace PROJECT_NAMESPACE
 
     void Column::render()
     {
-        for (auto widget : widgets)
-            widget->render();
+        for (auto pair : widgets)
+            pair.second->render();
 
-        self.dimensions = query_content_vertical();
-        self.geometry.dest.w = dimensions.width + self.geometry.padding.x();
-        self.geometry.dest.h = dimensions.height + self.geometry.padding.y();
+        this->dimensions = query_content_vertical();
+        this->geometry.dest.w = dimensions.width + this->geometry.padding.x();
+        this->geometry.dest.h = dimensions.height + this->geometry.padding.y();
     }
 }
 
@@ -194,19 +197,21 @@ namespace PROJECT_NAMESPACE
 
     void Row::render()
     {
-        for (auto widget : widgets)
+        for (auto pair : widgets)
         {
+            auto widget = pair.second;
+
             widget->render();
 
             Column *column = dynamic_cast<Column *>(widget);
             if (column && column->size >= 1)
             {
-                column->geometry.dest.w = (column->size / float(self.size)) * self.geometry.dest.w;
+                column->geometry.dest.w = (column->size / float(this->size)) * this->geometry.dest.w;
             }
         }
 
         dimensions = query_content_horizontal();
-        self.geometry.dest.w = dimensions.width + self.geometry.padding.x();
-        self.geometry.dest.h = dimensions.height + self.geometry.padding.y();
+        this->geometry.dest.w = dimensions.width + this->geometry.padding.x();
+        this->geometry.dest.h = dimensions.height + this->geometry.padding.y();
     }
 }

@@ -9,9 +9,11 @@ namespace PROJECT_NAMESPACE
     public:
         Rect() : SDL_Rect({0, 0, 0, 0}) {}
 
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Rect, x, y, w, h);
+
         bool operator==(const Rect &rect)
         {
-            return self.x == rect.x && self.y == rect.y && self.w == rect.w && self.h == rect.h;
+            return this->x == rect.x && this->y == rect.y && this->w == rect.w && this->h == rect.h;
         }
 
         friend std::ostream &operator<<(std::ostream &o, const Rect &rect)
@@ -33,34 +35,36 @@ namespace PROJECT_NAMESPACE
         int bottom = 0;
         int right = 0;
 
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Box, top, left, bottom, right);
+
         bool operator==(const Box &box)
         {
-            return self.top == box.top && self.left == box.left && self.bottom == box.bottom && self.right == box.right;
+            return this->top == box.top && this->left == box.left && this->bottom == box.bottom && this->right == box.right;
         }
 
         Box &operator=(int value)
         {
             top = bottom = left = right = value;
-            return self;
+            return *this;
         }
 
         int x() const noexcept
         {
-            return self.left + self.right;
+            return this->left + this->right;
         }
         void x(int x)
         {
-            self.left = x;
-            self.right = x;
+            this->left = x;
+            this->right = x;
         }
         int y() const noexcept
         {
-            return self.top + self.bottom;
+            return this->top + this->bottom;
         }
         void y(int y)
         {
-            self.top = y;
-            self.bottom = y;
+            this->top = y;
+            this->bottom = y;
         }
     };
 
@@ -76,6 +80,17 @@ namespace PROJECT_NAMESPACE
         bottom_center,
         bottom_right
     };
+    NLOHMANN_JSON_SERIALIZE_ENUM(Center, {
+                                             {Center::top_left, "top_left"},
+                                             {Center::top_center, "top_center"},
+                                             {Center::top_right, "top_right"},
+                                             {Center::middle_left, "middle_left"},
+                                             {Center::middle_center, "middle_center"},
+                                             {Center::middle_right, "middle_right"},
+                                             {Center::bottom_left, "bottom_left"},
+                                             {Center::bottom_center, "bottom_center"},
+                                             {Center::bottom_right, "bottom_right"},
+                                         })
 
     class Widget;
     class Geometry
@@ -119,11 +134,17 @@ namespace PROJECT_NAMESPACE
             normal,
             hug,
         };
+        NLOHMANN_JSON_SERIALIZE_ENUM(Behavior, {
+                                                   {Behavior::normal, "normal"},
+                                                   {Behavior::hug, "hug"},
+                                               })
         Behavior behavior = normal;
         Center anchor = middle_center;
 
         Box margin;
         Box padding;
+
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE(Geometry, src, dest, abs, behavior, anchor, margin, padding);
 
         void normalize();
 
