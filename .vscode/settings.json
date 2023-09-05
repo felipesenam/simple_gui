@@ -52,6 +52,25 @@
         "chrono": "cpp",
         "future": "cpp",
         "stop_token": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "complex": "cpp",
+        "bitset": "cpp",
+        "optional": "cpp",
+        "mutex": "cpp",
+        "ranges": "cpp",
+        "ratio": "cpp",
+        "variant": "cpp",
+        "condition_variable": "cpp",
+        "cstring": "cpp",
+        "ctime": "cpp",
+        "any": "cpp",
+        "codecvt": "cpp",
+        "forward_list": "cpp",
+        "list": "cpp",
+        "set": "cpp",
+        "iomanip": "cpp",
+        "semaphore": "cpp",
+        "typeindex": "cpp",
+        "valarray": "cpp"
     }
 }

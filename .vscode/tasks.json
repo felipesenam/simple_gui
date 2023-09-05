@@ -2,9 +2,22 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "build (debug)",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "DEBUG=true"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "build",
             "type": "shell",
             "command": "make",
+            "args": [],
             "group": {
                 "kind": "build",
                 "isDefault": true
