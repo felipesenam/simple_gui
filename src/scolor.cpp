@@ -2,7 +2,7 @@
 
 namespace PROJECT_NAMESPACE
 {
-    Color::Color() : SDL_Color{0, 0, 0, 0}
+    Color::Color() : SDL_Color{0, 0, 0, 255}
     {
     }
 

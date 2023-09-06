@@ -1,6 +1,6 @@
 #include "swindow.hpp"
 
-#include "widgets/sflex.hpp"
+#include "swidgets.hpp"
 #include "sfont.hpp"
 #include "scolors.hpp"
 

@@ -3,11 +3,8 @@
 
 #include <thread>
 
-#include "score.hpp"
-#include "scolors.hpp"
 #include "sapplication.hpp"
-#include "../widgets/sbitmap.hpp"
-#include "../widgets/slabel.hpp"
+#include "swidgets.hpp"
 
 #define MODIFIER 7
 #define THREADS 8
@@ -15,36 +12,38 @@
 using namespace PROJECT_NAMESPACE;
 using namespace PROJECT_NAMESPACE::Colors;
 
-double mapToReal(int x, int w, double minR, double maxR)
+using ld = long double;
+
+ld mapToReal(int x, int w, ld minR, ld maxR)
 {
     return x * ((maxR - minR) / w) + minR;
 }
-double mapToImaginary(int y, int h, double minI, double maxI)
+ld mapToImaginary(int y, int h, ld minI, ld maxI)
 {
     return y * ((maxI - minI) / h) + minI;
 }
-int findMandelbrot(double cr, double ci, int maxN)
+int findMandelbrot(ld cr, ld ci, int maxN)
 {
     int i = 0;
-    double zr = 0., zi = 0.;
+    ld zr = 0., zi = 0.;
     while (i < maxN && zr * zr + zi * zi < 4.)
     {
-        double tmp = zr * zr - zi * zi + cr;
+        ld tmp = zr * zr - zi * zi + cr;
         zi = 2. * zr * zi + ci;
         zr = tmp;
         i++;
     }
     return i;
 }
-void calc(Bitmap &bitmap, double minR, double maxR, double minI, double maxI, int maxN, int row, int column, size_t nElements)
+void calc(Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int maxN, int row, int column, size_t nElements)
 {
     size_t elements = 0;
     for (size_t j = row; j < bitmap.height(); ++j)
     {
         for (size_t i = elements == 0 ? column : 0; i < bitmap.width(); ++i)
         {
-            double cr = mapToReal(i, bitmap.width(), minR, maxR);
-            double ci = mapToImaginary(j, bitmap.height(), minI, maxI);
+            ld cr = mapToReal(i, bitmap.width(), minR, maxR);
+            ld ci = mapToImaginary(j, bitmap.height(), minI, maxI);
             int n = findMandelbrot(cr, ci, maxN);
 
             int value = (n * MODIFIER) % 360;
@@ -56,11 +55,12 @@ void calc(Bitmap &bitmap, double minR, double maxR, double minI, double maxI, in
         }
     }
 }
-void updateGrid(sgui::Bitmap &bitmap, double minR, double maxR, double minI, double maxI, int maxN = 360)
+
+void updateGrid(sgui::Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int maxN = 360)
 {
     std::vector<std::thread *> threads;
     const size_t tElements = bitmap.width() * bitmap.height();
-    const size_t nElements = ceil(tElements / double(THREADS));
+    const size_t nElements = ceil(tElements / ld(THREADS));
     for (size_t i = 0, j = 0; i < tElements; i += nElements, ++j)
     {
         threads.emplace_back(new std::thread(calc,
@@ -79,12 +79,12 @@ void updateGrid(sgui::Bitmap &bitmap, double minR, double maxR, double minI, dou
     }
 }
 
-double getMaxI(double minR, double maxR, double minI, size_t width, size_t height)
+ld getMaxI(ld minR, ld maxR, ld minI, size_t width, size_t height)
 {
     return minI + (maxR - minR) * height / width;
 }
 
-void updateLabels(double minR, double maxR, double minI, Label &minRbox, Label &maxRbox, Label &minIbox)
+void updateLabels(ld minR, ld maxR, ld minI, Label &minRbox, Label &maxRbox, Label &minIbox)
 {
     minRbox.text = std::to_string(minR);
     maxRbox.text = std::to_string(maxR);
@@ -93,67 +93,56 @@ void updateLabels(double minR, double maxR, double minI, Label &minRbox, Label &
 
 int mandelbrot()
 {
-    const std::string config_file("assets/mandelbrot.json");
+    std::string config_file("assets/mandelbrot.json");
     std::ifstream ifstream(config_file);
     json data = json::parse(ifstream);
-    Application app = data.template get<Application>();
-
-    app.dump(config_file);
+    Application app;
+    from_json(data, app);
 
     auto &window = app.windows.get("main");
-    window.container.style.direction = vertical;
-    window.container.style.verticalAlign = middle;
-    window.container.style.horizontalAlign = center;
+    auto &container = *window.container;
 
-    // app.window.setIcon("assets/icon.png");
+    auto &content = container.get<Row>("content");
 
-    const int width = 512;
-    const int height = 512;
+    auto &left_col = content.get<Column>("left_col");
+    auto &right_col = content.get<Column>("right_col");
 
-    auto &content = window.create<Row>();
+    auto &bitmap = left_col.get<Bitmap>("bitmap");
 
-    auto &right_col = window.create<Column>();
-    auto &left_col = window.create<Column>();
-    content.add(left_col, right_col);
+    auto &values_col = right_col
+                           .get<Row>("values_row")
+                           .get<Column>("values_col");
 
-    auto &bitmap = window.create<Bitmap>(width, height);
-    bitmap.scheme.normal.background = Black;
-    left_col.add(bitmap);
+    auto &minRbox = values_col.get<Label>("minRbox");
+    auto &maxRbox = values_col.get<Label>("maxRbox");
+    auto &minIbox = values_col.get<Label>("minIbox");
 
-    double minR, maxR, minI;
-    minR = -2;
-    maxR = .8;
-    minI = -1.4;
+    /***** Setup values *****/
+    const size_t width = bitmap.width();
+    const size_t height = bitmap.height();
 
-    double maxI = getMaxI(minR, maxR, minI, width, height);
-
-    auto &values_row = window.create<Row>();
-    auto &values_col = window.create<Column>();
-
-    auto &minRbox = window.create<Label>();
-    auto &maxRbox = window.create<Label>();
-    auto &minIbox = window.create<Label>();
-
-    values_col.add(minRbox, maxRbox, minIbox);
-    values_row.add(values_col);
-    right_col.add(values_row);
+    ld minR = -2;
+    ld maxR = .8;
+    ld minI = -1.4;
+    ld maxI = getMaxI(minR, maxR, minI, width, height);
 
     updateGrid(bitmap, minR, maxR, minI, maxI);
     updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
+    /************************/
 
-    auto &zoom_control_row = window.create<Row>();
+    auto &zoom_control_row = right_col.get<Row>("zoom_control_row");
 
-    auto &zoomIn = window.create<Label>();
-    zoomIn.text = "IN";
+    auto &zoomIn = zoom_control_row.get<Label>("zoomIn");
+    auto &zoomOut = zoom_control_row.get<Label>("zoomOut");
+
     zoomIn.events["clicked"] = [&]()
     {
-        double deltaR = maxR - minR;
+        ld deltaR = maxR - minR;
         if (deltaR < 0.0000000000001)
         {
-            std::cout << "cannot be more acurate" << std::endl;
-            // return;
+            Warn("Zoom limit reached!");
         }
-        double value = (deltaR / 10) / 2;
+        ld value = (deltaR / 10) / 2;
 
         minR += value;
         maxR -= value;
@@ -164,14 +153,12 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    auto &zoomOut = window.create<Label>();
-    zoomOut.text = "OUT";
     zoomOut.events["clicked"] = [&]()
     {
-        double deltaR = maxR - minR;
+        ld deltaR = maxR - minR;
         if (deltaR > 2)
             return;
-        double value = (maxR - minR) / 10;
+        ld value = (maxR - minR) / 10;
         minR -= value;
         maxR += value;
         minI -= (maxI - minI) / 10;
@@ -181,44 +168,32 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    zoom_control_row.add(zoomIn, zoomOut);
-    right_col.add(zoom_control_row);
+    auto &controls_col = right_col
+                             .get<Row>("controls_row")
+                             .get<Column>("controls_col");
 
-    auto &controls_row = window.create<Row>();
-    controls_row.style.horizontalAlign = center;
-    right_col.add(controls_row);
+    auto &control_row1 = controls_col.get<Row>("control_row1");
+    auto &control_row2 = controls_col.get<Row>("control_row2");
 
-    auto &controls_col = window.create<Column>();
-    controls_row.add(controls_col);
+    auto &up = control_row1.get<Label>("up");
 
-    auto &control_row1 = window.create<Row>();
-    control_row1.style.horizontalAlign = center;
-    controls_col.add(control_row1);
+    auto &left = control_row2.get<Label>("left");
+    auto &down = control_row2.get<Label>("down");
+    auto &right = control_row2.get<Label>("right");
 
-    auto &up = window.create<Label>();
-    up.geometry.anchor = middle_center;
-    up.text = "UP";
     up.events["clicked"] = [&]()
     {
-        double value = ((maxI - minI) / 10) / 2;
+        ld value = ((maxI - minI) / 10) / 2;
         minI -= value;
         maxI = getMaxI(minR, maxR, minI, width, height);
 
         updateGrid(bitmap, minR, maxR, minI, maxI);
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
-    control_row1.add(up);
 
-    auto &control_row2 = window.create<Row>();
-    control_row2.style.horizontalAlign = center;
-    controls_col.add(control_row2);
-
-    auto &down = window.create<Label>();
-    down.geometry.anchor = middle_center;
-    down.text = "DOWN";
     down.events["clicked"] = [&]()
     {
-        double value = ((maxI - minI) / 10) / 2;
+        ld value = ((maxI - minI) / 10) / 2;
         minI += value;
         maxI = getMaxI(minR, maxR, minI, width, height);
 
@@ -226,12 +201,9 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    auto &left = window.create<Label>();
-    left.geometry.anchor = middle_center;
-    left.text = "LEFT";
     left.events["clicked"] = [&]()
     {
-        double value = ((maxR - minR) / 10) / 2;
+        ld value = ((maxR - minR) / 10) / 2;
         minR -= value;
         maxR -= value;
 
@@ -239,12 +211,9 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    auto &right = window.create<Label>();
-    right.geometry.anchor = middle_center;
-    right.text = "RIGHT";
     right.events["clicked"] = [&]()
     {
-        double value = ((maxR - minR) / 10) / 2;
+        ld value = ((maxR - minR) / 10) / 2;
         minR += value;
         maxR += value;
 
@@ -252,7 +221,7 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    control_row2.add(left, down, right);
+    app.dump("assets/mandelbrot.dump.json");
 
     return app();
 }

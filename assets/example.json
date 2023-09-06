@@ -6,42 +6,16 @@
         "windows": {
             "main": {
                 "config": {
-                    "behavior": {
-                        "destroyOnClose": true
-                    },
-                    "defaultFontPath": "assets/fonts/segoeui.ttf",
-                    "defaultFontSize": 12,
-                    "height": 400,
-                    "options": {
-                        "isAlwaysOnTop": false,
-                        "isBorderless": false,
-                        "isFullscreen": false,
-                        "isFullscreenDesktop": false,
-                        "isHidden": false,
-                        "isMaximized": false,
-                        "isMinimized": false,
-                        "isResizable": false,
-                        "isShown": true,
-                        "skipsTaskbar": false
-                    },
                     "renderer": {
-                        "blendMode": 1,
                         "drawColor": [
                             122,
                             122,
                             122,
                             255
-                        ],
-                        "index": -1,
-                        "options": {
-                            "usesHardwareAcceleration": false,
-                            "usesVSync": true
-                        }
+                        ]
                     },
                     "title": "Window",
-                    "width": 600,
-                    "x": 805240832,
-                    "y": 805240832
+                    "width": 600
                 },
                 "container": {
                     "style": {
@@ -52,19 +26,57 @@
                     },
                     "type": "sgui::Flex",
                     "widgets": {
-                        "mylabel": {
-                            "scheme": {
-                                "hover": {
-                                    "color": [
-                                        0,
-                                        122,
-                                        122,
-                                        255
-                                    ]
+                        "row": {
+                            "size": 12,
+                            "type": "sgui::Row",
+                            "widgets": {
+                                "col": {
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "widgets": {
+                                        "label": {
+                                            "text": "linha 1 coluna 1",
+                                            "type": "sgui::Label"
+                                        }
+                                    }
+                                },
+                                "col2": {
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "widgets": {
+                                        "label": {
+                                            "text": "linha 1 coluna 2",
+                                            "type": "sgui::Label"
+                                        }
+                                    }
                                 }
-                            },
-                            "text": "Olá mundo!!",
-                            "type": "sgui::Label"
+                            }
+                        },
+                        "row2": {
+                            "size": 12,
+                            "type": "sgui::Row",
+                            "widgets": {
+                                "col": {
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "widgets": {
+                                        "label": {
+                                            "text": "linha 2 coluna 1",
+                                            "type": "sgui::Label"
+                                        }
+                                    }
+                                },
+                                "col2": {
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "widgets": {
+                                        "label": {
+                                            "text": "linha 2 coluna 2",
+                                            "type": "sgui::Label"
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

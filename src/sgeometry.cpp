@@ -1,5 +1,4 @@
 #include "sgeometry.hpp"
-#include "swidget.hpp"
 
 namespace PROJECT_NAMESPACE
 {

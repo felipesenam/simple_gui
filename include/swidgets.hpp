@@ -4,6 +4,7 @@
 #include "score.hpp"
 #include "sfont.hpp"
 #include "sgeometry.hpp"
+#include "scolorgrid.hpp"
 
 namespace PROJECT_NAMESPACE
 {
@@ -133,7 +134,7 @@ namespace PROJECT_NAMESPACE
     {
     private:
     protected:
-        std::unordered_map<std::string, Widget *> widgets;
+        std::map<std::string, Widget *> widgets;
 
     public:
         WidgetManager(Window &window);
@@ -237,11 +238,219 @@ namespace PROJECT_NAMESPACE
             }
         }
 
+        template <typename T, typename... Args>
+        T &create(const std::string &uid, Args &&...args)
+        {
+            T *widget = new T(this->window, args...);
+            this->add(uid, *widget);
+            return *widget;
+        }
+
         void handleEvent(const SDL_Event &e) override;
         void render() override;
         void update() override;
         void draw() override;
     };
+
+    enum Direction
+    {
+        horizontal,
+        vertical
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(Direction, {
+                                                {Direction::horizontal, "horizontal"},
+                                                {Direction::vertical, "vertical"},
+                                            })
+
+    enum HorizontalAlign
+    {
+        left,
+        center,
+        right
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(HorizontalAlign, {
+                                                      {HorizontalAlign::left, "left"},
+                                                      {HorizontalAlign::center, "center"},
+                                                      {HorizontalAlign::right, "right"},
+                                                  })
+
+    enum JustifyContent
+    {
+        none,
+        between,
+        around
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(JustifyContent, {
+                                                     {JustifyContent::none, "none"},
+                                                     {JustifyContent::between, "between"},
+                                                     {JustifyContent::around, "around"},
+                                                 })
+
+    enum VerticalAlign
+    {
+        top,
+        middle,
+        bottom
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(VerticalAlign, {
+                                                    {VerticalAlign::top, "top"},
+                                                    {VerticalAlign::middle, "middle"},
+                                                    {VerticalAlign::bottom, "bottom"},
+                                                })
+
+    enum Layout
+    {
+        normal,
+        fixed
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(Layout, {
+                                             {Layout::normal, "normal"},
+                                             {Layout::fixed, "fixed"},
+                                         })
+
+    class Row;
+    class Column;
+    class Flex : public WidgetManager, public Object<Flex>
+    {
+    protected:
+        void posWidgetHorizontal(int &lx, int &ly, int &currentWidth, Widget &widget, const int spaceBetween, const int spaceAround);
+        void posWidgetVertical(int &lx, int &ly, int &currentHeight, Widget &widget, const int spaceBetween, const int spaceAround);
+        Dimensions dimensions;
+        void getDimensions();
+
+    public:
+        Flex(Window &window);
+        struct Style
+        {
+            Direction direction = vertical;
+            VerticalAlign verticalAlign = top;
+            HorizontalAlign horizontalAlign = left;
+            JustifyContent justifyContent = none;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Style, direction, verticalAlign, horizontalAlign, justifyContent);
+        };
+        Style style;
+
+        void update() override;
+
+        friend void to_json(json &j, const Flex &p);
+        friend void from_json(const json &j, Flex &p);
+    };
+
+    class Column : public Flex, public Object<Column>
+    {
+    public:
+        Column(Window &window);
+
+        unsigned size = 0;
+
+        void render() override;
+
+        friend void to_json(json &j, const Column &col);
+        friend void from_json(const json &j, Column &col);
+    };
+
+    class Row : public Flex, public Object<Row>
+    {
+    public:
+        Row(Window &window);
+
+        unsigned size = 12;
+
+        void render() override;
+
+        friend void to_json(json &j, const Row &row);
+        friend void from_json(const json &j, Row &row);
+    };
+
+    class Label : public Widget, public Object<Label>
+    {
+    private:
+        SDL_Texture *textTexture = nullptr;
+
+        Color renderedColor;
+        std::string renderedText;
+        // TTF* renderedFont = nullptr;
+
+    public:
+        Label(Window &window);
+        ~Label();
+
+        std::string text;
+
+        void render() override;
+        void update() override;
+        void draw() override;
+
+        friend void to_json(json &j, const Label &p)
+        {
+            j["type"] = demangle(typeid(Label).name());
+            j["text"] = p.text;
+            j["geometry"] = p.geometry;
+            j["scheme"] = p.scheme;
+        }
+        friend void from_json(const json &j, Label &p)
+        {
+            SETATTR_IF_JSON_CONTAINS(j, p, text);
+            SETATTR_IF_JSON_CONTAINS(j, p, geometry);
+            SETATTR_IF_JSON_CONTAINS(j, p, scheme);
+        }
+    };
+
+    class Bitmap : public ColorGrid, public Widget, public Object<Bitmap>
+    {
+    private:
+        SDL_Texture *tex = nullptr;
+
+        bool m_render = false;
+
+    public:
+        Bitmap(Window &window);
+        Bitmap(Window &window, size_t width, size_t height);
+        ~Bitmap();
+
+        Color &at(size_t x, size_t y) override;
+
+        void alloc(size_t width, size_t height) override;
+
+        void erase() override;
+
+        void render();
+        void draw();
+
+        friend void to_json(json &j, const Bitmap &col);
+        friend void from_json(const json &j, Bitmap &col);
+    };
+
+    template <typename T>
+    static bool emplace(json &j, const std::pair<std::string, Widget *> &widget)
+    {
+        T *ptr = dynamic_cast<T *>(widget.second);
+        if (ptr)
+        {
+            Debug("Saving " << widget.first << " as " << demangle(typeid(T).name()));
+            j[widget.first] = *ptr;
+        }
+
+        return ptr;
+    }
+
+    template <typename T>
+    bool get_from(const json &j, const std::string &uid, WidgetManager *manager)
+    {
+        std::string type = j["type"];
+        if (type == demangle(typeid(T).name()))
+        {
+            T &widget = manager->create<T>(uid);
+            from_json(j, widget);
+            Debug("New " << type << " from json");
+            return true;
+        }
+        return false;
+    }
+
+    void to_json(json &j, const std::map<std::string, Widget *> &p);
+    void from_json(const json &j, WidgetManager *man);
 }
 
 #endif // __WIDGET_H__

@@ -1,0 +1,127 @@
+{
+    "config": {
+        "targetFPS": 60
+    },
+    "windows": {
+        "windows": {
+            "main": {
+                "config": {
+                    "title": "Mandelbrot",
+                    "height": 530,
+                    "width": 620,
+                    "options": {
+                        "isResizable": true
+                    },
+                    "renderer": {
+                        "drawColor": [
+                            122,
+                            122,
+                            122,
+                            255
+                        ]
+                    }
+                },
+                "container": {
+                    "style": {
+                        "horizontalAlign": "center",
+                        "verticalAlign": "middle"
+                    },
+                    "type": "sgui::Flex",
+                    "widgets": {
+                        "content": {
+                            "type": "sgui::Row",
+                            "widgets": {
+                                "left_col": {
+                                    "type": "sgui::Column",
+                                    "widgets": {
+                                        "bitmap": {
+                                            "width": 512,
+                                            "height": 512,
+                                            "type": "sgui::Bitmap"
+                                        }
+                                    }
+                                },
+                                "right_col": {
+                                    "type": "sgui::Column",
+                                    "widgets": {
+                                        "controls_row": {
+                                            "type": "sgui::Row",
+                                            "widgets": {
+                                                "controls_col": {
+                                                    "type": "sgui::Column",
+                                                    "widgets": {
+                                                        "control_row1": {
+                                                            "type": "sgui::Row",
+                                                            "widgets": {
+                                                                "up": {
+                                                                    "text": "UP",
+                                                                    "type": "sgui::Label"
+                                                                }
+                                                            }
+                                                        },
+                                                        "control_row2": {
+                                                            "type": "sgui::Row",
+                                                            "widgets": {
+                                                                "left": {
+                                                                    "text": "LEFT",
+                                                                    "type": "sgui::Label"
+                                                                },
+                                                                "down": {
+                                                                    "text": "DOWN",
+                                                                    "type": "sgui::Label"
+                                                                },
+                                                                "right": {
+                                                                    "text": "RIGHT",
+                                                                    "type": "sgui::Label"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "values_row": {
+                                            "type": "sgui::Row",
+                                            "widgets": {
+                                                "values_col": {
+                                                    "type": "sgui::Column",
+                                                    "widgets": {
+                                                        "maxRbox": {
+                                                            "text": "0.800000",
+                                                            "type": "sgui::Label"
+                                                        },
+                                                        "minIbox": {
+                                                            "text": "-1.400000",
+                                                            "type": "sgui::Label"
+                                                        },
+                                                        "minRbox": {
+                                                            "text": "-2.000000",
+                                                            "type": "sgui::Label"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "zoom_control_row": {
+                                            "type": "sgui::Row",
+                                            "widgets": {
+                                                "zoomIn": {
+                                                    "text": "IN",
+                                                    "type": "sgui::Label"
+                                                },
+                                                "zoomOut": {
+                                                    "text": "OUT",
+                                                    "type": "sgui::Label"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

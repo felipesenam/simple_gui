@@ -214,13 +214,7 @@ namespace PROJECT_NAMESPACE
             return _size;
         }
 
-        template <typename T, typename... Args>
-        T &create(Args &&...args)
-        {
-            return *new T(*this, args...);
-        }
-
-        void show();
+                void show();
         void hide();
         void destroy();
 
