@@ -4,7 +4,7 @@
 #include "score.hpp"
 #include "scolor.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     class ColorGrid
     {

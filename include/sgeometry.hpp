@@ -2,7 +2,7 @@
 #define __SGEOMETRY_H__
 
 #include "score.hpp"
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     class Rect : public SDL_Rect
     {

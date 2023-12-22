@@ -6,7 +6,7 @@
 #include "sgeometry.hpp"
 #include "scolorgrid.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     class Window;
     class WidgetManager;
@@ -29,26 +29,26 @@ namespace PROJECT_NAMESPACE
         class Event
         {
         private:
-            std::function<void()> m_function;
+            std::function<void(Widget &)> m_function;
 
         public:
             bool triggered = false;
 
-            void operator()()
+            void operator()(Widget &widget)
             {
                 if (triggered && m_function)
                 {
-                    m_function();
+                    m_function(widget);
                     triggered = false;
                 }
             }
 
-            void invoke()
+            void invoke(Widget &widget)
             {
-                m_function();
+                m_function(widget);
             }
 
-            std::function<void()> operator=(std::function<void()> function)
+            std::function<void(Widget &)> operator=(std::function<void(Widget &)> function)
             {
                 return this->m_function = function;
             }
@@ -83,7 +83,12 @@ namespace PROJECT_NAMESPACE
 
         class EventManager
         {
+        private:
+            Widget &widget;
+
         public:
+            EventManager(Widget &Widget) : widget(Widget) {}
+
             std::map<std::string, Event> events;
 
             void perform()
@@ -91,7 +96,7 @@ namespace PROJECT_NAMESPACE
                 for (auto &tuple : events)
                 {
                     auto &event = tuple.second;
-                    event();
+                    event(widget);
                 }
             }
 
@@ -134,7 +139,7 @@ namespace PROJECT_NAMESPACE
     {
     private:
     protected:
-        std::map<std::string, Widget *> widgets;
+        std::vector<Widget *> widgets;
 
     public:
         WidgetManager(Window &window);
@@ -159,36 +164,30 @@ namespace PROJECT_NAMESPACE
         Dimensions query_content() const noexcept
         {
             Dimensions dimensions;
-            for (auto pair : widgets)
+            for (auto widget : widgets)
             {
-                auto &widget = *pair.second;
-
-                dimensions.width += widget.geometry.dest.w + widget.geometry.margin.x() + widget.geometry.padding.x();
-                dimensions.height += widget.geometry.dest.h + widget.geometry.margin.y() + widget.geometry.padding.y();
+                dimensions.width += widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x();
+                dimensions.height += widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y();
             }
             return dimensions;
         }
         Dimensions query_content_vertical() const noexcept
         {
             Dimensions dimensions;
-            for (auto pair : widgets)
+            for (auto widget : widgets)
             {
-                auto &widget = *pair.second;
-
-                dimensions.width = std::max(dimensions.width, widget.geometry.dest.w + widget.geometry.margin.x() + widget.geometry.padding.x());
-                dimensions.height += widget.geometry.dest.h + widget.geometry.margin.y() + widget.geometry.padding.y();
+                dimensions.width = std::max(dimensions.width, widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x());
+                dimensions.height += widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y();
             }
             return dimensions;
         }
         Dimensions query_content_horizontal() const noexcept
         {
             Dimensions dimensions;
-            for (auto pair : widgets)
+            for (auto widget : widgets)
             {
-                auto &widget = *pair.second;
-
-                dimensions.width += widget.geometry.dest.w + widget.geometry.margin.x() + widget.geometry.padding.x();
-                dimensions.height = std::max(dimensions.height, widget.geometry.dest.h + widget.geometry.margin.y() + widget.geometry.padding.y());
+                dimensions.width += widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x();
+                dimensions.height = std::max(dimensions.height, widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y());
             }
             return dimensions;
         }
@@ -196,7 +195,13 @@ namespace PROJECT_NAMESPACE
         template <typename T>
         T &get(const std::string &uid)
         {
-            return *dynamic_cast<T *>(widgets[uid]);
+            auto it = std::find_if(widgets.begin(), widgets.end(), [&uid](const auto &obj)
+                                   { return obj->uid == uid; });
+
+            if (it == widgets.end())
+                throw std::runtime_error("Widget not found '" + uid + "'");
+
+            return *dynamic_cast<T *>(*it);
         }
         template <typename T>
         T &operator[](const std::string &uid)
@@ -215,12 +220,12 @@ namespace PROJECT_NAMESPACE
                 auto &pwidgets = widget.parent->widgets;
                 pwidgets.erase(std::find_if(
                     pwidgets.begin(), pwidgets.end(),
-                    [this, &widget, &uid](const auto &pair)
+                    [this, &widget, &uid](const auto &obj)
                     {
-                        if (&widget == pair.second)
+                        if (&widget == obj)
                         {
                             widget.parent = this;
-                            this->widgets[uid] = &widget;
+                            this->widgets.emplace_back(&widget);
 
                             Debug("Moved object " << widget);
 
@@ -232,7 +237,7 @@ namespace PROJECT_NAMESPACE
             else
             {
                 widget.parent = this;
-                this->widgets[uid] = &widget;
+                this->widgets.emplace_back(&widget);
 
                 Debug("Orphan object moved " << widget);
             }
@@ -257,10 +262,11 @@ namespace PROJECT_NAMESPACE
         horizontal,
         vertical
     };
-    NLOHMANN_JSON_SERIALIZE_ENUM(Direction, {
-                                                {Direction::horizontal, "horizontal"},
-                                                {Direction::vertical, "vertical"},
-                                            })
+    NLOHMANN_JSON_SERIALIZE_ENUM(Direction,
+                                 {
+                                     {Direction::horizontal, "horizontal"},
+                                     {Direction::vertical, "vertical"},
+                                 })
 
     enum HorizontalAlign
     {
@@ -268,11 +274,12 @@ namespace PROJECT_NAMESPACE
         center,
         right
     };
-    NLOHMANN_JSON_SERIALIZE_ENUM(HorizontalAlign, {
-                                                      {HorizontalAlign::left, "left"},
-                                                      {HorizontalAlign::center, "center"},
-                                                      {HorizontalAlign::right, "right"},
-                                                  })
+    NLOHMANN_JSON_SERIALIZE_ENUM(HorizontalAlign,
+                                 {
+                                     {HorizontalAlign::left, "left"},
+                                     {HorizontalAlign::center, "center"},
+                                     {HorizontalAlign::right, "right"},
+                                 })
 
     enum JustifyContent
     {
@@ -280,11 +287,12 @@ namespace PROJECT_NAMESPACE
         between,
         around
     };
-    NLOHMANN_JSON_SERIALIZE_ENUM(JustifyContent, {
-                                                     {JustifyContent::none, "none"},
-                                                     {JustifyContent::between, "between"},
-                                                     {JustifyContent::around, "around"},
-                                                 })
+    NLOHMANN_JSON_SERIALIZE_ENUM(JustifyContent,
+                                 {
+                                     {JustifyContent::none, "none"},
+                                     {JustifyContent::between, "between"},
+                                     {JustifyContent::around, "around"},
+                                 })
 
     enum VerticalAlign
     {
@@ -292,25 +300,27 @@ namespace PROJECT_NAMESPACE
         middle,
         bottom
     };
-    NLOHMANN_JSON_SERIALIZE_ENUM(VerticalAlign, {
-                                                    {VerticalAlign::top, "top"},
-                                                    {VerticalAlign::middle, "middle"},
-                                                    {VerticalAlign::bottom, "bottom"},
-                                                })
+    NLOHMANN_JSON_SERIALIZE_ENUM(VerticalAlign,
+                                 {
+                                     {VerticalAlign::top, "top"},
+                                     {VerticalAlign::middle, "middle"},
+                                     {VerticalAlign::bottom, "bottom"},
+                                 })
 
     enum Layout
     {
         normal,
         fixed
     };
-    NLOHMANN_JSON_SERIALIZE_ENUM(Layout, {
-                                             {Layout::normal, "normal"},
-                                             {Layout::fixed, "fixed"},
-                                         })
+    NLOHMANN_JSON_SERIALIZE_ENUM(Layout,
+                                 {
+                                     {Layout::normal, "normal"},
+                                     {Layout::fixed, "fixed"},
+                                 })
 
     class Row;
     class Column;
-    class Flex : public WidgetManager, public Object<Flex>
+    class Flex : public WidgetManager
     {
     protected:
         void posWidgetHorizontal(int &lx, int &ly, int &currentWidth, Widget &widget, const int spaceBetween, const int spaceAround);
@@ -337,7 +347,7 @@ namespace PROJECT_NAMESPACE
         friend void from_json(const json &j, Flex &p);
     };
 
-    class Column : public Flex, public Object<Column>
+    class Column : public Flex
     {
     public:
         Column(Window &window);
@@ -350,7 +360,7 @@ namespace PROJECT_NAMESPACE
         friend void from_json(const json &j, Column &col);
     };
 
-    class Row : public Flex, public Object<Row>
+    class Row : public Flex
     {
     public:
         Row(Window &window);
@@ -363,7 +373,7 @@ namespace PROJECT_NAMESPACE
         friend void from_json(const json &j, Row &row);
     };
 
-    class Label : public Widget, public Object<Label>
+    class Label : public Widget
     {
     private:
         SDL_Texture *textTexture = nullptr;
@@ -377,6 +387,7 @@ namespace PROJECT_NAMESPACE
         ~Label();
 
         std::string text;
+        SDL_Texture *texture = nullptr;
 
         void render() override;
         void update() override;
@@ -385,19 +396,22 @@ namespace PROJECT_NAMESPACE
         friend void to_json(json &j, const Label &p)
         {
             j["type"] = demangle(typeid(Label).name());
+
+            j["uid"] = p.uid;
             j["text"] = p.text;
             j["geometry"] = p.geometry;
             j["scheme"] = p.scheme;
         }
         friend void from_json(const json &j, Label &p)
         {
+            SETATTR_IF_JSON_CONTAINS(j, p, uid);
             SETATTR_IF_JSON_CONTAINS(j, p, text);
             SETATTR_IF_JSON_CONTAINS(j, p, geometry);
             SETATTR_IF_JSON_CONTAINS(j, p, scheme);
         }
     };
 
-    class Bitmap : public ColorGrid, public Widget, public Object<Bitmap>
+    class Bitmap : public ColorGrid, public Widget
     {
     private:
         SDL_Texture *tex = nullptr;
@@ -423,13 +437,13 @@ namespace PROJECT_NAMESPACE
     };
 
     template <typename T>
-    static bool emplace(json &j, const std::pair<std::string, Widget *> &widget)
+    static bool emplace(json &j, const Widget *widget)
     {
-        T *ptr = dynamic_cast<T *>(widget.second);
+        const T *ptr = dynamic_cast<const T *>(widget);
         if (ptr)
         {
-            Debug("Saving " << widget.first << " as " << demangle(typeid(T).name()));
-            j[widget.first] = *ptr;
+            Debug("Saving " << *widget << " as " << demangle(typeid(T).name()));
+            j.emplace_back(*ptr);
         }
 
         return ptr;
@@ -449,7 +463,7 @@ namespace PROJECT_NAMESPACE
         return false;
     }
 
-    void to_json(json &j, const std::map<std::string, Widget *> &p);
+    void to_json(json &j, const std::vector<Widget *> &p);
     void from_json(const json &j, WidgetManager *man);
 }
 

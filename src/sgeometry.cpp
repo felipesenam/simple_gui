@@ -1,6 +1,6 @@
 #include "sgeometry.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     void Geometry::normalize()
     {

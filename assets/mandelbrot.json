@@ -27,99 +27,109 @@
                         "verticalAlign": "middle"
                     },
                     "type": "sgui::Flex",
-                    "widgets": {
-                        "content": {
+                    "widgets": [
+                        {
                             "type": "sgui::Row",
-                            "widgets": {
-                                "left_col": {
+                            "widgets": [
+                                {
                                     "type": "sgui::Column",
-                                    "widgets": {
-                                        "bitmap": {
+                                    "widgets": [
+                                        {
+                                            "uid": "bitmap",
                                             "width": 512,
                                             "height": 512,
                                             "type": "sgui::Bitmap"
                                         }
-                                    }
+                                    ]
                                 },
-                                "right_col": {
+                                {
                                     "type": "sgui::Column",
-                                    "widgets": {
-                                        "controls_row": {
+                                    "widgets": [
+                                        {
                                             "type": "sgui::Row",
-                                            "widgets": {
-                                                "controls_col": {
+                                            "widgets": [
+                                                {
                                                     "type": "sgui::Column",
-                                                    "widgets": {
-                                                        "control_row1": {
+                                                    "widgets": [
+                                                        {
                                                             "type": "sgui::Row",
-                                                            "widgets": {
-                                                                "up": {
+                                                            "widgets": [
+                                                                {
+                                                                    "uid": "up",
                                                                     "text": "UP",
                                                                     "type": "sgui::Label"
                                                                 }
-                                                            }
+                                                            ]
                                                         },
-                                                        "control_row2": {
+                                                        {
                                                             "type": "sgui::Row",
-                                                            "widgets": {
-                                                                "left": {
+                                                            "widgets": [
+                                                                {
+                                                                    "uid": "left",
                                                                     "text": "LEFT",
                                                                     "type": "sgui::Label"
                                                                 },
-                                                                "down": {
+                                                                {
+                                                                    "uid": "down",
                                                                     "text": "DOWN",
                                                                     "type": "sgui::Label"
                                                                 },
-                                                                "right": {
+                                                                {
+                                                                    "uid": "right",
                                                                     "text": "RIGHT",
                                                                     "type": "sgui::Label"
                                                                 }
-                                                            }
+                                                            ]
                                                         }
-                                                    }
+                                                    ]
                                                 }
-                                            }
+                                            ]
                                         },
-                                        "values_row": {
+                                        {
                                             "type": "sgui::Row",
-                                            "widgets": {
-                                                "values_col": {
+                                            "widgets": [
+                                                {
                                                     "type": "sgui::Column",
-                                                    "widgets": {
-                                                        "maxRbox": {
+                                                    "widgets": [
+                                                        {
+                                                            "uid": "maxRbox",
                                                             "text": "0.800000",
                                                             "type": "sgui::Label"
                                                         },
-                                                        "minIbox": {
+                                                        {
+                                                            "uid": "minIbox",
                                                             "text": "-1.400000",
                                                             "type": "sgui::Label"
                                                         },
-                                                        "minRbox": {
+                                                        {
+                                                            "uid": "minRbox",
                                                             "text": "-2.000000",
                                                             "type": "sgui::Label"
                                                         }
-                                                    }
+                                                    ]
                                                 }
-                                            }
+                                            ]
                                         },
-                                        "zoom_control_row": {
+                                        {
                                             "type": "sgui::Row",
-                                            "widgets": {
-                                                "zoomIn": {
+                                            "widgets": [
+                                                {
+                                                    "uid": "zoomIn",
                                                     "text": "IN",
                                                     "type": "sgui::Label"
                                                 },
-                                                "zoomOut": {
+                                                {
+                                                    "uid": "zoomOut",
                                                     "text": "OUT",
                                                     "type": "sgui::Label"
                                                 }
-                                            }
+                                            ]
                                         }
-                                    }
+                                    ]
                                 }
-                            }
+                            ]
                         }
-                    }
+                    ]
                 }
             }
         }

@@ -1,6 +1,6 @@
 #include "sapplication.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     Application::Application()
     {

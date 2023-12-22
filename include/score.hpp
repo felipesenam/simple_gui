@@ -22,8 +22,6 @@ using json = nlohmann::json;
 #include "sconsole.hpp"
 #include "sobject.hpp"
 
-#define PROJECT_NAMESPACE sgui
-
 #define RGB(x) x.r, x.g, x.b
 #define RGBA(x) x.r, x.g, x.b, x.a
 

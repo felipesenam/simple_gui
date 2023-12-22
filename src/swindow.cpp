@@ -4,7 +4,7 @@
 #include "sfont.hpp"
 #include "scolors.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     WindowManager::WindowManager()
     {
@@ -80,7 +80,7 @@ namespace PROJECT_NAMESPACE
     }
 }
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     Window::Window(const WindowConfig &config) : config(config)
     {
@@ -125,14 +125,15 @@ namespace PROJECT_NAMESPACE
             config.options.get());
         renderer.create(*this, config.renderer);
 
-        container->events["windowSizeChanged"] = [&]()
+        container->events["windowSizeChanged"] = [this](Widget &widget)
         {
             auto size = this->size();
-            container->geometry.abs.w = size.first;
-            container->geometry.abs.h = size.second;
-            container->geometry.normalize();
+
+            widget.geometry.abs.w = size.first;
+            widget.geometry.abs.h = size.second;
+            widget.geometry.normalize();
         };
-        container->events["windowSizeChanged"].invoke();
+        container->events["windowSizeChanged"].invoke(*container);
 
         Debug("Window created: " << this->uid << " (" << config.width << "x" << config.height << ")");
     }
@@ -188,7 +189,7 @@ namespace PROJECT_NAMESPACE
     }
 }
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     Renderer::Renderer()
     {

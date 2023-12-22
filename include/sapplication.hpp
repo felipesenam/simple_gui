@@ -6,7 +6,7 @@
 
 using json = nlohmann::json;
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     class ApplicationConfig
     {

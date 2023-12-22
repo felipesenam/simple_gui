@@ -1,6 +1,6 @@
 #include "scolor.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     Color::Color() : SDL_Color{0, 0, 0, 255}
     {

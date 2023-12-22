@@ -7,34 +7,27 @@
 #include "swidgets.hpp"
 
 #define MODIFIER 7
-#define THREADS 8
+#define THREADS 16
 
-using namespace PROJECT_NAMESPACE;
-using namespace PROJECT_NAMESPACE::Colors;
+using namespace sgui;
+using namespace sgui::Colors;
 
 using ld = long double;
 
-ld mapToReal(int x, int w, ld minR, ld maxR)
-{
-    return x * ((maxR - minR) / w) + minR;
-}
-ld mapToImaginary(int y, int h, ld minI, ld maxI)
-{
-    return y * ((maxI - minI) / h) + minI;
-}
 int findMandelbrot(ld cr, ld ci, int maxN)
 {
     int i = 0;
-    ld zr = 0., zi = 0.;
+    ld zr = 0., zi = 0., tmp;
     while (i < maxN && zr * zr + zi * zi < 4.)
     {
-        ld tmp = zr * zr - zi * zi + cr;
+        tmp = zr * zr - zi * zi + cr;
         zi = 2. * zr * zi + ci;
         zr = tmp;
         i++;
     }
     return i;
 }
+
 void calc(Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int maxN, int row, int column, size_t nElements)
 {
     size_t elements = 0;
@@ -42,12 +35,12 @@ void calc(Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int maxN, int row,
     {
         for (size_t i = elements == 0 ? column : 0; i < bitmap.width(); ++i)
         {
-            ld cr = mapToReal(i, bitmap.width(), minR, maxR);
-            ld ci = mapToImaginary(j, bitmap.height(), minI, maxI);
-            int n = findMandelbrot(cr, ci, maxN);
+            const ld cr = i * ((maxR - minR) / bitmap.width()) + minR;
+            const ld ci = j * ((maxI - minI) / bitmap.height()) + minI;
+            const int n = findMandelbrot(cr, ci, maxN);
 
-            int value = (n * MODIFIER) % 360;
-            bitmap.at(i, j).hsl(value, n == 1 ? 0 : 1, n == 360 ? 0 : .5);
+            int value = (int)((sin(n) + cos(n)) * 361) % 361;
+            bitmap.at(i, j).hsl(value, n == 1 ? 0 : 1, n == 255 ? 0 : .5);
 
             elements++;
             if (elements == nElements)
@@ -56,12 +49,12 @@ void calc(Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int maxN, int row,
     }
 }
 
-void updateGrid(sgui::Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int maxN = 360)
+void updateGrid(sgui::Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int maxN = 255)
 {
     std::vector<std::thread *> threads;
     const size_t tElements = bitmap.width() * bitmap.height();
     const size_t nElements = ceil(tElements / ld(THREADS));
-    for (size_t i = 0, j = 0; i < tElements; i += nElements, ++j)
+    for (size_t i = 0; i < tElements; i += nElements)
     {
         threads.emplace_back(new std::thread(calc,
                                              std::ref(bitmap),
@@ -99,23 +92,11 @@ int mandelbrot()
     Application app;
     from_json(data, app);
 
-    auto &window = app.windows.get("main");
-    auto &container = *window.container;
+    auto &bitmap = Object<Widget>::get<Bitmap>("bitmap");
 
-    auto &content = container.get<Row>("content");
-
-    auto &left_col = content.get<Column>("left_col");
-    auto &right_col = content.get<Column>("right_col");
-
-    auto &bitmap = left_col.get<Bitmap>("bitmap");
-
-    auto &values_col = right_col
-                           .get<Row>("values_row")
-                           .get<Column>("values_col");
-
-    auto &minRbox = values_col.get<Label>("minRbox");
-    auto &maxRbox = values_col.get<Label>("maxRbox");
-    auto &minIbox = values_col.get<Label>("minIbox");
+    auto &minRbox = Object<Widget>::get<Label>("minRbox");
+    auto &maxRbox = Object<Widget>::get<Label>("maxRbox");
+    auto &minIbox = Object<Widget>::get<Label>("minIbox");
 
     /***** Setup values *****/
     const size_t width = bitmap.width();
@@ -130,12 +111,8 @@ int mandelbrot()
     updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     /************************/
 
-    auto &zoom_control_row = right_col.get<Row>("zoom_control_row");
-
-    auto &zoomIn = zoom_control_row.get<Label>("zoomIn");
-    auto &zoomOut = zoom_control_row.get<Label>("zoomOut");
-
-    zoomIn.events["clicked"] = [&]()
+    auto &zoomIn = Object<Widget>::get<Label>("zoomIn");
+    zoomIn.events["clicked"] = [&](Widget &)
     {
         ld deltaR = maxR - minR;
         if (deltaR < 0.0000000000001)
@@ -153,7 +130,8 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    zoomOut.events["clicked"] = [&]()
+    auto &zoomOut = Object<Widget>::get<Label>("zoomOut");
+    zoomOut.events["clicked"] = [&](Widget &)
     {
         ld deltaR = maxR - minR;
         if (deltaR > 2)
@@ -168,20 +146,8 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    auto &controls_col = right_col
-                             .get<Row>("controls_row")
-                             .get<Column>("controls_col");
-
-    auto &control_row1 = controls_col.get<Row>("control_row1");
-    auto &control_row2 = controls_col.get<Row>("control_row2");
-
-    auto &up = control_row1.get<Label>("up");
-
-    auto &left = control_row2.get<Label>("left");
-    auto &down = control_row2.get<Label>("down");
-    auto &right = control_row2.get<Label>("right");
-
-    up.events["clicked"] = [&]()
+    auto &up = Object<Widget>::get<Label>("up");
+    up.events["clicked"] = [&](Widget &)
     {
         ld value = ((maxI - minI) / 10) / 2;
         minI -= value;
@@ -191,7 +157,8 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    down.events["clicked"] = [&]()
+    auto &down = Object<Widget>::get<Label>("down");
+    down.events["clicked"] = [&](Widget &)
     {
         ld value = ((maxI - minI) / 10) / 2;
         minI += value;
@@ -201,7 +168,8 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    left.events["clicked"] = [&]()
+    auto &left = Object<Widget>::get<Label>("left");
+    left.events["clicked"] = [&](Widget &)
     {
         ld value = ((maxR - minR) / 10) / 2;
         minR -= value;
@@ -211,7 +179,8 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    right.events["clicked"] = [&]()
+    auto &right = Object<Widget>::get<Label>("right");
+    right.events["clicked"] = [&](Widget &)
     {
         ld value = ((maxR - minR) / 10) / 2;
         minR += value;

@@ -7,7 +7,7 @@
 #include "scolors.hpp"
 #include "skeyboard.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     class Flex;
     class Font;
@@ -187,6 +187,9 @@ namespace PROJECT_NAMESPACE
         bool shown = true;
 
         friend Renderer;
+        friend Widget;
+
+        std::unordered_map<std::string, Widget *> widgets;
 
     public:
         Window(const WindowConfig &config = WindowConfig());
@@ -198,6 +201,18 @@ namespace PROJECT_NAMESPACE
         KeyboardController keyboard;
 
         Flex *container = nullptr;
+
+        template <typename T>
+        T &get(const std::string &uid)
+        {
+            auto *widget = dynamic_cast<T *>(this->widgets[uid]);
+            if (!widget)
+            {
+                throw std::runtime_error("Widget with uid '" + uid + "' not found.");
+            }
+
+            return *widget;
+        }
 
         bool isActive() const;
         bool isShown() const;
@@ -214,7 +229,7 @@ namespace PROJECT_NAMESPACE
             return _size;
         }
 
-                void show();
+        void show();
         void hide();
         void destroy();
 

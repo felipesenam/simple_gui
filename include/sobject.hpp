@@ -4,7 +4,7 @@
 #include "score.hpp"
 #include "type.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     template <typename T>
     class Object
@@ -71,16 +71,17 @@ namespace PROJECT_NAMESPACE
             return uid;
         }
 
-        // static T &get(const std::string &uid)
-        // {
-        //     auto it = std::find_if(objects.begin(), objects.end(), [&uid](const Object<T> *obj)
-        //                            { return obj->uid == uid; });
+        template <typename _T>
+        static _T &get(const std::string &uid)
+        {
+            auto it = std::find_if(objects.begin(), objects.end(), [&uid](const Object<T> *obj)
+                                   { return obj->uid == uid; });
 
-        //     if (it == objects.end())
-        //         throw std::runtime_error("Object not found '" + uid + "'");
+            if (it == objects.end())
+                throw std::runtime_error("Object not found '" + uid + "'");
 
-        //     return *dynamic_cast<T *>(*it);
-        // }
+            return *dynamic_cast<_T *>(*it);
+        }
 
         friend std::ostream &operator<<(std::ostream &os, const Object<T> &obj)
         {

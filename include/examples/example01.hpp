@@ -14,16 +14,14 @@ int example()
     Application app;
     from_json(data, app);
 
-    auto &window = app.windows.get("main");
-    auto &main_container = *window.container;
-
-    auto &label = main_container
-                      .get<Row>("row")
-                      .get<Column>("col")
-                      .get<Label>("label");
-
-    label.events["clicked"] = [&label]()
+    Object<Widget>::get<Label>("label1").events["clicked"] =
+        Object<Widget>::get<Label>("label2").events["clicked"] =
+            Object<Widget>::get<Label>("label3").events["clicked"] =
+                Object<Widget>::get<Label>("label4").events["clicked"] =
+                    [](Widget &widget)
     {
+        auto &label = static_cast<Label &>(widget);
+
         Debug("Clicked!");
         label.text = "Clicked!";
     };

@@ -3,7 +3,7 @@
 #include "swindow.hpp"
 #include "sscheme.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     Bitmap::Bitmap(Window &window) : Widget(window)
     {
@@ -79,12 +79,18 @@ namespace PROJECT_NAMESPACE
     }
     void to_json(json &j, const Bitmap &bitmap)
     {
-        j["type"] = demangle(typeid(Bitmap).name());
+        j["uid"] = bitmap.uid;
+        j["scheme"] = bitmap.scheme;
         j["width"] = bitmap.w;
         j["height"] = bitmap.h;
+
+        j["type"] = demangle(typeid(Bitmap).name());
     }
     void from_json(const json &j, Bitmap &bitmap)
     {
+        SETATTR_IF_JSON_CONTAINS(j, bitmap, uid);
+        SETATTR_IF_JSON_CONTAINS(j, bitmap, scheme);
+
         bitmap.alloc(j["width"], j["height"]);
     }
 
@@ -216,10 +222,8 @@ namespace PROJECT_NAMESPACE
             const int spaceBetween = widgets.size() > 1 ? (geometry.dest.h - dimensions.height) / (widgets.size() - 1) : 0;
 
             int currentHeight = 0;
-            for (auto &pair : widgets)
+            for (auto widget : widgets)
             {
-                auto widget = pair.second;
-
                 posWidgetVertical(lx, ly, currentHeight, *widget, spaceBetween, spaceAround);
 
                 widget->update();
@@ -235,10 +239,8 @@ namespace PROJECT_NAMESPACE
             const int spaceBetween = widgets.size() > 1 ? (geometry.dest.w - dimensions.width) / (widgets.size() - 1) : 0;
 
             int currentWidth = 0;
-            for (auto &pair : widgets)
+            for (auto widget : widgets)
             {
-                auto widget = pair.second;
-
                 posWidgetHorizontal(lx, ly, currentWidth, *widget, spaceBetween, spaceAround);
 
                 widget->update();
@@ -251,13 +253,19 @@ namespace PROJECT_NAMESPACE
     }
     void to_json(json &j, const Flex &p)
     {
-        j["type"] = demangle(typeid(Flex).name());
+        j["uid"] = p.uid;
         j["style"] = p.style;
+        j["scheme"] = p.scheme;
         j["widgets"] = p.widgets;
+
+        j["type"] = demangle(typeid(Flex).name());
     }
     void from_json(const json &j, Flex &p)
     {
+        SETATTR_IF_JSON_CONTAINS(j, p, uid);
         SETATTR_IF_JSON_CONTAINS(j, p, style);
+        SETATTR_IF_JSON_CONTAINS(j, p, scheme);
+
         from_json(j["widgets"], &p);
     }
 
@@ -270,8 +278,8 @@ namespace PROJECT_NAMESPACE
 
     void Column::render()
     {
-        for (auto pair : widgets)
-            pair.second->render();
+        for (auto widget : widgets)
+            widget->render();
 
         this->dimensions = query_content_vertical();
         this->geometry.dest.w = dimensions.width + this->geometry.padding.x();
@@ -279,12 +287,18 @@ namespace PROJECT_NAMESPACE
     }
     void to_json(json &j, const Column &col)
     {
-        j["type"] = demangle(typeid(Column).name());
+        j["uid"] = col.uid;
         j["size"] = col.size;
+        j["scheme"] = col.scheme;
         j["widgets"] = col.widgets;
+
+        j["type"] = demangle(typeid(Column).name());
     }
     void from_json(const json &j, Column &col)
     {
+        SETATTR_IF_JSON_CONTAINS(j, col, uid);
+        SETATTR_IF_JSON_CONTAINS(j, col, scheme);
+
         from_json(j["widgets"], &col);
     }
 
@@ -297,10 +311,8 @@ namespace PROJECT_NAMESPACE
 
     void Row::render()
     {
-        for (auto pair : widgets)
+        for (auto widget : widgets)
         {
-            auto widget = pair.second;
-
             widget->render();
 
             Column *column = dynamic_cast<Column *>(widget);
@@ -316,12 +328,18 @@ namespace PROJECT_NAMESPACE
     }
     void to_json(json &j, const Row &row)
     {
-        j["type"] = demangle(typeid(Row).name());
+        j["uid"] = row.uid;
         j["size"] = row.size;
+        j["scheme"] = row.scheme;
         j["widgets"] = row.widgets;
+
+        j["type"] = demangle(typeid(Row).name());
     }
     void from_json(const json &j, Row &row)
     {
+        SETATTR_IF_JSON_CONTAINS(j, row, uid);
+        SETATTR_IF_JSON_CONTAINS(j, row, scheme);
+
         from_json(j["widgets"], &row);
     }
 
@@ -370,6 +388,12 @@ namespace PROJECT_NAMESPACE
 
     void Label::draw()
     {
+        if (this->texture != nullptr)
+        {
+            Rect destR = this->geometry.dest;
+            SDL_QueryTexture(this->texture, NULL, NULL, &destR.w, &destR.h);
+            this->window.renderer.drawTexture(this->texture, NULL, &this->geometry.dest);
+        }
         this->window.renderer.drawTexture(textTexture, &this->geometry.src, &this->geometry.dest);
     }
 
@@ -380,44 +404,32 @@ namespace PROJECT_NAMESPACE
 
     WidgetManager::~WidgetManager()
     {
-        for (auto pair : widgets)
-            delete pair.second;
+        for (auto widget : widgets)
+            delete widget;
     }
 
     void WidgetManager::handleEvent(const SDL_Event &e)
     {
-        for (auto pair : widgets)
+        for (auto widget : widgets)
         {
-            auto widget = pair.second;
-
             widget->handleGenericEvents(e);
             widget->handleEvent(e);
         }
     }
     void WidgetManager::render()
     {
-        for (auto pair : widgets)
-        {
-            auto widget = pair.second;
-
+        for (auto widget : widgets)
             widget->render();
-        }
     }
     void WidgetManager::update()
     {
-        for (auto pair : widgets)
-        {
-            auto widget = pair.second;
-
+        for (auto widget : widgets)
             widget->update();
-        }
     }
     void WidgetManager::draw()
     {
-        for (auto pair : widgets)
+        for (auto widget : widgets)
         {
-            auto widget = pair.second;
-
             widget->drawCommonElements();
             widget->draw();
         }
@@ -426,8 +438,9 @@ namespace PROJECT_NAMESPACE
     template <>
     const int Object<Widget>::err = std::atexit(Object<Widget>::atexit_handler);
 
-    Widget::Widget(Window &window) : window(window), geometry(*this), font(window.config.defaultFontPath, window.config.defaultFontSize)
+    Widget::Widget(Window &window) : window(window), geometry(*this), font(window.config.defaultFontPath, window.config.defaultFontSize), events(*this)
     {
+        window.widgets[this->uid] = this;
         // if (window.container && window.container != this)
         // {
         //     window.container->add(*this);
@@ -532,9 +545,9 @@ namespace PROJECT_NAMESPACE
     {
     }
 
-    void to_json(json &j, const std::map<std::string, Widget *> &p)
+    void to_json(json &j, const std::vector<Widget *> &p)
     {
-        for (auto &widget : p)
+        for (auto widget : p)
         {
             if (emplace<Label>(j, widget))
                 continue;

@@ -3,7 +3,7 @@
 
 #include "score.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     class Color : public SDL_Color
     {
