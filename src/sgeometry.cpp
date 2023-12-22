@@ -1,7 +1,6 @@
 #include "sgeometry.hpp"
-#include "swidget.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     void Geometry::normalize()
     {

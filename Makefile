@@ -17,11 +17,14 @@ LINK_FLAGS:=$(LINK_FLAGS) -lSDL2main -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 endif
 endif
 
-ifeq ($(filter debug,$(MAKECMDGOALS)),debug)
-TARGET_OBJFOLDER := $(TARGET_OBJFOLDER)/debug
-DEFINES := $(DEFINES) $(DEBUG_DEFINES)
+ifdef DEBUG
+TARGET_OBJFOLDER:=$(TARGET_OBJFOLDER)/debug
+DEFINES:=$(DEFINES) $(DEBUG_DEFINES)
+COMPILATION_FLAGS:=$(COMPILATION_FLAGS) $(DEBUG_COMPILATION_FLAGS)
+LINK_FLAGS:=$(LINK_FLAGS) $(DEBUG_LINK_FLAGS)
+FILE:=debug.out
 else
-TARGET_OBJFOLDER := $(TARGET_OBJFOLDER)/release
+TARGET_OBJFOLDER:=$(TARGET_OBJFOLDER)/release
 endif
 
 SRCFILES:=$(wildcard ./$(SRCFOLDER)/*$(SOURCE_EXT)) $(wildcard ./$(SRCFOLDER)/**/*$(SOURCE_EXT))
@@ -37,7 +40,13 @@ else
 OBJCOUNT=$$(($(words $(OBJECTS))+1))
 endif
 
-debug: all
+
+all: objdir $(FILE)
+ifeq ($(OS),Windows_NT)
+	@ echo [100%%] Built target $(FILE)
+else
+	@ printf "[100%%] Built target %s\n" "$(FILE)"
+endif
 
 run: all
 ifeq ($(OS),Windows_NT)
@@ -48,14 +57,6 @@ else
 	@ printf "[100%%] Built target %s\n\n" "$(FILE)"
 	@ ./$(FILE) || echo Process returned $$?
 endif
-
-all: objdir $(FILE)
-ifeq ($(OS),Windows_NT)
-	@ echo [100%%] Built target $(FILE)
-else
-	@ printf "[100%%] Built target %s\n" "$(FILE)"
-endif
-
 
 $(FILE): $(OBJECTS)
 ifeq ($(OS),Windows_NT)

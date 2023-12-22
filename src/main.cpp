@@ -1,7 +1,7 @@
 
 #include "examples/mandelbrot.hpp"
 
-int main(/*int argc, char const *argv[]*/)
+int main()
 {
     return mandelbrot();
 }

@@ -4,14 +4,12 @@
 #include "score.hpp"
 #include "type.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     template <typename T>
     class Object
     {
     private:
-        Object(const Object &) = delete;
-
         static size_t objectCounter;
         static size_t objectCount;
         static std::string objectType;
@@ -30,44 +28,64 @@ namespace PROJECT_NAMESPACE
             }
         }
 
+        std::string getName() const noexcept
+        {
+            return type(*this) + "{id=" + std::to_string(id) + "}";
+        }
+
     protected:
         const size_t id;
 
     public:
         Object() : id(objectCounter++)
         {
-            if (objectType.empty())
-                objectType = type(self);
-
-            Debug("New object " << self.getName());
-            objects.emplace_back(this);
-            objectCounter++;
+            this->uid = std::to_string(id);
+            this->init();
         }
         virtual ~Object()
         {
-            Debug("Destroying " << self.getName());
+            Debug("Destroying " << *this);
             objectCounter--;
+        }
+
+        std::string uid;
+
+        void init()
+        {
+            if (objectType.empty())
+                objectType = type(*this);
+
+            objects.emplace_back(this);
+            objectCounter++;
+
+            Debug("New object " << *this);
         }
 
         size_t getId() const noexcept
         {
             return id;
         }
-        std::string getName() const noexcept
+
+        std::string getUId() const noexcept
         {
-            return type(self) + "{id=" + std::to_string(id) + "}";
+            return uid;
         }
-        static T &get(size_t id, LINE_INFO)
+
+        template <typename _T>
+        static _T &get(const std::string &uid)
         {
-            try
-            {
-                return *dynamic_cast<T *>(objects.at(id));
-            }
-            catch (const std::out_of_range &e)
-            {
-                PRINT_TRACE;
-                __throw_exception_again;
-            }
+            auto it = std::find_if(objects.begin(), objects.end(), [&uid](const Object<T> *obj)
+                                   { return obj->uid == uid; });
+
+            if (it == objects.end())
+                throw std::runtime_error("Object not found '" + uid + "'");
+
+            return *dynamic_cast<_T *>(*it);
+        }
+
+        friend std::ostream &operator<<(std::ostream &os, const Object<T> &obj)
+        {
+            return os << objectType << " " << obj.uid;
         }
     };
 

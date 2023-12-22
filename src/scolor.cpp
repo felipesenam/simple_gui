@@ -1,6 +1,6 @@
 #include "scolor.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     Color::Color() : SDL_Color{0, 0, 0, 255}
     {
@@ -12,13 +12,13 @@ namespace PROJECT_NAMESPACE
 
     Color::Color(unsigned hex, Uint8 a)
     {
-        self.hex(hex);
-        self.a = a;
+        this->hex(hex);
+        this->a = a;
     }
 
     Color::Color(const Color &color)
     {
-        self = color;
+        *this = color;
     }
 
     Color &Color::hsl(float h, float s, float l, Uint8 a)
@@ -65,12 +65,12 @@ namespace PROJECT_NAMESPACE
             bt = X;
         }
 
-        self.r = (rt + m) * 255;
-        self.g = (gt + m) * 255;
-        self.b = (bt + m) * 255;
-        self.a = a;
+        this->r = (rt + m) * 255;
+        this->g = (gt + m) * 255;
+        this->b = (bt + m) * 255;
+        this->a = a;
 
-        return self;
+        return *this;
     }
 
     Color &Color::hsv(float h, float s, float v, Uint8 a)
@@ -117,41 +117,41 @@ namespace PROJECT_NAMESPACE
             bt = X;
         }
 
-        self.r = (rt + m) * 255;
-        self.g = (gt + m) * 255;
-        self.b = (bt + m) * 255;
-        self.a = a;
+        this->r = (rt + m) * 255;
+        this->g = (gt + m) * 255;
+        this->b = (bt + m) * 255;
+        this->a = a;
 
-        return self;
+        return *this;
     }
 
     Color &Color::rgb(float r, float g, float b, Uint8 a)
     {
-        self.r = r;
-        self.g = g;
-        self.b = b;
-        self.a = a;
+        this->r = r;
+        this->g = g;
+        this->b = b;
+        this->a = a;
 
-        return self;
+        return *this;
     }
 
     Color &Color::hex(unsigned hex)
     {
-        self.r = (hex >> 24) & 0xFF;
-        self.g = (hex >> 16) & 0xFF;
-        self.b = (hex >> 8) & 0xFF;
-        self.a = hex & 0xFF;
+        this->r = (hex >> 24) & 0xFF;
+        this->g = (hex >> 16) & 0xFF;
+        this->b = (hex >> 8) & 0xFF;
+        this->a = hex & 0xFF;
 
-        return self;
+        return *this;
     }
 
     Color &Color::operator=(unsigned hex)
     {
-        return self.hex(hex);
+        return this->hex(hex);
     }
 
     Color &Color::operator=(const Color &color)
     {
-        return self.rgb(RGBA(color));
+        return this->rgb(RGBA(color));
     }
 }

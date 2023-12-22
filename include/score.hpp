@@ -15,14 +15,12 @@
 #include <unordered_map>
 #include <vector>
 
+#include "nlohmann/json.hpp"
+
+using json = nlohmann::json;
+
 #include "sconsole.hpp"
 #include "sobject.hpp"
-
-#define PROJECT_NAMESPACE sgui
-
-#define PRINT_TRACE std::cerr << "From: " << __file << ":" << __line << std::endl
-#define LINE_INFO int __line = __LINE__, const char *__file = __FILE__
-#define self (*this)
 
 #define RGB(x) x.r, x.g, x.b
 #define RGBA(x) x.r, x.g, x.b, x.a
@@ -35,3 +33,7 @@
 #define SDL_PrintError(alert) \
     alert(SDL_GetError());    \
     SDL_ClearError();
+
+#define SETATTR_IF_JSON_CONTAINS(j, attr, key) \
+    if (j.contains(#key))                      \
+        j[#key].get_to(attr.key);

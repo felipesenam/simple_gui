@@ -1,9 +1,8 @@
 #include "sapplication.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
-
-    Application::Application(const ApplicationConfig &config) : config(config)
+    Application::Application()
     {
         if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
         {
@@ -22,8 +21,8 @@ namespace PROJECT_NAMESPACE
             SDL_PrintError(Error);
             exit(-1);
         }
-        windows.create("main", config.window);
     }
+
     Application::~Application()
     {
         Debug("Shutting down SDL subsystems...");
@@ -36,9 +35,12 @@ namespace PROJECT_NAMESPACE
     {
         m_running = false;
     }
+
     int Application::run()
     {
         m_running = true;
+
+        windows.init();
 
         Uint32 fStart, frameTime;
         const float frameDelay = 1000.0f / config.targetFPS;

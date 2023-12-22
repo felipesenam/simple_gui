@@ -3,20 +3,28 @@
 
 #include <fstream>
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     void ColorGrid::updateSurface()
     {
+        size_t i;
         unsigned char *pixels = (unsigned char *)surface->pixels;
         for (size_t y = 0; y < h; ++y)
         {
             for (size_t x = 0; x < w; ++x)
             {
-                // Pixels are stored in BGRA order, so we shift the values according to their position
-                pixels[4 * (y * surface->w + x) + 0] = data[y][x].b;
-                pixels[4 * (y * surface->w + x) + 1] = data[y][x].g;
-                pixels[4 * (y * surface->w + x) + 2] = data[y][x].r;
-                pixels[4 * (y * surface->w + x) + 3] = 255;
+                i = 4 * (y * surface->w + x);
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+                pixels[i + 0] = 255;
+                pixels[i + 1] = data[y][x].r;
+                pixels[i + 2] = data[y][x].g;
+                pixels[i + 3] = data[y][x].b;
+#else
+                pixels[i + 3] = 255;
+                pixels[i + 2] = data[y][x].r;
+                pixels[i + 1] = data[y][x].g;
+                pixels[i + 0] = data[y][x].b;
+#endif
             }
         }
     }

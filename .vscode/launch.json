@@ -5,7 +5,7 @@
             "name": "Debug Makefile",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/prog.out",
+            "program": "${workspaceFolder}/debug.out",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -13,8 +13,7 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerPath": "/usr/bin/gdb",
-            "preLaunchTask": "build"
+            "preLaunchTask": "build (debug)"
         }
     ],
-    
 }

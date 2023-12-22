@@ -1,0 +1,1381 @@
+{
+    "config": {
+        "targetFPS": 60
+    },
+    "windows": {
+        "windows": {
+            "main": {
+                "config": {
+                    "behavior": {
+                        "destroyOnClose": true
+                    },
+                    "defaultFontPath": "assets/fonts/segoeui.ttf",
+                    "defaultFontSize": 12,
+                    "height": 400,
+                    "options": {
+                        "isAlwaysOnTop": false,
+                        "isBorderless": false,
+                        "isFullscreen": false,
+                        "isFullscreenDesktop": false,
+                        "isHidden": false,
+                        "isMaximized": false,
+                        "isMinimized": false,
+                        "isResizable": false,
+                        "isShown": true,
+                        "skipsTaskbar": false
+                    },
+                    "renderer": {
+                        "blendMode": 1,
+                        "drawColor": [
+                            122,
+                            122,
+                            122,
+                            255
+                        ],
+                        "index": -1,
+                        "options": {
+                            "usesHardwareAcceleration": false,
+                            "usesVSync": true
+                        }
+                    },
+                    "title": "Window",
+                    "width": 600,
+                    "x": 805240832,
+                    "y": 805240832
+                },
+                "container": {
+                    "scheme": {
+                        "disabled": {
+                            "background": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ],
+                            "border": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ],
+                            "color": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ]
+                        },
+                        "focused": {
+                            "background": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ],
+                            "border": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ],
+                            "color": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ]
+                        },
+                        "hover": {
+                            "background": [
+                                0,
+                                0,
+                                0,
+                                0
+                            ],
+                            "border": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ],
+                            "color": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ]
+                        },
+                        "normal": {
+                            "background": [
+                                0,
+                                0,
+                                0,
+                                0
+                            ],
+                            "border": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ],
+                            "color": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ]
+                        },
+                        "pressed": {
+                            "background": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ],
+                            "border": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ],
+                            "color": [
+                                0,
+                                0,
+                                0,
+                                255
+                            ]
+                        }
+                    },
+                    "style": {
+                        "direction": "vertical",
+                        "horizontalAlign": "center",
+                        "justifyContent": "none",
+                        "verticalAlign": "middle"
+                    },
+                    "type": "sgui::Flex",
+                    "uid": "0",
+                    "widgets": [
+                        {
+                            "scheme": {
+                                "disabled": {
+                                    "background": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "border": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "color": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "focused": {
+                                    "background": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "border": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "color": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "hover": {
+                                    "background": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "border": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "color": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "normal": {
+                                    "background": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "border": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "color": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "pressed": {
+                                    "background": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "border": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "color": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                }
+                            },
+                            "size": 12,
+                            "type": "sgui::Row",
+                            "uid": "2",
+                            "widgets": [
+                                {
+                                    "scheme": {
+                                        "disabled": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "focused": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "hover": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "normal": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "pressed": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        }
+                                    },
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "uid": "4",
+                                    "widgets": [
+                                        {
+                                            "geometry": {
+                                                "abs": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                },
+                                                "anchor": "middle_center",
+                                                "behavior": 0,
+                                                "dest": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                },
+                                                "margin": {
+                                                    "bottom": 0,
+                                                    "left": 0,
+                                                    "right": 0,
+                                                    "top": 0
+                                                },
+                                                "padding": {
+                                                    "bottom": 0,
+                                                    "left": 0,
+                                                    "right": 0,
+                                                    "top": 0
+                                                },
+                                                "src": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                }
+                                            },
+                                            "scheme": {
+                                                "disabled": {
+                                                    "background": [
+                                                        191,
+                                                        191,
+                                                        191,
+                                                        255
+                                                    ],
+                                                    "border": [
+                                                        131,
+                                                        131,
+                                                        131,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        204,
+                                                        204,
+                                                        204,
+                                                        255
+                                                    ]
+                                                },
+                                                "focused": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "hover": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "normal": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "pressed": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                }
+                                            },
+                                            "text": "linha 1 coluna 1",
+                                            "type": "sgui::Label",
+                                            "uid": "label1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "scheme": {
+                                        "disabled": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "focused": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "hover": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "normal": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "pressed": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        }
+                                    },
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "uid": "8",
+                                    "widgets": [
+                                        {
+                                            "geometry": {
+                                                "abs": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                },
+                                                "anchor": "middle_center",
+                                                "behavior": 0,
+                                                "dest": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                },
+                                                "margin": {
+                                                    "bottom": 0,
+                                                    "left": 0,
+                                                    "right": 0,
+                                                    "top": 0
+                                                },
+                                                "padding": {
+                                                    "bottom": 0,
+                                                    "left": 0,
+                                                    "right": 0,
+                                                    "top": 0
+                                                },
+                                                "src": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                }
+                                            },
+                                            "scheme": {
+                                                "disabled": {
+                                                    "background": [
+                                                        191,
+                                                        191,
+                                                        191,
+                                                        255
+                                                    ],
+                                                    "border": [
+                                                        131,
+                                                        131,
+                                                        131,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        204,
+                                                        204,
+                                                        204,
+                                                        255
+                                                    ]
+                                                },
+                                                "focused": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "hover": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "normal": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "pressed": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                }
+                                            },
+                                            "text": "linha 1 coluna 2",
+                                            "type": "sgui::Label",
+                                            "uid": "label2"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "scheme": {
+                                "disabled": {
+                                    "background": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "border": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "color": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "focused": {
+                                    "background": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "border": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "color": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "hover": {
+                                    "background": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "border": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "color": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "normal": {
+                                    "background": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "border": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "color": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                },
+                                "pressed": {
+                                    "background": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "border": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ],
+                                    "color": [
+                                        0,
+                                        0,
+                                        0,
+                                        0
+                                    ]
+                                }
+                            },
+                            "size": 12,
+                            "type": "sgui::Row",
+                            "uid": "12",
+                            "widgets": [
+                                {
+                                    "scheme": {
+                                        "disabled": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "focused": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "hover": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "normal": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "pressed": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        }
+                                    },
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "uid": "14",
+                                    "widgets": [
+                                        {
+                                            "geometry": {
+                                                "abs": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                },
+                                                "anchor": "middle_center",
+                                                "behavior": 0,
+                                                "dest": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                },
+                                                "margin": {
+                                                    "bottom": 0,
+                                                    "left": 0,
+                                                    "right": 0,
+                                                    "top": 0
+                                                },
+                                                "padding": {
+                                                    "bottom": 0,
+                                                    "left": 0,
+                                                    "right": 0,
+                                                    "top": 0
+                                                },
+                                                "src": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                }
+                                            },
+                                            "scheme": {
+                                                "disabled": {
+                                                    "background": [
+                                                        191,
+                                                        191,
+                                                        191,
+                                                        255
+                                                    ],
+                                                    "border": [
+                                                        131,
+                                                        131,
+                                                        131,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        204,
+                                                        204,
+                                                        204,
+                                                        255
+                                                    ]
+                                                },
+                                                "focused": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "hover": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "normal": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "pressed": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                }
+                                            },
+                                            "text": "linha 2 coluna 1",
+                                            "type": "sgui::Label",
+                                            "uid": "label3"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "scheme": {
+                                        "disabled": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "focused": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "hover": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "normal": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        },
+                                        "pressed": {
+                                            "background": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "border": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ],
+                                            "color": [
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ]
+                                        }
+                                    },
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "uid": "18",
+                                    "widgets": [
+                                        {
+                                            "geometry": {
+                                                "abs": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                },
+                                                "anchor": "middle_center",
+                                                "behavior": 0,
+                                                "dest": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                },
+                                                "margin": {
+                                                    "bottom": 0,
+                                                    "left": 0,
+                                                    "right": 0,
+                                                    "top": 0
+                                                },
+                                                "padding": {
+                                                    "bottom": 0,
+                                                    "left": 0,
+                                                    "right": 0,
+                                                    "top": 0
+                                                },
+                                                "src": {
+                                                    "h": 0,
+                                                    "w": 0,
+                                                    "x": 0,
+                                                    "y": 0
+                                                }
+                                            },
+                                            "scheme": {
+                                                "disabled": {
+                                                    "background": [
+                                                        191,
+                                                        191,
+                                                        191,
+                                                        255
+                                                    ],
+                                                    "border": [
+                                                        131,
+                                                        131,
+                                                        131,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        204,
+                                                        204,
+                                                        204,
+                                                        255
+                                                    ]
+                                                },
+                                                "focused": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "hover": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "normal": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                },
+                                                "pressed": {
+                                                    "background": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ],
+                                                    "border": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        255
+                                                    ],
+                                                    "color": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0
+                                                    ]
+                                                }
+                                            },
+                                            "text": "linha 2 coluna 2",
+                                            "type": "sgui::Label",
+                                            "uid": "label4"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

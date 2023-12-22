@@ -2,14 +2,92 @@
 #define __SWINDOW_H__
 
 #include "score.hpp"
-#include "sfont.hpp"
+#include "sgeometry.hpp"
+#include "scolor.hpp"
+#include "scolors.hpp"
 #include "skeyboard.hpp"
-#include "srenderer.hpp"
-#include "swidget.hpp"
-#include "widgets/sflex.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
+    class Flex;
+    class Font;
+    class Window;
+
+    using DrawFunction = std::function<SDL_Surface *(TTF_Font *, const char *, SDL_Color)>;
+    using DrawFunctionWrapped = std::function<SDL_Surface *(TTF_Font *, const char *, SDL_Color, Uint32)>;
+
+    struct RendererConfig
+    {
+        struct Options
+        {
+            // SDL_RENDERER_ACCELERATED
+            bool usesHardwareAcceleration = false;
+
+            // SDL_RENDERER_PRESENTVSYNC
+            bool usesVSync = true;
+
+            Uint32 get() const noexcept
+            {
+                return (
+                    (this->usesHardwareAcceleration ? SDL_RENDERER_ACCELERATED : 0) |
+                    (this->usesVSync ? SDL_RENDERER_PRESENTVSYNC : 0));
+            }
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Options, usesHardwareAcceleration, usesVSync);
+        };
+
+        int index = -1;
+        Color drawColor;
+
+        Options options;
+
+        enum BlendMode
+        {
+            none = SDL_BLENDMODE_NONE,
+            alpha = SDL_BLENDMODE_BLEND,
+            additive = SDL_BLENDMODE_ADD,
+            modulate = SDL_BLENDMODE_MOD,
+            multiply = SDL_BLENDMODE_MUL
+        };
+        BlendMode blendMode = alpha;
+        NLOHMANN_JSON_SERIALIZE_ENUM(BlendMode, {
+                                                    {BlendMode::none, "none"},
+                                                    {BlendMode::alpha, "alpha"},
+                                                    {BlendMode::additive, "additive"},
+                                                    {BlendMode::modulate, "modulate"},
+                                                    {BlendMode::multiply, "multiply"},
+                                                })
+
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(RendererConfig, index, drawColor, options, blendMode);
+    };
+
+    class Renderer
+    {
+    private:
+        SDL_Renderer *renderer = nullptr;
+
+    public:
+        Renderer();
+        ~Renderer();
+
+        Color drawColor;
+
+        bool isCreated() const noexcept;
+
+        void create(Window &, const RendererConfig &);
+        void destroy();
+
+        void clear();
+        void present();
+
+        SDL_Texture *createTextureFromSurface(SDL_Surface *surface);
+        void drawTexture(SDL_Texture *texture, Rect *src, Rect *dest);
+        void drawRectangle(const Rect &dest, const Color &color);
+        void drawCross(const Rect &dest, const Color &color);
+        void drawFillRectangle(const Rect &dest, const Color &color);
+        SDL_Texture *renderText(const std::string &text, Font &font, Geometry &geometry, const Color &background, Uint32 wrapLenght = 0);
+    };
+
     struct WindowConfig
     {
         struct Options
@@ -44,25 +122,39 @@ namespace PROJECT_NAMESPACE
             // SDL_WINDOW_SKIP_TASKBAR
             bool skipsTaskbar = false;
 
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Options,
+                                                        isFullscreen,
+                                                        isShown,
+                                                        isHidden,
+                                                        isBorderless,
+                                                        isResizable,
+                                                        isMinimized,
+                                                        isMaximized,
+                                                        isFullscreenDesktop,
+                                                        isAlwaysOnTop,
+                                                        skipsTaskbar);
+
             Uint32 get() const noexcept
             {
                 return (
-                    (self.isFullscreen ? SDL_WINDOW_FULLSCREEN : 0) |
-                    (self.isHidden ? SDL_WINDOW_HIDDEN : 0) |
-                    (self.isShown ? SDL_WINDOW_SHOWN : 0) |
-                    (self.isBorderless ? SDL_WINDOW_BORDERLESS : 0) |
-                    (self.isResizable ? SDL_WINDOW_RESIZABLE : 0) |
-                    (self.isMinimized ? SDL_WINDOW_MINIMIZED : 0) |
-                    (self.isMaximized ? SDL_WINDOW_MAXIMIZED : 0) |
-                    (self.isFullscreenDesktop ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) |
-                    (self.isAlwaysOnTop ? SDL_WINDOW_ALWAYS_ON_TOP : 0) |
-                    (self.skipsTaskbar ? SDL_WINDOW_SKIP_TASKBAR : 0));
+                    (this->isFullscreen ? SDL_WINDOW_FULLSCREEN : 0) |
+                    (this->isHidden ? SDL_WINDOW_HIDDEN : 0) |
+                    (this->isShown ? SDL_WINDOW_SHOWN : 0) |
+                    (this->isBorderless ? SDL_WINDOW_BORDERLESS : 0) |
+                    (this->isResizable ? SDL_WINDOW_RESIZABLE : 0) |
+                    (this->isMinimized ? SDL_WINDOW_MINIMIZED : 0) |
+                    (this->isMaximized ? SDL_WINDOW_MAXIMIZED : 0) |
+                    (this->isFullscreenDesktop ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0) |
+                    (this->isAlwaysOnTop ? SDL_WINDOW_ALWAYS_ON_TOP : 0) |
+                    (this->skipsTaskbar ? SDL_WINDOW_SKIP_TASKBAR : 0));
             }
         };
 
         struct Behavior
         {
             bool destroyOnClose = true;
+
+            NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Behavior, destroyOnClose);
         };
 
         std::string title = "Window";
@@ -81,24 +173,8 @@ namespace PROJECT_NAMESPACE
         Options options;
         Behavior behavior;
         RendererConfig renderer;
-    };
 
-    class WindowManager
-    {
-    private:
-        std::unordered_map<std::string, Window *> windows;
-
-        friend class Application;
-
-    public:
-        WindowManager();
-        ~WindowManager();
-
-        bool hasActiveWindows() const;
-        Window &get(const std::string &id);
-        Window &create(const std::string &id, const WindowConfig &windowConfig = WindowConfig());
-        void handleEvent(const SDL_Event &);
-        void runLogic();
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(WindowConfig, title, x, y, width, height, defaultFontPath, defaultFontSize, options, behavior, renderer);
     };
 
     class Window : public Object<Window>
@@ -111,6 +187,9 @@ namespace PROJECT_NAMESPACE
         bool shown = true;
 
         friend Renderer;
+        friend Widget;
+
+        std::unordered_map<std::string, Widget *> widgets;
 
     public:
         Window(const WindowConfig &config = WindowConfig());
@@ -119,8 +198,21 @@ namespace PROJECT_NAMESPACE
         Renderer renderer;
 
         WindowConfig config;
-        Flex container;
         KeyboardController keyboard;
+
+        Flex *container = nullptr;
+
+        template <typename T>
+        T &get(const std::string &uid)
+        {
+            auto *widget = dynamic_cast<T *>(this->widgets[uid]);
+            if (!widget)
+            {
+                throw std::runtime_error("Widget with uid '" + uid + "' not found.");
+            }
+
+            return *widget;
+        }
 
         bool isActive() const;
         bool isShown() const;
@@ -137,20 +229,50 @@ namespace PROJECT_NAMESPACE
             return _size;
         }
 
-        template <typename T, typename... Args>
-        T &create(Args &&...args)
-        {
-            return *new T(self, args...);
-        }
-
         void show();
         void hide();
         void destroy();
 
+        void init();
         void handleEvent(const SDL_Event &event);
         void update();
         void draw();
+
+        friend void to_json(json &j, const Window &p);
+        friend void from_json(const json &j, Window &p);
     };
+    class WindowManager
+    {
+    private:
+        std::unordered_map<std::string, Window *> windows;
+
+        friend class Application;
+
+    public:
+        WindowManager();
+        ~WindowManager();
+
+        bool hasActiveWindows() const;
+        Window &get(const std::string &id);
+        Window &create(const std::string &id, const WindowConfig &windowConfig = WindowConfig());
+        void init();
+        void handleEvent(const SDL_Event &);
+        void runLogic();
+
+        friend void to_json(json &j, const WindowManager &p)
+        {
+            for (auto pair : p.windows)
+                j["windows"][pair.first] = *pair.second;
+        }
+        friend void from_json(const json &j, WindowManager &p)
+        {
+            for (auto window : j["windows"].items())
+            {
+                from_json(window.value(), p.create(window.key()));
+            }
+        }
+    };
+
 }
 
 #endif // __SWINDOW_H__

@@ -4,7 +4,7 @@
 #include "scolor.hpp"
 #include "score.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     class Font
     {

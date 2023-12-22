@@ -1,0 +1,108 @@
+{
+    "config": {
+        "targetFPS": 60
+    },
+    "windows": {
+        "windows": {
+            "main": {
+                "config": {
+                    "renderer": {
+                        "drawColor": [
+                            122,
+                            122,
+                            122,
+                            255
+                        ]
+                    },
+                    "title": "Window",
+                    "width": 600
+                },
+                "container": {
+                    "style": {
+                        "direction": "vertical",
+                        "horizontalAlign": "center",
+                        "justifyContent": "none",
+                        "verticalAlign": "middle"
+                    },
+                    "type": "sgui::Flex",
+                    "scheme": {
+                        "hover": {
+                            "background": [
+                                0,
+                                0,
+                                0,
+                                0
+                            ]
+                        },
+                        "normal": {
+                            "background": [
+                                0,
+                                0,
+                                0,
+                                0
+                            ]
+                        }
+                    },
+                    "widgets": [
+                        {
+                            "size": 12,
+                            "type": "sgui::Row",
+                            "widgets": [
+                                {
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "widgets": [
+                                        {
+                                            "uid": "label1",
+                                            "text": "linha 1 coluna 1",
+                                            "type": "sgui::Label"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "widgets": [
+                                        {
+                                            "uid": "label2",
+                                            "text": "linha 1 coluna 2",
+                                            "type": "sgui::Label"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "size": 12,
+                            "type": "sgui::Row",
+                            "widgets": [
+                                {
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "widgets": [
+                                        {
+                                            "uid": "label3",
+                                            "text": "linha 2 coluna 1",
+                                            "type": "sgui::Label"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "size": 0,
+                                    "type": "sgui::Column",
+                                    "widgets": [
+                                        {
+                                            "uid": "label4",
+                                            "text": "linha 2 coluna 2",
+                                            "type": "sgui::Label"
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

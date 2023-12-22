@@ -1,6 +1,6 @@
 #include "sfont.hpp"
 
-namespace PROJECT_NAMESPACE
+namespace sgui
 {
     void Font::open(const std::string &path, unsigned size)
     {
