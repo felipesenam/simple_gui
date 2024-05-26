@@ -2,13 +2,189 @@
 #define __WIDGET_H__
 
 #include "score.hpp"
-#include "sfont.hpp"
-#include "sgeometry.hpp"
-#include "scolorgrid.hpp"
 
 namespace sgui
 {
-    class Window;
+
+    class Box
+    {
+    public:
+        Box() {}
+        Box(int size) : top(size), left(size), bottom(size), right(size) {}
+        Box(int top, int left, int bottom, int right) : top(top), left(left), bottom(bottom), right(right) {}
+
+        int top = 0;
+        int left = 0;
+        int bottom = 0;
+        int right = 0;
+
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Box, top, left, bottom, right);
+
+        bool operator==(const Box &box)
+        {
+            return this->top == box.top && this->left == box.left && this->bottom == box.bottom && this->right == box.right;
+        }
+
+        Box &operator=(int value)
+        {
+            top = bottom = left = right = value;
+            return *this;
+        }
+
+        int x() const noexcept
+        {
+            return this->left + this->right;
+        }
+        void x(int x)
+        {
+            this->left = x;
+            this->right = x;
+        }
+        int y() const noexcept
+        {
+            return this->top + this->bottom;
+        }
+        void y(int y)
+        {
+            this->top = y;
+            this->bottom = y;
+        }
+    };
+
+    enum Center
+    {
+        top_left,
+        top_center,
+        top_right,
+        middle_left,
+        middle_center,
+        middle_right,
+        bottom_left,
+        bottom_center,
+        bottom_right
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(Center, {
+                                             {Center::top_left, "top_left"},
+                                             {Center::top_center, "top_center"},
+                                             {Center::top_right, "top_right"},
+                                             {Center::middle_left, "middle_left"},
+                                             {Center::middle_center, "middle_center"},
+                                             {Center::middle_right, "middle_right"},
+                                             {Center::bottom_left, "bottom_left"},
+                                             {Center::bottom_center, "bottom_center"},
+                                             {Center::bottom_right, "bottom_right"},
+                                         })
+
+    class Widget;
+    class Geometry
+    {
+    private:
+        Widget &widget;
+
+        int width = 0, height = 0;
+
+        void confine(int &srcp, int &srcd, int &destp, int &destd, int boxp, int boxd, int absd)
+        {
+            srcp = 0;
+            destd = srcd = absd;
+            if (destp >= boxp && destp + absd < boxp + boxd)
+            {
+                srcp = 0;
+                destd = srcd = absd;
+            }
+            else
+            {
+                if (destp < boxp && destp + absd > boxp)
+                {
+                    destd = srcd = (destp + absd) - boxp;
+                    srcp = boxp - destp;
+                    destp = boxp;
+                }
+                if (destp < boxp + boxd && destp + absd > boxp + boxd)
+                {
+                    destd = srcd = (boxp + boxd) - destp;
+                }
+            }
+        }
+
+    public:
+        Geometry(Widget &widget) : widget(widget)
+        {
+        }
+
+        Rect src, dest, abs;
+
+        enum Behavior
+        {
+            normal,
+            hug,
+        };
+        NLOHMANN_JSON_SERIALIZE_ENUM(Behavior, {
+                                                   {Behavior::normal, "normal"},
+                                                   {Behavior::hug, "hug"},
+                                               })
+        Behavior behavior = normal;
+        Center anchor = middle_center;
+
+        float aspect = 1.0f;
+
+        Box margin;
+        Box padding;
+
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE(Geometry, src, dest, abs, behavior, anchor, aspect, margin, padding);
+
+        void normalize();
+
+        void confine(const Rect &box)
+        {
+            confine(src.x, src.w, dest.x, dest.w, box.x, box.w, abs.w);
+            confine(src.y, src.h, dest.y, dest.h, box.y, box.h, abs.h);
+        }
+
+        void posCenter(Rect ref)
+        {
+            switch (anchor)
+            {
+            case top_left:
+                dest.x = ref.x;
+                dest.y = ref.y;
+                break;
+            case top_center:
+                dest.x = ref.x - (ref.w / 2);
+                dest.y = ref.y;
+                break;
+            case top_right:
+                dest.x = ref.x - ref.w;
+                dest.y = ref.y;
+                break;
+            case middle_left:
+                dest.x = ref.x;
+                dest.y = ref.y - (ref.h / 2);
+                break;
+            case middle_center:
+                dest.x = ref.x - (ref.w / 2);
+                dest.y = ref.y - (ref.h / 2);
+                break;
+            case middle_right:
+                dest.x = ref.x - ref.w;
+                dest.y = ref.y - (ref.h / 2);
+                break;
+            case bottom_left:
+                dest.x = ref.x;
+                dest.y = ref.y - ref.h;
+                break;
+            case bottom_center:
+                dest.x = ref.x - (ref.w / 2);
+                dest.y = ref.y - ref.h;
+                break;
+            case bottom_right:
+                dest.x = ref.x - ref.w;
+                dest.y = ref.y - ref.h;
+                break;
+            }
+        }
+    };
+    class ApplicationWindow;
     class WidgetManager;
 
     class Widget : public Object<Widget>
@@ -24,7 +200,7 @@ namespace sgui
 
     protected:
         WidgetManager *parent = nullptr;
-        Window &window;
+        ApplicationWindow &window;
 
         class Event
         {
@@ -55,7 +231,7 @@ namespace sgui
         };
 
     public:
-        Widget(Window &window);
+        Widget(ApplicationWindow &window);
 
         Geometry geometry;
         Font font;
@@ -133,6 +309,16 @@ namespace sgui
         virtual void render();
         virtual void update();
         virtual void draw();
+
+        virtual int height() const noexcept
+        {
+            return geometry.abs.h + geometry.margin.y() + geometry.padding.y();
+        }
+
+        virtual int width() const noexcept
+        {
+            return geometry.abs.w + geometry.margin.x() + geometry.padding.x();
+        }
     };
 
     class WidgetManager : public Widget
@@ -142,54 +328,12 @@ namespace sgui
         std::vector<Widget *> widgets;
 
     public:
-        WidgetManager(Window &window);
+        WidgetManager(ApplicationWindow &window);
         virtual ~WidgetManager();
 
         size_t count() const noexcept
         {
             return widgets.size();
-        }
-
-        struct Dimensions
-        {
-            int width = 0;
-            int height = 0;
-
-            friend std::ostream &operator<<(std::ostream &os, const Dimensions &dimensions)
-            {
-                return os << "Dimensions{width=" << dimensions.width << ", height=" << dimensions.height << "}";
-            }
-        };
-
-        Dimensions query_content() const noexcept
-        {
-            Dimensions dimensions;
-            for (auto widget : widgets)
-            {
-                dimensions.width += widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x();
-                dimensions.height += widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y();
-            }
-            return dimensions;
-        }
-        Dimensions query_content_vertical() const noexcept
-        {
-            Dimensions dimensions;
-            for (auto widget : widgets)
-            {
-                dimensions.width = std::max(dimensions.width, widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x());
-                dimensions.height += widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y();
-            }
-            return dimensions;
-        }
-        Dimensions query_content_horizontal() const noexcept
-        {
-            Dimensions dimensions;
-            for (auto widget : widgets)
-            {
-                dimensions.width += widget->geometry.dest.w + widget->geometry.margin.x() + widget->geometry.padding.x();
-                dimensions.height = std::max(dimensions.height, widget->geometry.dest.h + widget->geometry.margin.y() + widget->geometry.padding.y());
-            }
-            return dimensions;
         }
 
         template <typename T>
@@ -325,32 +469,82 @@ namespace sgui
     protected:
         void posWidgetHorizontal(int &lx, int &ly, int &currentWidth, Widget &widget, const int spaceBetween, const int spaceAround);
         void posWidgetVertical(int &lx, int &ly, int &currentHeight, Widget &widget, const int spaceBetween, const int spaceAround);
-        Dimensions dimensions;
-        void getDimensions();
 
     public:
-        Flex(Window &window);
+        Flex(ApplicationWindow &window);
         struct Style
         {
             Direction direction = vertical;
-            VerticalAlign verticalAlign = top;
-            HorizontalAlign horizontalAlign = left;
+            VerticalAlign verticalAlign = middle;
+            HorizontalAlign horizontalAlign = center;
             JustifyContent justifyContent = none;
 
             NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Style, direction, verticalAlign, horizontalAlign, justifyContent);
         };
         Style style;
 
+        int gap = 0;
+
         void update() override;
 
         friend void to_json(json &j, const Flex &p);
         friend void from_json(const json &j, Flex &p);
+
+        int contentHeight() const noexcept
+        {
+            int height = 0;
+            switch (this->style.direction)
+            {
+            case horizontal:
+                for (auto &widget : widgets)
+                    height = std::max(height, widget->height());
+                break;
+            case vertical:
+                height += (widgets.size() - 1) * gap;
+                for (auto &widget : widgets)
+                    height += widget->height();
+                break;
+            }
+
+            return height;
+        }
+
+        int contentWidth() const noexcept
+        {
+            int width = 0;
+            switch (this->style.direction)
+            {
+            case horizontal:
+                width += (widgets.size() - 1) * gap;
+                for (auto &widget : widgets)
+                    width += widget->width();
+                break;
+            case vertical:
+                for (auto &widget : widgets)
+                    width = std::max(width, widget->width());
+                break;
+            }
+
+            return width;
+        }
+
+        int height() const noexcept override
+        {
+            const int height = contentHeight();
+            return height + geometry.margin.y() + geometry.padding.y();
+        }
+
+        int width() const noexcept override
+        {
+            const int width = contentWidth();
+            return width + geometry.margin.x() + geometry.padding.x();
+        }
     };
 
     class Column : public Flex
     {
     public:
-        Column(Window &window);
+        Column(ApplicationWindow &window);
 
         unsigned size = 0;
 
@@ -363,7 +557,7 @@ namespace sgui
     class Row : public Flex
     {
     public:
-        Row(Window &window);
+        Row(ApplicationWindow &window);
 
         unsigned size = 12;
 
@@ -376,18 +570,17 @@ namespace sgui
     class Label : public Widget
     {
     private:
-        SDL_Texture *textTexture = nullptr;
+        Texture *textTexture = nullptr;
 
-        Color renderedColor;
         std::string renderedText;
-        // TTF* renderedFont = nullptr;
 
     public:
-        Label(Window &window);
+        Label(ApplicationWindow &window, const std::string &text);
+        Label(ApplicationWindow &window);
         ~Label();
 
         std::string text;
-        SDL_Texture *texture = nullptr;
+        Texture *texture = nullptr;
 
         void render() override;
         void update() override;
@@ -411,23 +604,58 @@ namespace sgui
         }
     };
 
-    class Bitmap : public ColorGrid, public Widget
+    class TextBox : public Widget
     {
     private:
-        SDL_Texture *tex = nullptr;
+        Texture *textTexture = nullptr;
+
+        std::string renderedText;
+
+    public:
+        TextBox(ApplicationWindow &window) : Widget(window)
+        {
+        }
+
+        std::string text;
+
+        void render() override;
+        void update() override;
+        void draw() override;
+
+        friend void to_json(json &j, const TextBox &p)
+        {
+            j["type"] = demangle(typeid(TextBox).name());
+
+            j["uid"] = p.uid;
+            j["geometry"] = p.geometry;
+            j["scheme"] = p.scheme;
+        }
+        friend void from_json(const json &j, TextBox &p)
+        {
+            SETATTR_IF_JSON_CONTAINS(j, p, uid);
+            SETATTR_IF_JSON_CONTAINS(j, p, geometry);
+            SETATTR_IF_JSON_CONTAINS(j, p, scheme);
+        }
+    };
+
+    class Bitmap : public Widget
+    {
+    private:
+        Texture *m_texture = nullptr;
 
         bool m_render = false;
 
     public:
-        Bitmap(Window &window);
-        Bitmap(Window &window, size_t width, size_t height);
+        Bitmap(ApplicationWindow &window, size_t width, size_t height);
+        Bitmap(ApplicationWindow &window);
         ~Bitmap();
 
-        Color &at(size_t x, size_t y) override;
+        Surface *surface = nullptr;
 
-        void alloc(size_t width, size_t height) override;
+        void alloc(size_t width, size_t height);
+        void open(const std::string &file);
 
-        void erase() override;
+        void erase();
 
         void render();
         void draw();

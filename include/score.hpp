@@ -21,6 +21,7 @@ using json = nlohmann::json;
 
 #include "sconsole.hpp"
 #include "sobject.hpp"
+#include "ssdl.hpp"
 
 #define RGB(x) x.r, x.g, x.b
 #define RGBA(x) x.r, x.g, x.b, x.a

@@ -11,19 +11,6 @@
                     },
                     "defaultFontPath": "assets/fonts/segoeui.ttf",
                     "defaultFontSize": 12,
-                    "height": 530,
-                    "options": {
-                        "isAlwaysOnTop": false,
-                        "isBorderless": false,
-                        "isFullscreen": false,
-                        "isFullscreenDesktop": false,
-                        "isHidden": false,
-                        "isMaximized": false,
-                        "isMinimized": false,
-                        "isResizable": true,
-                        "isShown": true,
-                        "skipsTaskbar": false
-                    },
                     "renderer": {
                         "blendMode": 1,
                         "drawColor": [
@@ -38,10 +25,25 @@
                             "usesVSync": true
                         }
                     },
-                    "title": "Mandelbrot",
-                    "width": 620,
-                    "x": 805240832,
-                    "y": 805240832
+                    "window": {
+                        "height": 530,
+                        "options": {
+                            "isAlwaysOnTop": false,
+                            "isBorderless": false,
+                            "isFullscreen": false,
+                            "isFullscreenDesktop": false,
+                            "isHidden": false,
+                            "isMaximized": false,
+                            "isMinimized": false,
+                            "isResizable": true,
+                            "isShown": true,
+                            "skipsTaskbar": false
+                        },
+                        "title": "Mandelbrot",
+                        "width": 620,
+                        "x": 805240832,
+                        "y": 805240832
+                    }
                 },
                 "container": {
                     "scheme": {
@@ -370,26 +372,25 @@
                                     "uid": "4",
                                     "widgets": [
                                         {
-                                            "height": 512,
                                             "scheme": {
                                                 "disabled": {
                                                     "background": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ],
                                                     "border": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ],
                                                     "color": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ]
                                                 },
                                                 "focused": {
@@ -397,19 +398,19 @@
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ],
                                                     "border": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ],
                                                     "color": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ]
                                                 },
                                                 "hover": {
@@ -417,19 +418,19 @@
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ],
                                                     "border": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ],
                                                     "color": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ]
                                                 },
                                                 "normal": {
@@ -437,19 +438,19 @@
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ],
                                                     "border": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ],
                                                     "color": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ]
                                                 },
                                                 "pressed": {
@@ -457,25 +458,24 @@
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ],
                                                     "border": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ],
                                                     "color": [
                                                         0,
                                                         0,
                                                         0,
-                                                        255
+                                                        0
                                                     ]
                                                 }
                                             },
                                             "type": "sgui::Bitmap",
-                                            "uid": "bitmap",
-                                            "width": 512
+                                            "uid": "bitmap"
                                         }
                                     ]
                                 },
@@ -916,6 +916,7 @@
                                                                             "y": 0
                                                                         },
                                                                         "anchor": "middle_center",
+                                                                        "aspect": 1.0,
                                                                         "behavior": 0,
                                                                         "dest": {
                                                                             "h": 0,
@@ -1166,6 +1167,7 @@
                                                                             "y": 0
                                                                         },
                                                                         "anchor": "middle_center",
+                                                                        "aspect": 1.0,
                                                                         "behavior": 0,
                                                                         "dest": {
                                                                             "h": 0,
@@ -1307,6 +1309,7 @@
                                                                             "y": 0
                                                                         },
                                                                         "anchor": "middle_center",
+                                                                        "aspect": 1.0,
                                                                         "behavior": 0,
                                                                         "dest": {
                                                                             "h": 0,
@@ -1448,6 +1451,7 @@
                                                                             "y": 0
                                                                         },
                                                                         "anchor": "middle_center",
+                                                                        "aspect": 1.0,
                                                                         "behavior": 0,
                                                                         "dest": {
                                                                             "h": 0,
@@ -1809,6 +1813,7 @@
                                                                     "y": 0
                                                                 },
                                                                 "anchor": "middle_center",
+                                                                "aspect": 1.0,
                                                                 "behavior": 0,
                                                                 "dest": {
                                                                     "h": 0,
@@ -1950,6 +1955,7 @@
                                                                     "y": 0
                                                                 },
                                                                 "anchor": "middle_center",
+                                                                "aspect": 1.0,
                                                                 "behavior": 0,
                                                                 "dest": {
                                                                     "h": 0,
@@ -2091,6 +2097,7 @@
                                                                     "y": 0
                                                                 },
                                                                 "anchor": "middle_center",
+                                                                "aspect": 1.0,
                                                                 "behavior": 0,
                                                                 "dest": {
                                                                     "h": 0,
@@ -2343,6 +2350,7 @@
                                                             "y": 0
                                                         },
                                                         "anchor": "middle_center",
+                                                        "aspect": 1.0,
                                                         "behavior": 0,
                                                         "dest": {
                                                             "h": 0,
@@ -2484,6 +2492,7 @@
                                                             "y": 0
                                                         },
                                                         "anchor": "middle_center",
+                                                        "aspect": 1.0,
                                                         "behavior": 0,
                                                         "dest": {
                                                             "h": 0,

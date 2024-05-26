@@ -31,16 +31,21 @@ int findMandelbrot(ld cr, ld ci, int maxN)
 void calc(Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int maxN, int row, int column, size_t nElements)
 {
     size_t elements = 0;
-    for (size_t j = row; j < bitmap.height(); ++j)
+    for (size_t j = row; j < bitmap.surface->height(); ++j)
     {
-        for (size_t i = elements == 0 ? column : 0; i < bitmap.width(); ++i)
+        for (size_t i = elements == 0 ? column : 0; i < bitmap.surface->width(); ++i)
         {
-            const ld cr = i * ((maxR - minR) / bitmap.width()) + minR;
-            const ld ci = j * ((maxI - minI) / bitmap.height()) + minI;
+            const ld cr = i * ((maxR - minR) / bitmap.surface->width()) + minR;
+            const ld ci = j * ((maxI - minI) / bitmap.surface->height()) + minI;
             const int n = findMandelbrot(cr, ci, maxN);
 
-            int value = (int)((sin(n) + cos(n)) * 361) % 361;
-            bitmap.at(i, j).hsl(value, n == 1 ? 0 : 1, n == 255 ? 0 : .5);
+            // int value = (int)((sin(n) + cos(n)) * 360) % 360;
+            Uint8 r, g, b;
+            r = (n * MODIFIER) % 255;
+            g = (n * MODIFIER) % 255;
+            b = (n * MODIFIER) % 255;
+
+            bitmap.surface->set(i, j, {r, g, b, 255});
 
             elements++;
             if (elements == nElements)
@@ -52,7 +57,7 @@ void calc(Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int maxN, int row,
 void updateGrid(sgui::Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int maxN = 255)
 {
     std::vector<std::thread *> threads;
-    const size_t tElements = bitmap.width() * bitmap.height();
+    const size_t tElements = bitmap.surface->width() * bitmap.surface->height();
     const size_t nElements = ceil(tElements / ld(THREADS));
     for (size_t i = 0; i < tElements; i += nElements)
     {
@@ -61,8 +66,8 @@ void updateGrid(sgui::Bitmap &bitmap, ld minR, ld maxR, ld minI, ld maxI, int ma
                                              minR, maxR,
                                              minI, maxI,
                                              maxN,
-                                             i / bitmap.width(),
-                                             i % bitmap.width(),
+                                             i / bitmap.surface->width(),
+                                             i % bitmap.surface->width(),
                                              nElements));
     }
     for (auto thread : threads)
@@ -92,15 +97,15 @@ int mandelbrot()
     Application app;
     from_json(data, app);
 
-    auto &bitmap = Object<Widget>::get<Bitmap>("bitmap");
+    auto &bitmap = Widget::get<Bitmap>("bitmap");
 
-    auto &minRbox = Object<Widget>::get<Label>("minRbox");
-    auto &maxRbox = Object<Widget>::get<Label>("maxRbox");
-    auto &minIbox = Object<Widget>::get<Label>("minIbox");
+    auto &minRbox = Widget::get<Label>("minRbox");
+    auto &maxRbox = Widget::get<Label>("maxRbox");
+    auto &minIbox = Widget::get<Label>("minIbox");
 
     /***** Setup values *****/
-    const size_t width = bitmap.width();
-    const size_t height = bitmap.height();
+    const size_t width = bitmap.surface->width();
+    const size_t height = bitmap.surface->height();
 
     ld minR = -2;
     ld maxR = .8;
@@ -111,15 +116,15 @@ int mandelbrot()
     updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     /************************/
 
-    auto &zoomIn = Object<Widget>::get<Label>("zoomIn");
+    auto &zoomIn = Widget::get<Label>("zoomIn");
     zoomIn.events["clicked"] = [&](Widget &)
     {
-        ld deltaR = maxR - minR;
+        const ld deltaR = maxR - minR;
         if (deltaR < 0.0000000000001)
         {
             Warn("Zoom limit reached!");
         }
-        ld value = (deltaR / 10) / 2;
+        const ld value = (deltaR / 10) / 2;
 
         minR += value;
         maxR -= value;
@@ -130,13 +135,14 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    auto &zoomOut = Object<Widget>::get<Label>("zoomOut");
+    auto &zoomOut = Widget::get<Label>("zoomOut");
     zoomOut.events["clicked"] = [&](Widget &)
     {
-        ld deltaR = maxR - minR;
+        const ld deltaR = maxR - minR;
         if (deltaR > 2)
             return;
-        ld value = (maxR - minR) / 10;
+        const ld value = (maxR - minR) / 10;
+
         minR -= value;
         maxR += value;
         minI -= (maxI - minI) / 10;
@@ -146,10 +152,10 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    auto &up = Object<Widget>::get<Label>("up");
+    auto &up = Widget::get<Label>("up");
     up.events["clicked"] = [&](Widget &)
     {
-        ld value = ((maxI - minI) / 10) / 2;
+        const ld value = ((maxI - minI) / 10) / 2;
         minI -= value;
         maxI = getMaxI(minR, maxR, minI, width, height);
 
@@ -157,10 +163,10 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    auto &down = Object<Widget>::get<Label>("down");
+    auto &down = Widget::get<Label>("down");
     down.events["clicked"] = [&](Widget &)
     {
-        ld value = ((maxI - minI) / 10) / 2;
+        const ld value = ((maxI - minI) / 10) / 2;
         minI += value;
         maxI = getMaxI(minR, maxR, minI, width, height);
 
@@ -168,10 +174,10 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    auto &left = Object<Widget>::get<Label>("left");
+    auto &left = Widget::get<Label>("left");
     left.events["clicked"] = [&](Widget &)
     {
-        ld value = ((maxR - minR) / 10) / 2;
+        const ld value = ((maxR - minR) / 10) / 2;
         minR -= value;
         maxR -= value;
 
@@ -179,10 +185,10 @@ int mandelbrot()
         updateLabels(minR, maxR, minI, minRbox, maxRbox, minIbox);
     };
 
-    auto &right = Object<Widget>::get<Label>("right");
+    auto &right = Widget::get<Label>("right");
     right.events["clicked"] = [&](Widget &)
     {
-        ld value = ((maxR - minR) / 10) / 2;
+        const ld value = ((maxR - minR) / 10) / 2;
         minR += value;
         maxR += value;
 

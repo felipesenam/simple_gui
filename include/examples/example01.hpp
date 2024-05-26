@@ -14,10 +14,10 @@ int example()
     Application app;
     from_json(data, app);
 
-    Object<Widget>::get<Label>("label1").events["clicked"] =
-        Object<Widget>::get<Label>("label2").events["clicked"] =
-            Object<Widget>::get<Label>("label3").events["clicked"] =
-                Object<Widget>::get<Label>("label4").events["clicked"] =
+    Widget::get<Label>("label1").events["clicked"] =
+        Widget::get<Label>("label2").events["clicked"] =
+            Widget::get<Label>("label3").events["clicked"] =
+                Widget::get<Label>("label4").events["clicked"] =
                     [](Widget &widget)
     {
         auto &label = static_cast<Label &>(widget);

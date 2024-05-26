@@ -2,87 +2,99 @@
 
 #include "swindow.hpp"
 #include "sscheme.hpp"
-
 namespace sgui
 {
-    Bitmap::Bitmap(Window &window) : Widget(window)
+    void Geometry::normalize()
     {
+        switch (behavior)
+        {
+        case hug:
+            dest = abs * aspect;
+            src = abs;
+            break;
+
+        case normal:
+            dest = abs * aspect;
+            src = abs;
+            break;
+        default:
+            break;
+        }
     }
-    Bitmap::Bitmap(Window &window, size_t w, size_t h) : Widget(window)
+
+    Bitmap::Bitmap(ApplicationWindow &window, size_t w, size_t h) : Bitmap(window)
     {
         alloc(w, h);
     }
-
+    Bitmap::Bitmap(ApplicationWindow &window) : Widget(window)
+    {
+        scheme = UI_TRANSPARENT_COLOR_SCHEME;
+    }
     Bitmap::~Bitmap()
     {
-        erase();
     }
 
-    Color &Bitmap::at(size_t x, size_t y)
+    void Bitmap::erase()
     {
-        m_render = true;
-        return data[y][x];
+        if (surface)
+        {
+            delete surface;
+            surface = nullptr;
+        }
+        if (m_texture)
+        {
+            delete m_texture;
+            m_texture = nullptr;
+        }
+
+        geometry.abs.w = 0;
+        geometry.abs.h = 0;
     }
 
     void Bitmap::alloc(size_t width, size_t height)
     {
         erase();
-        geometry.abs.w = this->w = width;
-        geometry.abs.h = this->h = height;
+        geometry.abs.w = width;
+        geometry.abs.h = height;
 
-        data = new Color *[height];
-        for (size_t i = 0; i < height; ++i)
-            data[i] = new Color[width];
-        surface = SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0);
-        if (surface == nullptr)
-        {
-            SDL_PrintError(Error);
-        }
+        surface = new Surface(width, height);
+
         m_render = true;
     }
 
-    void Bitmap::erase()
+    void Bitmap::open(const std::string &file)
     {
-        if (w == 0 || h == 0)
-            return;
+        this->erase();
 
-        SDL_FreeSurface(surface);
-        if (tex != nullptr)
-            SDL_DestroyTexture(tex);
-        SDL_PrintIfError(Warn);
-
-        geometry.abs.w = w = 0;
-        geometry.abs.h = h = 0;
-
-        data = nullptr;
+        surface = new Surface(file);
+        this->geometry.abs.w = surface->width();
+        this->geometry.abs.h = surface->height();
     }
 
     void Bitmap::render()
     {
-        if (m_render)
-        {
-            if (tex != NULL)
-                SDL_DestroyTexture(tex);
-            SDL_PrintIfError(Warn);
+        if (!surface->mIsDirty)
+            return;
 
-            updateSurface();
-            tex = window.renderer.createTextureFromSurface(surface);
+        surface->mIsDirty = false;
 
-            m_render = false;
-            this->geometry.normalize();
-        }
+        if (m_texture != nullptr)
+            delete m_texture;
+
+        m_texture = window.renderer->createTextureFromSurface(*surface);
+
+        this->geometry.normalize();
     }
 
     void Bitmap::draw()
     {
-        window.renderer.drawTexture(tex, &geometry.src, &geometry.dest);
+        this->geometry.normalize();
+        window.renderer->drawTexture(*m_texture, &geometry.src, &geometry.dest);
     }
     void to_json(json &j, const Bitmap &bitmap)
     {
         j["uid"] = bitmap.uid;
         j["scheme"] = bitmap.scheme;
-        j["width"] = bitmap.w;
-        j["height"] = bitmap.h;
 
         j["type"] = demangle(typeid(Bitmap).name());
     }
@@ -94,40 +106,44 @@ namespace sgui
         bitmap.alloc(j["width"], j["height"]);
     }
 
-    Flex::Flex(Window &window) : WidgetManager(window)
+    Flex::Flex(ApplicationWindow &window) : WidgetManager(window)
     {
     }
 
     void Flex::posWidgetHorizontal(int &lx, int &ly, int &currentWidth, Widget &widget, const int spaceBetween, const int spaceAround)
     {
+        const int cw = contentWidth();
+        // const int ch = contentHeight();
+
         switch (style.horizontalAlign)
         {
         case left:
             lx = currentWidth + geometry.dest.x;
-            widget.geometry.dest.x = lx + widget.geometry.margin.left + widget.geometry.padding.left;
+            widget.geometry.dest.x = lx + widget.geometry.margin.left + geometry.padding.left;
             break;
         case center:
-            lx = currentWidth + geometry.dest.x + (geometry.dest.w / 2) - (dimensions.width / 2);
-            widget.geometry.dest.x = lx + widget.geometry.padding.left - widget.geometry.padding.right;
+            lx = currentWidth + geometry.dest.x + ((geometry.dest.w + (geometry.padding.left - geometry.padding.right) - cw) / 2);
+            widget.geometry.dest.x = lx + widget.geometry.margin.left;
             break;
         case right:
-            lx = currentWidth + geometry.dest.x + geometry.dest.w - dimensions.width;
-            widget.geometry.dest.x = lx + widget.geometry.margin.right + widget.geometry.padding.right;
+            lx = currentWidth + geometry.dest.x + geometry.dest.w - cw;
+            widget.geometry.dest.x = lx - geometry.padding.right + widget.geometry.margin.left;
             break;
         }
         switch (style.verticalAlign)
         {
         case top:
             ly = geometry.dest.y;
-            widget.geometry.dest.y = ly + widget.geometry.margin.top + widget.geometry.padding.top;
+            widget.geometry.dest.y = ly + widget.geometry.margin.top + geometry.padding.top;
             break;
         case middle:
-            ly = geometry.dest.y + (geometry.dest.h / 2) - (widget.geometry.dest.h / 2);
-            widget.geometry.dest.y = ly + widget.geometry.padding.top - widget.geometry.padding.bottom;
+            // ly = geometry.dest.y + ((geometry.dest.h - widget.geometry.dest.h + (widget.geometry.padding.top - widget.geometry.padding.bottom)) / 2);
+            ly = geometry.dest.y + ((geometry.dest.h - widget.geometry.dest.h + (widget.geometry.margin.top - widget.geometry.margin.bottom) + (geometry.padding.top - geometry.padding.bottom)) / 2);
+            widget.geometry.dest.y = ly;
             break;
         case bottom:
             ly = geometry.dest.y + geometry.dest.h - widget.geometry.dest.h;
-            widget.geometry.dest.y = ly - (widget.geometry.margin.bottom + widget.geometry.padding.bottom);
+            widget.geometry.dest.y = ly - widget.geometry.margin.bottom - geometry.padding.bottom;
             break;
         }
         switch (style.justifyContent)
@@ -149,34 +165,37 @@ namespace sgui
     }
     void Flex::posWidgetVertical(int &lx, int &ly, int &currentHeight, Widget &widget, const int spaceBetween, const int spaceAround)
     {
+        const int ch = contentHeight();
+        // const int cw = contentWidth();
+
         switch (style.horizontalAlign)
         {
         case left:
             lx = geometry.dest.x;
-            widget.geometry.dest.x = lx + widget.geometry.margin.left + widget.geometry.padding.left;
+            widget.geometry.dest.x = lx + widget.geometry.margin.left + geometry.padding.left;
             break;
         case center:
-            lx = geometry.dest.x + (geometry.dest.w / 2) - (widget.geometry.dest.w / 2);
-            widget.geometry.dest.x = lx + widget.geometry.padding.left - widget.geometry.padding.right;
+            lx = geometry.dest.x + (((geometry.dest.w + (geometry.padding.left - geometry.padding.right)) + (widget.geometry.margin.left - widget.geometry.margin.right) - widget.geometry.dest.w) / 2);
+            widget.geometry.dest.x = lx;
             break;
         case right:
             lx = geometry.dest.x + geometry.dest.w - widget.geometry.dest.w;
-            widget.geometry.dest.x = lx - (widget.geometry.margin.right + widget.geometry.padding.right);
+            widget.geometry.dest.x = lx - widget.geometry.margin.right - geometry.padding.right;
             break;
         }
         switch (style.verticalAlign)
         {
         case top:
             ly = currentHeight + geometry.dest.y;
-            widget.geometry.dest.y = ly + widget.geometry.margin.top + widget.geometry.padding.top;
+            widget.geometry.dest.y = ly + widget.geometry.margin.top + geometry.padding.top;
             break;
         case middle:
-            ly = currentHeight + geometry.dest.y + (geometry.dest.h / 2) - (dimensions.height / 2);
-            widget.geometry.dest.y = ly + widget.geometry.margin.top + widget.geometry.padding.top;
+            ly = currentHeight + geometry.dest.y + ((geometry.dest.h + (geometry.padding.top - geometry.padding.bottom) - ch) / 2);
+            widget.geometry.dest.y = ly;
             break;
         case bottom:
-            ly = currentHeight + geometry.dest.y + geometry.dest.h - dimensions.height;
-            widget.geometry.dest.y = ly + widget.geometry.margin.top + widget.geometry.padding.top;
+            ly = currentHeight + geometry.dest.y + geometry.dest.h - ch;
+            widget.geometry.dest.y = ly - widget.geometry.margin.bottom - geometry.padding.bottom;
             break;
         }
         switch (style.justifyContent)
@@ -197,29 +216,19 @@ namespace sgui
         }
     }
 
-    void Flex::getDimensions()
-    {
-        switch (this->style.direction)
-        {
-        case horizontal:
-            this->dimensions = query_content_horizontal();
-            break;
-        case vertical:
-            this->dimensions = query_content_vertical();
-            break;
-        }
-    }
-
     void Flex::update()
     {
         events.perform();
 
         int lx = 0, ly = 0;
-        getDimensions();
+
+        const int w = width();
+        const int h = height();
+
         if (style.direction == vertical)
         {
-            const int spaceAround = widgets.size() ? (geometry.dest.h - dimensions.height) / (widgets.size() * 2) : 0;
-            const int spaceBetween = widgets.size() > 1 ? (geometry.dest.h - dimensions.height) / (widgets.size() - 1) : 0;
+            const int spaceAround = widgets.size() ? (geometry.dest.h - h) / (widgets.size() * 2) : 0;
+            const int spaceBetween = widgets.size() > 1 ? (geometry.dest.h - h) / (widgets.size() - 1) : 0;
 
             int currentHeight = 0;
             for (auto widget : widgets)
@@ -228,15 +237,13 @@ namespace sgui
 
                 widget->update();
 
-                const int my = widget->geometry.margin.y();
-                const int py = widget->geometry.padding.y();
-                currentHeight += widget->geometry.dest.h + my + py;
+                currentHeight += widget->height() + gap;
             }
         }
         else if (style.direction == horizontal)
         {
-            const int spaceAround = widgets.size() ? (geometry.dest.w - dimensions.width) / (widgets.size() * 2) : 0;
-            const int spaceBetween = widgets.size() > 1 ? (geometry.dest.w - dimensions.width) / (widgets.size() - 1) : 0;
+            const int spaceAround = widgets.size() ? (geometry.dest.w - w) / (widgets.size() * 2) : 0;
+            const int spaceBetween = widgets.size() > 1 ? (geometry.dest.w - w) / (widgets.size() - 1) : 0;
 
             int currentWidth = 0;
             for (auto widget : widgets)
@@ -245,9 +252,7 @@ namespace sgui
 
                 widget->update();
 
-                const int mx = widget->geometry.margin.x();
-                const int px = widget->geometry.padding.x();
-                currentWidth += widget->geometry.dest.w + mx + px;
+                currentWidth += widget->width() + gap;
             }
         }
     }
@@ -257,6 +262,7 @@ namespace sgui
         j["style"] = p.style;
         j["scheme"] = p.scheme;
         j["widgets"] = p.widgets;
+        j["gap"] = p.gap;
 
         j["type"] = demangle(typeid(Flex).name());
     }
@@ -265,11 +271,12 @@ namespace sgui
         SETATTR_IF_JSON_CONTAINS(j, p, uid);
         SETATTR_IF_JSON_CONTAINS(j, p, style);
         SETATTR_IF_JSON_CONTAINS(j, p, scheme);
+        SETATTR_IF_JSON_CONTAINS(j, p, gap);
 
         from_json(j["widgets"], &p);
     }
 
-    Column::Column(Window &window) : Flex(window)
+    Column::Column(ApplicationWindow &window) : Flex(window)
     {
         style.direction = vertical;
         style.horizontalAlign = center;
@@ -281,9 +288,8 @@ namespace sgui
         for (auto widget : widgets)
             widget->render();
 
-        this->dimensions = query_content_vertical();
-        this->geometry.dest.w = dimensions.width + this->geometry.padding.x();
-        this->geometry.dest.h = dimensions.height + this->geometry.padding.y();
+        this->geometry.dest.w = contentWidth() + geometry.padding.x();
+        this->geometry.dest.h = contentHeight() + geometry.padding.y();
     }
     void to_json(json &j, const Column &col)
     {
@@ -302,7 +308,7 @@ namespace sgui
         from_json(j["widgets"], &col);
     }
 
-    Row::Row(Window &window) : Flex(window)
+    Row::Row(ApplicationWindow &window) : Flex(window)
     {
         style.direction = horizontal;
         style.horizontalAlign = center;
@@ -322,9 +328,8 @@ namespace sgui
             }
         }
 
-        dimensions = query_content_horizontal();
-        this->geometry.dest.w = dimensions.width + this->geometry.padding.x();
-        this->geometry.dest.h = dimensions.height + this->geometry.padding.y();
+        this->geometry.dest.w = contentWidth() + geometry.padding.x();
+        this->geometry.dest.h = contentHeight() + geometry.padding.y();
     }
     void to_json(json &j, const Row &row)
     {
@@ -343,30 +348,29 @@ namespace sgui
         from_json(j["widgets"], &row);
     }
 
-    Label::Label(Window &window) : Widget(window)
+    Label::Label(ApplicationWindow &window) : Widget(window)
     {
         this->scheme = UI_LABEL_COLOR_SCHEME;
     }
+    Label::Label(ApplicationWindow &window, const std::string &text) : Label(window)
+    {
+        this->text = text;
+    }
+
     Label::~Label()
     {
         if (textTexture)
-        {
-            SDL_DestroyTexture(textTexture);
-        }
+            delete textTexture;
     }
 
     void Label::render()
     {
         if (text != renderedText)
         {
-            const WidgetColorScheme::ColorScheme *currentScheme = &scheme.normal;
             if (textTexture != nullptr)
-            {
-                SDL_DestroyTexture(textTexture);
-            }
-            SDL_PrintIfError(Warn);
+                delete textTexture;
 
-            textTexture = this->window.renderer.renderText(text, font, this->geometry, currentScheme->background);
+            textTexture = this->window.renderer->renderText(text, font, this->geometry.abs);
             renderedText = text;
             this->geometry.normalize();
         }
@@ -377,13 +381,7 @@ namespace sgui
         events.perform();
 
         auto &scheme = getCurrentColorScheme();
-        if (textTexture != nullptr)
-        {
-            if (SDL_SetTextureColorMod(textTexture, RGB(scheme.color)) != 0)
-            {
-                Warn(SDL_GetError());
-            }
-        }
+        textTexture->modColor(scheme.color);
     }
 
     void Label::draw()
@@ -391,13 +389,37 @@ namespace sgui
         if (this->texture != nullptr)
         {
             Rect destR = this->geometry.dest;
-            SDL_QueryTexture(this->texture, NULL, NULL, &destR.w, &destR.h);
-            this->window.renderer.drawTexture(this->texture, NULL, &this->geometry.dest);
+            texture->query(NULL, NULL, &destR.w, &destR.h);
+            this->window.renderer->drawTexture(*this->texture, NULL, &this->geometry.dest);
         }
-        this->window.renderer.drawTexture(textTexture, &this->geometry.src, &this->geometry.dest);
+        this->window.renderer->drawTexture(*textTexture, &this->geometry.src, &this->geometry.dest);
     }
 
-    WidgetManager::WidgetManager(Window &window) : Widget(window)
+    void TextBox::render()
+    {
+        if (text != renderedText)
+        {
+            if (textTexture != nullptr)
+                delete textTexture;
+
+            textTexture = this->window.renderer->renderText(text, font, this->geometry.abs);
+            renderedText = text;
+            this->geometry.normalize();
+        }
+    }
+    void TextBox::update()
+    {
+        events.perform();
+
+        auto &scheme = getCurrentColorScheme();
+        textTexture->modColor(scheme.color);
+    }
+    void TextBox::draw()
+    {
+        window.renderer->drawTexture(*textTexture, &geometry.src, &geometry.dest);
+    }
+
+    WidgetManager::WidgetManager(ApplicationWindow &window) : Widget(window)
     {
         scheme = UI_TRANSPARENT_COLOR_SCHEME;
     }
@@ -438,13 +460,9 @@ namespace sgui
     template <>
     const int Object<Widget>::err = std::atexit(Object<Widget>::atexit_handler);
 
-    Widget::Widget(Window &window) : window(window), geometry(*this), font(window.config.defaultFontPath, window.config.defaultFontSize), events(*this)
+    Widget::Widget(ApplicationWindow &window) : window(window), geometry(*this), font(window.config.defaultFontPath, window.config.defaultFontSize), events(*this)
     {
         window.widgets[this->uid] = this;
-        // if (window.container && window.container != this)
-        // {
-        //     window.container->add(*this);
-        // }
     }
 
     void Widget::handleGenericEvents(const SDL_Event &e)
@@ -466,9 +484,7 @@ namespace sgui
         }
         case SDL_MOUSEMOTION:
         {
-            SDL_Point mousePos;
-            SDL_GetMouseState(&mousePos.x, &mousePos.y);
-            bool isInside = SDL_PointInRect(&mousePos, &geometry.dest);
+            bool isInside = geometry.dest.mouseIn();
             if (isInside)
             {
                 if (!m_isHovered)
@@ -505,29 +521,28 @@ namespace sgui
     void Widget::drawCommonElements()
     {
         auto scheme = this->getCurrentColorScheme();
-        window.renderer.drawFillRectangle(geometry.dest, scheme.background);
-        window.renderer.drawRectangle(geometry.dest, scheme.border);
+        window.renderer->drawFillRectangle(geometry.dest, scheme.background);
+        window.renderer->drawRectangle(geometry.dest, scheme.border);
 
 #ifdef DEBUG
-        if (this->m_isHovered)
-        {
-            auto marginbox = geometry.dest;
-            marginbox.x -= geometry.margin.left;
-            marginbox.y -= geometry.margin.top;
-            marginbox.w += geometry.margin.x();
-            marginbox.h += geometry.margin.y();
+        // if (this->m_isHovered)
+        // {
+        auto marginbox = geometry.dest;
+        marginbox.x -= geometry.margin.left;
+        marginbox.y -= geometry.margin.top;
+        marginbox.w += geometry.margin.x();
+        marginbox.h += geometry.margin.y();
+        window.renderer->drawRectangle(marginbox, Colors::Lime);
 
-            window.renderer.drawRectangle(marginbox, Colors::Yellow);
+        auto paddingbox = geometry.dest;
+        paddingbox.x += geometry.padding.left;
+        paddingbox.y += geometry.padding.top;
+        paddingbox.w -= geometry.padding.x();
+        paddingbox.h -= geometry.padding.y();
 
-            auto paddingbox = geometry.dest;
-            paddingbox.x += geometry.padding.left;
-            paddingbox.y += geometry.padding.top;
-            paddingbox.w -= geometry.padding.x();
-            paddingbox.h -= geometry.padding.y();
-
-            window.renderer.drawRectangle(paddingbox, Colors::Blue);
-        }
-        window.renderer.drawRectangle(geometry.dest, Colors::Red);
+        window.renderer->drawRectangle(paddingbox, Colors::Blue);
+        // }
+        window.renderer->drawRectangle(geometry.dest, Colors::Red);
 #endif
     }
 

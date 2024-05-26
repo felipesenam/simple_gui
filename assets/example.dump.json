@@ -11,19 +11,6 @@
                     },
                     "defaultFontPath": "assets/fonts/segoeui.ttf",
                     "defaultFontSize": 12,
-                    "height": 400,
-                    "options": {
-                        "isAlwaysOnTop": false,
-                        "isBorderless": false,
-                        "isFullscreen": false,
-                        "isFullscreenDesktop": false,
-                        "isHidden": false,
-                        "isMaximized": false,
-                        "isMinimized": false,
-                        "isResizable": false,
-                        "isShown": true,
-                        "skipsTaskbar": false
-                    },
                     "renderer": {
                         "blendMode": 1,
                         "drawColor": [
@@ -38,10 +25,25 @@
                             "usesVSync": true
                         }
                     },
-                    "title": "Window",
-                    "width": 600,
-                    "x": 805240832,
-                    "y": 805240832
+                    "window": {
+                        "height": 400,
+                        "options": {
+                            "isAlwaysOnTop": false,
+                            "isBorderless": false,
+                            "isFullscreen": false,
+                            "isFullscreenDesktop": false,
+                            "isHidden": false,
+                            "isMaximized": false,
+                            "isMinimized": false,
+                            "isResizable": false,
+                            "isShown": true,
+                            "skipsTaskbar": false
+                        },
+                        "title": "Window",
+                        "width": 600,
+                        "x": 805240832,
+                        "y": 805240832
+                    }
                 },
                 "container": {
                     "scheme": {
@@ -378,6 +380,7 @@
                                                     "y": 0
                                                 },
                                                 "anchor": "middle_center",
+                                                "aspect": 1.0,
                                                 "behavior": 0,
                                                 "dest": {
                                                     "h": 0,
@@ -628,6 +631,7 @@
                                                     "y": 0
                                                 },
                                                 "anchor": "middle_center",
+                                                "aspect": 1.0,
                                                 "behavior": 0,
                                                 "dest": {
                                                     "h": 0,
@@ -987,6 +991,7 @@
                                                     "y": 0
                                                 },
                                                 "anchor": "middle_center",
+                                                "aspect": 1.0,
                                                 "behavior": 0,
                                                 "dest": {
                                                     "h": 0,
@@ -1237,6 +1242,7 @@
                                                     "y": 0
                                                 },
                                                 "anchor": "middle_center",
+                                                "aspect": 1.0,
                                                 "behavior": 0,
                                                 "dest": {
                                                     "h": 0,

@@ -1,3 +1,10 @@
 *.o
 *.out
 doc/
+
+# Images
+/*.jpg
+/*.png
+/*.gif
+/*.webp
+/*.svg

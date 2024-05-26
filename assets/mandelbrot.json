@@ -6,11 +6,13 @@
         "windows": {
             "main": {
                 "config": {
-                    "title": "Mandelbrot",
-                    "height": 530,
-                    "width": 620,
-                    "options": {
-                        "isResizable": true
+                    "window": {
+                        "title": "Mandelbrot",
+                        "height": 530,
+                        "width": 620,
+                        "options": {
+                            "isResizable": true
+                        }
                     },
                     "renderer": {
                         "drawColor": [
