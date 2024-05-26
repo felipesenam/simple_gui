@@ -49,6 +49,14 @@ namespace sgui
             this->top = y;
             this->bottom = y;
         }
+        int dx() const noexcept
+        {
+            return this->left - this->right;
+        }
+        int dy() const noexcept
+        {
+            return this->top - this->bottom;
+        }
     };
 
     enum Center

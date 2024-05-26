@@ -113,7 +113,6 @@ namespace sgui
     void Flex::posWidgetHorizontal(int &lx, int &ly, int &currentWidth, Widget &widget, const int spaceBetween, const int spaceAround)
     {
         const int cw = contentWidth();
-        // const int ch = contentHeight();
 
         switch (style.horizontalAlign)
         {
@@ -122,7 +121,7 @@ namespace sgui
             widget.geometry.dest.x = lx + widget.geometry.margin.left + geometry.padding.left;
             break;
         case center:
-            lx = currentWidth + geometry.dest.x + ((geometry.dest.w + (geometry.padding.left - geometry.padding.right) - cw) / 2);
+            lx = currentWidth + geometry.dest.x + ((geometry.dest.w + geometry.padding.dx() - cw) / 2);
             widget.geometry.dest.x = lx + widget.geometry.margin.left;
             break;
         case right:
@@ -137,8 +136,7 @@ namespace sgui
             widget.geometry.dest.y = ly + widget.geometry.margin.top + geometry.padding.top;
             break;
         case middle:
-            // ly = geometry.dest.y + ((geometry.dest.h - widget.geometry.dest.h + (widget.geometry.padding.top - widget.geometry.padding.bottom)) / 2);
-            ly = geometry.dest.y + ((geometry.dest.h - widget.geometry.dest.h + (widget.geometry.margin.top - widget.geometry.margin.bottom) + (geometry.padding.top - geometry.padding.bottom)) / 2);
+            ly = geometry.dest.y + ((geometry.dest.h - widget.geometry.dest.h + widget.geometry.margin.dy() + geometry.padding.dy()) / 2);
             widget.geometry.dest.y = ly;
             break;
         case bottom:
@@ -166,7 +164,6 @@ namespace sgui
     void Flex::posWidgetVertical(int &lx, int &ly, int &currentHeight, Widget &widget, const int spaceBetween, const int spaceAround)
     {
         const int ch = contentHeight();
-        // const int cw = contentWidth();
 
         switch (style.horizontalAlign)
         {
@@ -175,7 +172,7 @@ namespace sgui
             widget.geometry.dest.x = lx + widget.geometry.margin.left + geometry.padding.left;
             break;
         case center:
-            lx = geometry.dest.x + (((geometry.dest.w + (geometry.padding.left - geometry.padding.right)) + (widget.geometry.margin.left - widget.geometry.margin.right) - widget.geometry.dest.w) / 2);
+            lx = geometry.dest.x + (((geometry.dest.w + geometry.padding.dx()) + widget.geometry.margin.dx() - widget.geometry.dest.w) / 2);
             widget.geometry.dest.x = lx;
             break;
         case right:
@@ -190,7 +187,7 @@ namespace sgui
             widget.geometry.dest.y = ly + widget.geometry.margin.top + geometry.padding.top;
             break;
         case middle:
-            ly = currentHeight + geometry.dest.y + ((geometry.dest.h + (geometry.padding.top - geometry.padding.bottom) - ch) / 2);
+            ly = currentHeight + geometry.dest.y + ((geometry.dest.h + geometry.padding.dy() - ch) / 2);
             widget.geometry.dest.y = ly;
             break;
         case bottom:
