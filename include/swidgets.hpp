@@ -89,8 +89,6 @@ namespace sgui
     private:
         Widget &widget;
 
-        int width = 0, height = 0;
-
         void confine(int &srcp, int &srcd, int &destp, int &destd, int boxp, int boxd, int absd)
         {
             srcp = 0;
@@ -120,76 +118,39 @@ namespace sgui
         {
         }
 
-        Rect src, dest, abs;
+        int x = 0, y = 0;
+        int width = 0, height = 0;
+
+        Rect src, dest;
 
         enum Behavior
         {
             normal,
             hug,
+            fill,
         };
         NLOHMANN_JSON_SERIALIZE_ENUM(Behavior, {
                                                    {Behavior::normal, "normal"},
                                                    {Behavior::hug, "hug"},
                                                })
-        Behavior behavior = normal;
-        Center anchor = middle_center;
+        Behavior behavior = hug;
 
         float aspect = 1.0f;
 
         Box margin;
         Box padding;
 
-        NLOHMANN_DEFINE_TYPE_INTRUSIVE(Geometry, src, dest, abs, behavior, anchor, aspect, margin, padding);
+        Rect marginRect() const noexcept;
+        Rect paddingRect() const noexcept;
+
+        NLOHMANN_DEFINE_TYPE_INTRUSIVE(Geometry, src, dest, behavior, aspect, margin, padding);
 
         void normalize();
 
         void confine(const Rect &box)
         {
-            confine(src.x, src.w, dest.x, dest.w, box.x, box.w, abs.w);
-            confine(src.y, src.h, dest.y, dest.h, box.y, box.h, abs.h);
-        }
-
-        void posCenter(Rect ref)
-        {
-            switch (anchor)
-            {
-            case top_left:
-                dest.x = ref.x;
-                dest.y = ref.y;
-                break;
-            case top_center:
-                dest.x = ref.x - (ref.w / 2);
-                dest.y = ref.y;
-                break;
-            case top_right:
-                dest.x = ref.x - ref.w;
-                dest.y = ref.y;
-                break;
-            case middle_left:
-                dest.x = ref.x;
-                dest.y = ref.y - (ref.h / 2);
-                break;
-            case middle_center:
-                dest.x = ref.x - (ref.w / 2);
-                dest.y = ref.y - (ref.h / 2);
-                break;
-            case middle_right:
-                dest.x = ref.x - ref.w;
-                dest.y = ref.y - (ref.h / 2);
-                break;
-            case bottom_left:
-                dest.x = ref.x;
-                dest.y = ref.y - ref.h;
-                break;
-            case bottom_center:
-                dest.x = ref.x - (ref.w / 2);
-                dest.y = ref.y - ref.h;
-                break;
-            case bottom_right:
-                dest.x = ref.x - ref.w;
-                dest.y = ref.y - ref.h;
-                break;
-            }
+            confine(src.x, src.w, dest.x, dest.w, box.x, box.w, width);
+            confine(src.y, src.h, dest.y, dest.h, box.y, box.h, height);
         }
     };
     class ApplicationWindow;
@@ -293,6 +254,7 @@ namespace sgui
 
         virtual void handleGenericEvents(const SDL_Event &e);
         virtual void drawCommonElements();
+        virtual void preUpdate();
 
         bool isHovered() const noexcept { return m_isHovered; }
         bool isPressed() const noexcept { return m_isPressed; }
@@ -318,14 +280,22 @@ namespace sgui
         virtual void update();
         virtual void draw();
 
+        virtual int contentHeight() const noexcept
+        {
+            return geometry.height + geometry.padding.y();
+        }
         virtual int height() const noexcept
         {
-            return geometry.abs.h + geometry.margin.y() + geometry.padding.y();
+            return contentHeight() + geometry.margin.y();
         }
 
+        virtual int contentWidth() const noexcept
+        {
+            return geometry.width + geometry.padding.x();
+        }
         virtual int width() const noexcept
         {
-            return geometry.abs.w + geometry.margin.x() + geometry.padding.x();
+            return contentWidth() + geometry.margin.x();
         }
     };
 
@@ -493,12 +463,14 @@ namespace sgui
 
         int gap = 0;
 
+        void preUpdate() override;
+
         void update() override;
 
         friend void to_json(json &j, const Flex &p);
         friend void from_json(const json &j, Flex &p);
 
-        int contentHeight() const noexcept
+        int widgetHeight() const noexcept
         {
             int height = 0;
             switch (this->style.direction)
@@ -513,11 +485,22 @@ namespace sgui
                     height += widget->height();
                 break;
             }
-
             return height;
         }
 
-        int contentWidth() const noexcept
+        int contentHeight() const noexcept override
+        {
+            switch (geometry.behavior)
+            {
+            case Geometry::hug:
+                return widgetHeight() + geometry.padding.y();
+
+            default:
+                return geometry.height + geometry.padding.y();
+            }
+        }
+
+        int widgetWidth() const noexcept
         {
             int width = 0;
             switch (this->style.direction)
@@ -536,16 +519,16 @@ namespace sgui
             return width;
         }
 
-        int height() const noexcept override
+        int contentWidth() const noexcept override
         {
-            const int height = contentHeight();
-            return height + geometry.margin.y() + geometry.padding.y();
-        }
+            switch (geometry.behavior)
+            {
+            case Geometry::hug:
+                return widgetWidth() + geometry.padding.x();
 
-        int width() const noexcept override
-        {
-            const int width = contentWidth();
-            return width + geometry.margin.x() + geometry.padding.x();
+            default:
+                return geometry.width + geometry.padding.x();
+            }
         }
     };
 

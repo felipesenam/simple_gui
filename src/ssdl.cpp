@@ -167,7 +167,7 @@ namespace sgui
         SDL_SetRenderDrawColor(renderer, RGBA(drawColor));
     }
 
-    Texture *Renderer::renderText(const std::string &text, Font &font, Rect &rect, Uint32 wrapLenght)
+    Texture *Renderer::renderText(const std::string &text, Font &font, int &width, int &height, Uint32 wrapLenght)
     {
         if (font.ttf == nullptr)
         {
@@ -176,11 +176,12 @@ namespace sgui
         }
 
         Surface *surface = font.render(text, wrapLenght);
+        width = surface->width();
+        height = surface->height();
 
         Texture *texture = this->createTextureFromSurface(*surface);
-        delete surface;
 
-        texture->query(nullptr, nullptr, &rect.w, &rect.h);
+        delete surface;
 
         return texture;
     }
@@ -344,9 +345,11 @@ namespace sgui
 
 namespace sgui
 {
-    Texture::Texture() {}
     Texture::Texture(Renderer &renderer, Surface &surface)
     {
+        m_width = surface.width();
+        m_height = surface.height();
+
         texture = SDL_CreateTextureFromSurface(renderer.renderer, surface.surface);
         if (texture == nullptr)
         {

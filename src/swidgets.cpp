@@ -9,17 +9,58 @@ namespace sgui
         switch (behavior)
         {
         case hug:
-            dest = abs * aspect;
-            src = abs;
+        {
+            dest.w = width = widget.contentWidth() - padding.x();
+            dest.h = height = widget.contentHeight() - padding.y();
             break;
-
+        }
         case normal:
-            dest = abs * aspect;
-            src = abs;
+        {
+            dest.w = width;
+            dest.h = height;
             break;
+        }
+        case fill:
+        {
+            if (widget.parent)
+            {
+                dest.w = width = widget.parent->contentWidth();
+                dest.h = height = widget.parent->contentHeight();
+            }
+            else
+            {
+                dest.w = width = widget.window.size().first;
+                dest.h = height = widget.window.size().second;
+            }
+            break;
+        }
         default:
             break;
         }
+
+        if (widget.parent)
+        {
+            dest.x = x + padding.left;
+            dest.y = y + padding.top;
+        }
+    }
+
+    Rect Geometry::marginRect() const noexcept
+    {
+        return Rect(
+            widget.geometry.x - margin.left,
+            widget.geometry.y - margin.top,
+            widget.geometry.width + padding.x() + margin.x(),
+            widget.geometry.height + padding.y() + margin.y());
+    }
+
+    Rect Geometry::paddingRect() const noexcept
+    {
+        return Rect(
+            widget.geometry.x,
+            widget.geometry.y,
+            widget.geometry.width + padding.x(),
+            widget.geometry.height + padding.y());
     }
 
     Bitmap::Bitmap(ApplicationWindow &window, size_t w, size_t h) : Bitmap(window)
@@ -47,15 +88,15 @@ namespace sgui
             m_texture = nullptr;
         }
 
-        geometry.abs.w = 0;
-        geometry.abs.h = 0;
+        geometry.width = 0;
+        geometry.height = 0;
     }
 
     void Bitmap::alloc(size_t width, size_t height)
     {
         erase();
-        geometry.abs.w = width;
-        geometry.abs.h = height;
+        geometry.width = width;
+        geometry.height = height;
 
         surface = new Surface(width, height);
 
@@ -67,8 +108,8 @@ namespace sgui
         this->erase();
 
         surface = new Surface(file);
-        this->geometry.abs.w = surface->width();
-        this->geometry.abs.h = surface->height();
+        this->geometry.width = surface->width();
+        this->geometry.height = surface->height();
     }
 
     void Bitmap::render()
@@ -82,13 +123,10 @@ namespace sgui
             delete m_texture;
 
         m_texture = window.renderer->createTextureFromSurface(*surface);
-
-        this->geometry.normalize();
     }
 
     void Bitmap::draw()
     {
-        this->geometry.normalize();
         window.renderer->drawTexture(*m_texture, &geometry.src, &geometry.dest);
     }
     void to_json(json &j, const Bitmap &bitmap)
@@ -112,50 +150,49 @@ namespace sgui
 
     void Flex::posWidgetHorizontal(int &lx, int &ly, int &currentWidth, Widget &widget, const int spaceBetween, const int spaceAround)
     {
-        const int cw = contentWidth();
+        const int cw = widgetWidth();
 
         switch (style.horizontalAlign)
         {
         case left:
-            lx = currentWidth + geometry.dest.x;
-            widget.geometry.dest.x = lx + widget.geometry.margin.left + geometry.padding.left;
+            lx = geometry.x + currentWidth + geometry.padding.left;
+            widget.geometry.x = lx + widget.geometry.margin.left;
             break;
         case center:
-            lx = currentWidth + geometry.dest.x + ((geometry.dest.w + geometry.padding.dx() - cw) / 2);
-            widget.geometry.dest.x = lx + widget.geometry.margin.left;
+            lx = geometry.x + currentWidth + ((geometry.width - cw) / 2) + geometry.padding.left;
+            widget.geometry.x = lx + widget.geometry.margin.left;
             break;
         case right:
-            lx = currentWidth + geometry.dest.x + geometry.dest.w - cw;
-            widget.geometry.dest.x = lx - geometry.padding.right + widget.geometry.margin.left;
+            lx = geometry.x + currentWidth + geometry.width + geometry.padding.left - cw;
+            widget.geometry.x = lx + widget.geometry.margin.left;
             break;
         }
+
         switch (style.verticalAlign)
         {
         case top:
-            ly = geometry.dest.y;
-            widget.geometry.dest.y = ly + widget.geometry.margin.top + geometry.padding.top;
+            ly = geometry.y + geometry.padding.top;
+            widget.geometry.y = ly + widget.geometry.margin.top;
             break;
         case middle:
-            ly = geometry.dest.y + ((geometry.dest.h - widget.geometry.dest.h + widget.geometry.margin.dy() + geometry.padding.dy()) / 2);
-            widget.geometry.dest.y = ly;
+            ly = geometry.y + ((geometry.height - widget.height()) / 2) + geometry.padding.top;
+            widget.geometry.y = ly + widget.geometry.margin.top;
             break;
         case bottom:
-            ly = geometry.dest.y + geometry.dest.h - widget.geometry.dest.h;
-            widget.geometry.dest.y = ly - widget.geometry.margin.bottom - geometry.padding.bottom;
+            ly = geometry.y + geometry.height + geometry.padding.top;
+            widget.geometry.y = ly + widget.geometry.margin.top - widget.height();
             break;
         }
+
         switch (style.justifyContent)
         {
         case between:
-            lx = currentWidth + geometry.dest.x;
-            widget.geometry.dest.x = lx + widget.geometry.margin.left + widget.geometry.padding.left;
             currentWidth += spaceBetween;
             break;
         case around:
             currentWidth += spaceAround;
-            lx = currentWidth + geometry.dest.x;
-            widget.geometry.dest.x = lx + widget.geometry.margin.left + widget.geometry.padding.left;
-            currentWidth += spaceAround;
+            lx += spaceAround;
+            widget.geometry.x = lx + widget.geometry.margin.left;
             break;
         default:
             break;
@@ -163,54 +200,60 @@ namespace sgui
     }
     void Flex::posWidgetVertical(int &lx, int &ly, int &currentHeight, Widget &widget, const int spaceBetween, const int spaceAround)
     {
-        const int ch = contentHeight();
+        const int ch = widgetHeight();
 
         switch (style.horizontalAlign)
         {
         case left:
-            lx = geometry.dest.x;
-            widget.geometry.dest.x = lx + widget.geometry.margin.left + geometry.padding.left;
+            lx = geometry.x + geometry.padding.left;
+            widget.geometry.x = lx + widget.geometry.margin.left;
             break;
         case center:
-            lx = geometry.dest.x + (((geometry.dest.w + geometry.padding.dx()) + widget.geometry.margin.dx() - widget.geometry.dest.w) / 2);
-            widget.geometry.dest.x = lx;
+            lx = geometry.x + ((geometry.width - widget.width()) / 2) + geometry.padding.left;
+            widget.geometry.x = lx + widget.geometry.margin.left;
             break;
         case right:
-            lx = geometry.dest.x + geometry.dest.w - widget.geometry.dest.w;
-            widget.geometry.dest.x = lx - widget.geometry.margin.right - geometry.padding.right;
+            lx = geometry.x + geometry.width + geometry.padding.left;
+            widget.geometry.x = lx + widget.geometry.margin.left - widget.width();
             break;
         }
+
         switch (style.verticalAlign)
         {
         case top:
-            ly = currentHeight + geometry.dest.y;
-            widget.geometry.dest.y = ly + widget.geometry.margin.top + geometry.padding.top;
+            ly = geometry.y + currentHeight + geometry.padding.top;
+            widget.geometry.y = ly + widget.geometry.margin.top;
             break;
         case middle:
-            ly = currentHeight + geometry.dest.y + ((geometry.dest.h + geometry.padding.dy() - ch) / 2);
-            widget.geometry.dest.y = ly;
+            ly = geometry.y + currentHeight + ((geometry.height - ch) / 2) + geometry.padding.top;
+            widget.geometry.y = ly + widget.geometry.margin.top;
             break;
         case bottom:
-            ly = currentHeight + geometry.dest.y + geometry.dest.h - ch;
-            widget.geometry.dest.y = ly - widget.geometry.margin.bottom - geometry.padding.bottom;
+            ly = geometry.y + currentHeight + geometry.height + geometry.padding.top - ch;
+            widget.geometry.y = ly + widget.geometry.margin.top;
             break;
         }
+
         switch (style.justifyContent)
         {
         case between:
-            ly = currentHeight + geometry.dest.y;
-            widget.geometry.dest.y = ly + widget.geometry.margin.top + widget.geometry.padding.top;
             currentHeight += spaceBetween;
             break;
         case around:
             currentHeight += spaceAround;
-            ly = currentHeight + geometry.dest.y;
-            widget.geometry.dest.y = ly + widget.geometry.margin.top + widget.geometry.padding.top;
-            currentHeight += spaceAround;
+            ly += spaceAround;
+            widget.geometry.y = ly + widget.geometry.margin.top;
             break;
         default:
             break;
         }
+    }
+
+    void Flex::preUpdate()
+    {
+        for (auto widget : widgets)
+            widget->preUpdate();
+        geometry.normalize();
     }
 
     void Flex::update()
@@ -233,6 +276,8 @@ namespace sgui
                 posWidgetVertical(lx, ly, currentHeight, *widget, spaceBetween, spaceAround);
 
                 widget->update();
+                // TODO: tem um problema com esse método
+                widget->geometry.confine(geometry.dest);
 
                 currentHeight += widget->height() + gap;
             }
@@ -248,6 +293,8 @@ namespace sgui
                 posWidgetHorizontal(lx, ly, currentWidth, *widget, spaceBetween, spaceAround);
 
                 widget->update();
+                // TODO: tem um problema com esse método
+                widget->geometry.confine(geometry.dest);
 
                 currentWidth += widget->width() + gap;
             }
@@ -284,9 +331,6 @@ namespace sgui
     {
         for (auto widget : widgets)
             widget->render();
-
-        this->geometry.dest.w = contentWidth() + geometry.padding.x();
-        this->geometry.dest.h = contentHeight() + geometry.padding.y();
     }
     void to_json(json &j, const Column &col)
     {
@@ -324,9 +368,6 @@ namespace sgui
                 column->geometry.dest.w = (column->size / float(this->size)) * this->geometry.dest.w;
             }
         }
-
-        this->geometry.dest.w = contentWidth() + geometry.padding.x();
-        this->geometry.dest.h = contentHeight() + geometry.padding.y();
     }
     void to_json(json &j, const Row &row)
     {
@@ -367,9 +408,8 @@ namespace sgui
             if (textTexture != nullptr)
                 delete textTexture;
 
-            textTexture = this->window.renderer->renderText(text, font, this->geometry.abs);
+            textTexture = this->window.renderer->renderText(text, font, geometry.width, geometry.height);
             renderedText = text;
-            this->geometry.normalize();
         }
     }
 
@@ -399,9 +439,8 @@ namespace sgui
             if (textTexture != nullptr)
                 delete textTexture;
 
-            textTexture = this->window.renderer->renderText(text, font, this->geometry.abs);
+            textTexture = this->window.renderer->renderText(text, font, geometry.width, geometry.height);
             renderedText = text;
-            this->geometry.normalize();
         }
     }
     void TextBox::update()
@@ -517,30 +556,23 @@ namespace sgui
 
     void Widget::drawCommonElements()
     {
+        const auto paddingRect = geometry.paddingRect();
+
         auto scheme = this->getCurrentColorScheme();
-        window.renderer->drawFillRectangle(geometry.dest, scheme.background);
-        window.renderer->drawRectangle(geometry.dest, scheme.border);
+        window.renderer->drawFillRectangle(paddingRect, scheme.background);
+        window.renderer->drawRectangle(paddingRect, scheme.border);
 
 #ifdef DEBUG
-        // if (this->m_isHovered)
-        // {
-        auto marginbox = geometry.dest;
-        marginbox.x -= geometry.margin.left;
-        marginbox.y -= geometry.margin.top;
-        marginbox.w += geometry.margin.x();
-        marginbox.h += geometry.margin.y();
-        window.renderer->drawRectangle(marginbox, Colors::Lime);
+        const auto marginRect = geometry.marginRect();
 
-        auto paddingbox = geometry.dest;
-        paddingbox.x += geometry.padding.left;
-        paddingbox.y += geometry.padding.top;
-        paddingbox.w -= geometry.padding.x();
-        paddingbox.h -= geometry.padding.y();
-
-        window.renderer->drawRectangle(paddingbox, Colors::Blue);
-        // }
+        window.renderer->drawRectangle(marginRect, Colors::Lime);
+        window.renderer->drawRectangle(paddingRect, Colors::Blue);
         window.renderer->drawRectangle(geometry.dest, Colors::Red);
 #endif
+    }
+    void Widget::preUpdate()
+    {
+        geometry.normalize();
     }
 
     void Widget::handleEvent(const SDL_Event &)

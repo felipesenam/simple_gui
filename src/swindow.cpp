@@ -84,6 +84,7 @@ namespace sgui
     ApplicationWindow::ApplicationWindow(const ApplicationWindowConfig &config) : config(config)
     {
         this->container = new Flex(*this);
+        this->container->geometry.behavior = Geometry::fill;
     }
     ApplicationWindow::~ApplicationWindow()
     {
@@ -118,17 +119,6 @@ namespace sgui
         window = new Window(config.window);
         renderer = new Renderer(*window, config.renderer);
 
-        auto event = [this](Widget &widget)
-        {
-            auto size = window->size();
-
-            widget.geometry.abs.w = size.first;
-            widget.geometry.abs.h = size.second;
-            widget.geometry.normalize();
-        };
-        container->events["windowSizeChanged"] = event;
-        event(*container);
-
         Debug("Window created: " << this->uid << " (" << config.window.width << "x" << config.window.height << ")");
     }
     void ApplicationWindow::handleEvent(const SDL_Event &event)
@@ -158,11 +148,14 @@ namespace sgui
     void ApplicationWindow::update()
     {
         renderer->clear();
+
         container->render();
         container->update();
     }
     void ApplicationWindow::draw()
     {
+        container->drawCommonElements();
+        container->preUpdate();
         container->draw();
         renderer->present();
     }

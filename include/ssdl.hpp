@@ -311,17 +311,30 @@ namespace sgui
         void drawRectangle(const Rect &dest, const Color &color);
         void drawCross(const Rect &dest, const Color &color);
         void drawFillRectangle(const Rect &dest, const Color &color);
-        Texture *renderText(const std::string &text, Font &font, Rect &rect, Uint32 wrapLenght = 0);
+        Texture *renderText(const std::string &text, Font &font, int &width, int &height, Uint32 wrapLenght = 0);
     };
 
     class Texture
     {
+    private:
+        SDL_Texture *texture = nullptr;
+        int m_width, m_height;
+
+        friend Renderer;
+
     public:
-        Texture();
         Texture(Renderer &renderer, Surface &surface);
         ~Texture();
 
-        SDL_Texture *texture = nullptr;
+        int width() const noexcept
+        {
+            return m_width;
+        }
+
+        int height() const noexcept
+        {
+            return m_height;
+        }
 
         void modColor(const Color &color);
         void query(Uint32 *format, int *access, int *w, int *h);
