@@ -5,6 +5,76 @@
 
 namespace sgui
 {
+    enum Direction
+    {
+        horizontal,
+        vertical
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(Direction,
+                                 {
+                                     {horizontal, "horizontal"},
+                                     {vertical, "vertical"},
+                                 })
+
+    enum Overflow
+    {
+        visible,
+        hidden,
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(Overflow, {
+                                               {visible, "visible"},
+                                               {hidden, "hidden"},
+                                           })
+
+    enum HorizontalAlign
+    {
+        left,
+        center,
+        right
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(HorizontalAlign,
+                                 {
+                                     {left, "left"},
+                                     {center, "center"},
+                                     {right, "right"},
+                                 })
+
+    enum JustifyContent
+    {
+        none,
+        between,
+        around
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(JustifyContent,
+                                 {
+                                     {none, "none"},
+                                     {between, "between"},
+                                     {around, "around"},
+                                 })
+
+    enum VerticalAlign
+    {
+        top,
+        middle,
+        bottom
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(VerticalAlign,
+                                 {
+                                     {top, "top"},
+                                     {middle, "middle"},
+                                     {bottom, "bottom"},
+                                 })
+
+    enum Behavior
+    {
+        normal,
+        hug,
+        fill,
+    };
+    NLOHMANN_JSON_SERIALIZE_ENUM(Behavior, {
+                                               {normal, "normal"},
+                                               {hug, "hug"},
+                                           })
 
     class Box
     {
@@ -59,30 +129,6 @@ namespace sgui
         }
     };
 
-    enum Center
-    {
-        top_left,
-        top_center,
-        top_right,
-        middle_left,
-        middle_center,
-        middle_right,
-        bottom_left,
-        bottom_center,
-        bottom_right
-    };
-    NLOHMANN_JSON_SERIALIZE_ENUM(Center, {
-                                             {Center::top_left, "top_left"},
-                                             {Center::top_center, "top_center"},
-                                             {Center::top_right, "top_right"},
-                                             {Center::middle_left, "middle_left"},
-                                             {Center::middle_center, "middle_center"},
-                                             {Center::middle_right, "middle_right"},
-                                             {Center::bottom_left, "bottom_left"},
-                                             {Center::bottom_center, "bottom_center"},
-                                             {Center::bottom_right, "bottom_right"},
-                                         })
-
     class Widget;
     class Geometry
     {
@@ -121,19 +167,10 @@ namespace sgui
         int x = 0, y = 0;
         int width = 0, height = 0;
 
-        Rect src, dest;
+        Rect clip, src, dest;
 
-        enum Behavior
-        {
-            normal,
-            hug,
-            fill,
-        };
-        NLOHMANN_JSON_SERIALIZE_ENUM(Behavior, {
-                                                   {Behavior::normal, "normal"},
-                                                   {Behavior::hug, "hug"},
-                                               })
         Behavior behavior = hug;
+        Overflow overflow = visible;
 
         float aspect = 1.0f;
 
@@ -147,11 +184,7 @@ namespace sgui
 
         void normalize();
 
-        void confine(const Rect &box)
-        {
-            confine(src.x, src.w, dest.x, dest.w, box.x, box.w, width);
-            confine(src.y, src.h, dest.y, dest.h, box.y, box.h, height);
-        }
+        void confine(Geometry &geometry);
     };
     class ApplicationWindow;
     class WidgetManager;
@@ -205,6 +238,8 @@ namespace sgui
         Geometry geometry;
         Font font;
 
+        bool show = true;
+
         struct WidgetColorScheme
         {
             struct ColorScheme
@@ -252,10 +287,6 @@ namespace sgui
         };
         EventManager events;
 
-        virtual void handleGenericEvents(const SDL_Event &e);
-        virtual void drawCommonElements();
-        virtual void preUpdate();
-
         bool isHovered() const noexcept { return m_isHovered; }
         bool isPressed() const noexcept { return m_isPressed; }
         bool isFocused() const noexcept { return m_isFocused; }
@@ -274,6 +305,10 @@ namespace sgui
 
             return scheme.normal;
         }
+
+        virtual void handleGenericEvents(const SDL_Event &e);
+        virtual void drawCommonElements();
+        virtual void preUpdate();
 
         virtual void handleEvent(const SDL_Event &e);
         virtual void render();
@@ -379,67 +414,6 @@ namespace sgui
         void draw() override;
     };
 
-    enum Direction
-    {
-        horizontal,
-        vertical
-    };
-    NLOHMANN_JSON_SERIALIZE_ENUM(Direction,
-                                 {
-                                     {Direction::horizontal, "horizontal"},
-                                     {Direction::vertical, "vertical"},
-                                 })
-
-    enum HorizontalAlign
-    {
-        left,
-        center,
-        right
-    };
-    NLOHMANN_JSON_SERIALIZE_ENUM(HorizontalAlign,
-                                 {
-                                     {HorizontalAlign::left, "left"},
-                                     {HorizontalAlign::center, "center"},
-                                     {HorizontalAlign::right, "right"},
-                                 })
-
-    enum JustifyContent
-    {
-        none,
-        between,
-        around
-    };
-    NLOHMANN_JSON_SERIALIZE_ENUM(JustifyContent,
-                                 {
-                                     {JustifyContent::none, "none"},
-                                     {JustifyContent::between, "between"},
-                                     {JustifyContent::around, "around"},
-                                 })
-
-    enum VerticalAlign
-    {
-        top,
-        middle,
-        bottom
-    };
-    NLOHMANN_JSON_SERIALIZE_ENUM(VerticalAlign,
-                                 {
-                                     {VerticalAlign::top, "top"},
-                                     {VerticalAlign::middle, "middle"},
-                                     {VerticalAlign::bottom, "bottom"},
-                                 })
-
-    enum Layout
-    {
-        normal,
-        fixed
-    };
-    NLOHMANN_JSON_SERIALIZE_ENUM(Layout,
-                                 {
-                                     {Layout::normal, "normal"},
-                                     {Layout::fixed, "fixed"},
-                                 })
-
     class Row;
     class Column;
     class Flex : public WidgetManager
@@ -462,8 +436,6 @@ namespace sgui
         Style style;
 
         int gap = 0;
-
-        void preUpdate() override;
 
         void update() override;
 
@@ -492,7 +464,7 @@ namespace sgui
         {
             switch (geometry.behavior)
             {
-            case Geometry::hug:
+            case hug:
                 return widgetHeight() + geometry.padding.y();
 
             default:
@@ -523,7 +495,7 @@ namespace sgui
         {
             switch (geometry.behavior)
             {
-            case Geometry::hug:
+            case hug:
                 return widgetWidth() + geometry.padding.x();
 
             default:

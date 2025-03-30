@@ -46,6 +46,7 @@
                     }
                 },
                 "container": {
+                    "gap": 0,
                     "scheme": {
                         "disabled": {
                             "background": [
@@ -909,15 +910,8 @@
                                                             "widgets": [
                                                                 {
                                                                     "geometry": {
-                                                                        "abs": {
-                                                                            "h": 0,
-                                                                            "w": 0,
-                                                                            "x": 0,
-                                                                            "y": 0
-                                                                        },
-                                                                        "anchor": "middle_center",
                                                                         "aspect": 1.0,
-                                                                        "behavior": 0,
+                                                                        "behavior": "hug",
                                                                         "dest": {
                                                                             "h": 0,
                                                                             "w": 0,
@@ -1160,15 +1154,8 @@
                                                             "widgets": [
                                                                 {
                                                                     "geometry": {
-                                                                        "abs": {
-                                                                            "h": 0,
-                                                                            "w": 0,
-                                                                            "x": 0,
-                                                                            "y": 0
-                                                                        },
-                                                                        "anchor": "middle_center",
                                                                         "aspect": 1.0,
-                                                                        "behavior": 0,
+                                                                        "behavior": "hug",
                                                                         "dest": {
                                                                             "h": 0,
                                                                             "w": 0,
@@ -1302,15 +1289,8 @@
                                                                 },
                                                                 {
                                                                     "geometry": {
-                                                                        "abs": {
-                                                                            "h": 0,
-                                                                            "w": 0,
-                                                                            "x": 0,
-                                                                            "y": 0
-                                                                        },
-                                                                        "anchor": "middle_center",
                                                                         "aspect": 1.0,
-                                                                        "behavior": 0,
+                                                                        "behavior": "hug",
                                                                         "dest": {
                                                                             "h": 0,
                                                                             "w": 0,
@@ -1444,15 +1424,8 @@
                                                                 },
                                                                 {
                                                                     "geometry": {
-                                                                        "abs": {
-                                                                            "h": 0,
-                                                                            "w": 0,
-                                                                            "x": 0,
-                                                                            "y": 0
-                                                                        },
-                                                                        "anchor": "middle_center",
                                                                         "aspect": 1.0,
-                                                                        "behavior": 0,
+                                                                        "behavior": "hug",
                                                                         "dest": {
                                                                             "h": 0,
                                                                             "w": 0,
@@ -1806,15 +1779,8 @@
                                                     "widgets": [
                                                         {
                                                             "geometry": {
-                                                                "abs": {
-                                                                    "h": 0,
-                                                                    "w": 0,
-                                                                    "x": 0,
-                                                                    "y": 0
-                                                                },
-                                                                "anchor": "middle_center",
                                                                 "aspect": 1.0,
-                                                                "behavior": 0,
+                                                                "behavior": "hug",
                                                                 "dest": {
                                                                     "h": 0,
                                                                     "w": 0,
@@ -1948,15 +1914,8 @@
                                                         },
                                                         {
                                                             "geometry": {
-                                                                "abs": {
-                                                                    "h": 0,
-                                                                    "w": 0,
-                                                                    "x": 0,
-                                                                    "y": 0
-                                                                },
-                                                                "anchor": "middle_center",
                                                                 "aspect": 1.0,
-                                                                "behavior": 0,
+                                                                "behavior": "hug",
                                                                 "dest": {
                                                                     "h": 0,
                                                                     "w": 0,
@@ -2090,15 +2049,8 @@
                                                         },
                                                         {
                                                             "geometry": {
-                                                                "abs": {
-                                                                    "h": 0,
-                                                                    "w": 0,
-                                                                    "x": 0,
-                                                                    "y": 0
-                                                                },
-                                                                "anchor": "middle_center",
                                                                 "aspect": 1.0,
-                                                                "behavior": 0,
+                                                                "behavior": "hug",
                                                                 "dest": {
                                                                     "h": 0,
                                                                     "w": 0,
@@ -2343,15 +2295,8 @@
                                             "widgets": [
                                                 {
                                                     "geometry": {
-                                                        "abs": {
-                                                            "h": 0,
-                                                            "w": 0,
-                                                            "x": 0,
-                                                            "y": 0
-                                                        },
-                                                        "anchor": "middle_center",
                                                         "aspect": 1.0,
-                                                        "behavior": 0,
+                                                        "behavior": "hug",
                                                         "dest": {
                                                             "h": 0,
                                                             "w": 0,
@@ -2485,15 +2430,8 @@
                                                 },
                                                 {
                                                     "geometry": {
-                                                        "abs": {
-                                                            "h": 0,
-                                                            "w": 0,
-                                                            "x": 0,
-                                                            "y": 0
-                                                        },
-                                                        "anchor": "middle_center",
                                                         "aspect": 1.0,
-                                                        "behavior": 0,
+                                                        "behavior": "hug",
                                                         "dest": {
                                                             "h": 0,
                                                             "w": 0,

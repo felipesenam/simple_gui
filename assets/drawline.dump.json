@@ -375,7 +375,7 @@
                                         {
                                             "geometry": {
                                                 "aspect": 1.0,
-                                                "behavior": 1,
+                                                "behavior": "hug",
                                                 "dest": {
                                                     "h": 0,
                                                     "w": 0,
@@ -383,16 +383,16 @@
                                                     "y": 0
                                                 },
                                                 "margin": {
-                                                    "bottom": 12,
-                                                    "left": 12,
-                                                    "right": 12,
-                                                    "top": 14
+                                                    "bottom": 8,
+                                                    "left": 14,
+                                                    "right": 6,
+                                                    "top": 8
                                                 },
                                                 "padding": {
-                                                    "bottom": 14,
-                                                    "left": 12,
-                                                    "right": 6,
-                                                    "top": 11
+                                                    "bottom": 5,
+                                                    "left": 7,
+                                                    "right": 10,
+                                                    "top": 6
                                                 },
                                                 "src": {
                                                     "h": 0,
@@ -510,7 +510,7 @@
                                         {
                                             "geometry": {
                                                 "aspect": 1.0,
-                                                "behavior": 1,
+                                                "behavior": "hug",
                                                 "dest": {
                                                     "h": 0,
                                                     "w": 0,
@@ -518,16 +518,16 @@
                                                     "y": 0
                                                 },
                                                 "margin": {
-                                                    "bottom": 11,
-                                                    "left": 5,
-                                                    "right": 12,
-                                                    "top": 15
+                                                    "bottom": 12,
+                                                    "left": 9,
+                                                    "right": 7,
+                                                    "top": 12
                                                 },
                                                 "padding": {
-                                                    "bottom": 14,
-                                                    "left": 8,
-                                                    "right": 11,
-                                                    "top": 14
+                                                    "bottom": 12,
+                                                    "left": 13,
+                                                    "right": 10,
+                                                    "top": 11
                                                 },
                                                 "src": {
                                                     "h": 0,
@@ -645,7 +645,7 @@
                                         {
                                             "geometry": {
                                                 "aspect": 1.0,
-                                                "behavior": 1,
+                                                "behavior": "hug",
                                                 "dest": {
                                                     "h": 0,
                                                     "w": 0,
@@ -653,16 +653,16 @@
                                                     "y": 0
                                                 },
                                                 "margin": {
-                                                    "bottom": 15,
-                                                    "left": 13,
-                                                    "right": 11,
-                                                    "top": 9
+                                                    "bottom": 10,
+                                                    "left": 12,
+                                                    "right": 9,
+                                                    "top": 10
                                                 },
                                                 "padding": {
-                                                    "bottom": 5,
-                                                    "left": 14,
-                                                    "right": 9,
-                                                    "top": 9
+                                                    "bottom": 14,
+                                                    "left": 9,
+                                                    "right": 7,
+                                                    "top": 14
                                                 },
                                                 "src": {
                                                     "h": 0,
@@ -780,7 +780,7 @@
                                         {
                                             "geometry": {
                                                 "aspect": 1.0,
-                                                "behavior": 1,
+                                                "behavior": "hug",
                                                 "dest": {
                                                     "h": 0,
                                                     "w": 0,
@@ -788,16 +788,16 @@
                                                     "y": 0
                                                 },
                                                 "margin": {
-                                                    "bottom": 5,
-                                                    "left": 13,
-                                                    "right": 12,
+                                                    "bottom": 12,
+                                                    "left": 14,
+                                                    "right": 10,
                                                     "top": 10
                                                 },
                                                 "padding": {
-                                                    "bottom": 9,
-                                                    "left": 7,
-                                                    "right": 10,
-                                                    "top": 5
+                                                    "bottom": 6,
+                                                    "left": 10,
+                                                    "right": 7,
+                                                    "top": 15
                                                 },
                                                 "src": {
                                                     "h": 0,
@@ -915,7 +915,7 @@
                                         {
                                             "geometry": {
                                                 "aspect": 1.0,
-                                                "behavior": 1,
+                                                "behavior": "hug",
                                                 "dest": {
                                                     "h": 0,
                                                     "w": 0,
@@ -923,16 +923,16 @@
                                                     "y": 0
                                                 },
                                                 "margin": {
-                                                    "bottom": 6,
-                                                    "left": 13,
-                                                    "right": 13,
-                                                    "top": 11
+                                                    "bottom": 5,
+                                                    "left": 11,
+                                                    "right": 15,
+                                                    "top": 5
                                                 },
                                                 "padding": {
-                                                    "bottom": 6,
-                                                    "left": 9,
-                                                    "right": 12,
-                                                    "top": 12
+                                                    "bottom": 15,
+                                                    "left": 12,
+                                                    "right": 8,
+                                                    "top": 8
                                                 },
                                                 "src": {
                                                     "h": 0,
@@ -1004,10 +1004,10 @@
                                                 },
                                                 "normal": {
                                                     "background": [
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        0
+                                                        255,
+                                                        127,
+                                                        80,
+                                                        255
                                                     ],
                                                     "border": [
                                                         0,
@@ -1043,7 +1043,7 @@
                                                     ]
                                                 }
                                             },
-                                            "text": "ABCABCABCABCABC",
+                                            "text": "ABCABCABCABC123",
                                             "type": "sgui::Label",
                                             "uid": "14"
                                         }
@@ -1266,7 +1266,7 @@
                                                 {
                                                     "geometry": {
                                                         "aspect": 1.0,
-                                                        "behavior": 1,
+                                                        "behavior": "hug",
                                                         "dest": {
                                                             "h": 0,
                                                             "w": 0,
@@ -1274,15 +1274,15 @@
                                                             "y": 0
                                                         },
                                                         "margin": {
-                                                            "bottom": 5,
-                                                            "left": 6,
+                                                            "bottom": 7,
+                                                            "left": 10,
                                                             "right": 8,
                                                             "top": 9
                                                         },
                                                         "padding": {
-                                                            "bottom": 7,
+                                                            "bottom": 11,
                                                             "left": 5,
-                                                            "right": 14,
+                                                            "right": 8,
                                                             "top": 12
                                                         },
                                                         "src": {
@@ -1401,7 +1401,7 @@
                                                 {
                                                     "geometry": {
                                                         "aspect": 1.0,
-                                                        "behavior": 1,
+                                                        "behavior": "hug",
                                                         "dest": {
                                                             "h": 0,
                                                             "w": 0,
@@ -1409,15 +1409,15 @@
                                                             "y": 0
                                                         },
                                                         "margin": {
-                                                            "bottom": 9,
-                                                            "left": 14,
-                                                            "right": 12,
+                                                            "bottom": 11,
+                                                            "left": 8,
+                                                            "right": 10,
                                                             "top": 5
                                                         },
                                                         "padding": {
-                                                            "bottom": 9,
+                                                            "bottom": 6,
                                                             "left": 6,
-                                                            "right": 10,
+                                                            "right": 12,
                                                             "top": 5
                                                         },
                                                         "src": {

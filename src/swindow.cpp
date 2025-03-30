@@ -84,7 +84,7 @@ namespace sgui
     ApplicationWindow::ApplicationWindow(const ApplicationWindowConfig &config) : config(config)
     {
         this->container = new Flex(*this);
-        this->container->geometry.behavior = Geometry::fill;
+        this->container->geometry.behavior = fill;
     }
     ApplicationWindow::~ApplicationWindow()
     {

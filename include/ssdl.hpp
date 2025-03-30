@@ -68,6 +68,11 @@ namespace sgui
             return SDL_PointInRect(&mousePos, this);
         }
 
+        bool AABB(const Rect &rect) const noexcept
+        {
+            return x < rect.x + rect.w && x + w > rect.x && y < rect.y + rect.h && y + h > rect.y;
+        }
+
         NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Rect, x, y, w, h);
 
         bool operator==(const Rect &rect)
@@ -87,6 +92,19 @@ namespace sgui
                     static_cast<int>(rect.y * scale),
                     static_cast<int>(rect.w * scale),
                     static_cast<int>(rect.h * scale)};
+        }
+
+        Rect intersect(const Rect &other) const noexcept
+        {
+            const int ix = std::max(x, other.x);
+            const int iy = std::max(y, other.y);
+            const int iw = std::min(x + w, other.x + other.w) - ix;
+            const int ih = std::min(y + h, other.y + other.h) - iy;
+
+            if (iw <= 0 || ih <= 0)
+                return Rect(0, 0, 0, 0);
+
+            return Rect(ix, iy, iw, ih);
         }
     };
 

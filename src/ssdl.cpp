@@ -129,7 +129,6 @@ namespace sgui
             drawFillRectangle(*dest, Color(255, 0, 0, 122));
         }
 
-        DebugFrame(*dest, Color(255, 0, 0));
         if (dest->w <= 0 || dest->h <= 0)
             return;
     }

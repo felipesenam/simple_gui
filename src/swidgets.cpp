@@ -6,31 +6,29 @@ namespace sgui
 {
     void Geometry::normalize()
     {
+        int cw = widget.contentWidth();
+        int ch = widget.contentHeight();
+
         switch (behavior)
         {
         case hug:
         {
-            dest.w = width = widget.contentWidth() - padding.x();
-            dest.h = height = widget.contentHeight() - padding.y();
-            break;
-        }
-        case normal:
-        {
-            dest.w = width;
-            dest.h = height;
+            width = cw - padding.x();
+            height = ch - padding.y();
             break;
         }
         case fill:
         {
             if (widget.parent)
             {
-                dest.w = width = widget.parent->contentWidth();
-                dest.h = height = widget.parent->contentHeight();
+                width = widget.parent->contentWidth();
+                height = widget.parent->contentHeight();
             }
             else
             {
-                dest.w = width = widget.window.size().first;
-                dest.h = height = widget.window.size().second;
+                const auto windowSize = widget.window.size();
+                width = windowSize.first;
+                height = windowSize.second;
             }
             break;
         }
@@ -40,9 +38,37 @@ namespace sgui
 
         if (widget.parent)
         {
-            dest.x = x + padding.left;
-            dest.y = y + padding.top;
+            if (overflow == hidden)
+            {
+                clip = dest.intersect(widget.parent->geometry.clip);
+            }
+            else
+            {
+                clip = widget.parent->geometry.clip;
+            }
         }
+        else
+        {
+            clip = {x, y, width, height};
+        }
+    }
+
+    void Geometry::confine(Geometry &geometry)
+    {
+        const int paddedX = x + padding.left;
+        const int paddedY = y + padding.top;
+
+        dest.x = std::max(paddedX, geometry.clip.x);
+        dest.y = std::max(paddedY, geometry.clip.y);
+        dest.w = std::min(width - (dest.x - paddedX), geometry.clip.w - (dest.x - geometry.clip.x));
+        dest.h = std::min(height - (dest.y - paddedY), geometry.clip.h - (dest.y - geometry.clip.y));
+
+        src.x = std::max(0, dest.x - x - padding.left);
+        src.y = std::max(0, dest.y - y - padding.top);
+        src.w = std::min(width - src.x, dest.w);
+        src.h = std::min(height - src.y, dest.h);
+
+        widget.show = clip.AABB(paddingRect());
     }
 
     Rect Geometry::marginRect() const noexcept
@@ -249,13 +275,6 @@ namespace sgui
         }
     }
 
-    void Flex::preUpdate()
-    {
-        for (auto widget : widgets)
-            widget->preUpdate();
-        geometry.normalize();
-    }
-
     void Flex::update()
     {
         events.perform();
@@ -275,9 +294,8 @@ namespace sgui
             {
                 posWidgetVertical(lx, ly, currentHeight, *widget, spaceBetween, spaceAround);
 
+                widget->preUpdate();
                 widget->update();
-                // TODO: tem um problema com esse método
-                widget->geometry.confine(geometry.dest);
 
                 currentHeight += widget->height() + gap;
             }
@@ -292,9 +310,8 @@ namespace sgui
             {
                 posWidgetHorizontal(lx, ly, currentWidth, *widget, spaceBetween, spaceAround);
 
+                widget->preUpdate();
                 widget->update();
-                // TODO: tem um problema com esse método
-                widget->geometry.confine(geometry.dest);
 
                 currentWidth += widget->width() + gap;
             }
@@ -488,8 +505,12 @@ namespace sgui
     {
         for (auto widget : widgets)
         {
-            widget->drawCommonElements();
-            widget->draw();
+            widget->geometry.confine(geometry);
+            if (widget->show)
+            {
+                widget->drawCommonElements();
+                widget->draw();
+            }
         }
     }
 
@@ -556,20 +577,26 @@ namespace sgui
 
     void Widget::drawCommonElements()
     {
-        const auto paddingRect = geometry.paddingRect();
+        if (parent)
+        {
+            const auto scheme = this->getCurrentColorScheme();
 
-        auto scheme = this->getCurrentColorScheme();
-        window.renderer->drawFillRectangle(paddingRect, scheme.background);
-        window.renderer->drawRectangle(paddingRect, scheme.border);
+            const auto paddingRect = geometry.paddingRect();
+            const auto backgroundRect = paddingRect.intersect(parent->geometry.clip);
+
+            window.renderer->drawRectangle(backgroundRect, scheme.border);
+            window.renderer->drawFillRectangle(backgroundRect, scheme.background);
 
 #ifdef DEBUG
-        const auto marginRect = geometry.marginRect();
+            const auto marginRect = geometry.marginRect();
 
-        window.renderer->drawRectangle(marginRect, Colors::Lime);
-        window.renderer->drawRectangle(paddingRect, Colors::Blue);
-        window.renderer->drawRectangle(geometry.dest, Colors::Red);
+            window.renderer->drawRectangle(marginRect, Colors::Lime);
+            window.renderer->drawRectangle(paddingRect, Colors::Blue);
+            window.renderer->drawRectangle(geometry.dest, Colors::Red);
 #endif
+        }
     }
+
     void Widget::preUpdate()
     {
         geometry.normalize();

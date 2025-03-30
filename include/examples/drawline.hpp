@@ -58,7 +58,10 @@ int drawline()
     randomInitialize(column01.create<Label>("text02", "ABCABC"));
     randomInitialize(column01.create<Label>("text03", "ABCABCABC"));
     randomInitialize(column01.create<Label>("text04", "ABCABCABCABC"));
-    randomInitialize(column01.create<Label>("text05", "ABCABCABCABCABC"));
+
+    auto &label = column01.create<Label>("text05", "ABCABCABCABC123");
+    label.scheme.normal.background = Colors::Coral;
+    randomInitialize(label);
 
     auto &column02 = row.create<Column>("column02");
     auto &row01 = column02.create<Row>("row01");
@@ -72,25 +75,20 @@ int drawline()
     randomInitialize(column01);
     randomInitialize(column02);
 
-    row.geometry.behavior = Geometry::normal;
+    row.geometry.behavior = normal;
+    row.geometry.overflow = hidden;
     row.geometry.width = 500;
-    row.geometry.height = 400;
+    row.geometry.height = 200;
+    row.events["windowSizeChanged"] = [&window](Widget &widget)
+    {
+        auto windowSize = window.size();
+        widget.geometry.width = .8 * windowSize.first;
+        widget.geometry.height = .5 * windowSize.second;
+    };
 
-    column02.geometry.behavior = Geometry::normal;
+    column02.geometry.behavior = normal;
     column02.geometry.width = 200;
     column02.geometry.height = 200;
-
-    window.container->style.horizontalAlign = center;
-    row.style.horizontalAlign = center;
-    row01.style.horizontalAlign = center;
-    column01.style.horizontalAlign = center;
-    column02.style.horizontalAlign = center;
-
-    window.container->style.verticalAlign = middle;
-    row.style.verticalAlign = middle;
-    row01.style.verticalAlign = middle;
-    column01.style.verticalAlign = middle;
-    column02.style.verticalAlign = middle;
 
     app.dump("assets/drawline.dump.json");
 
